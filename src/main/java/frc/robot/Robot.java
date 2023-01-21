@@ -20,12 +20,15 @@ public class Robot extends TimedRobot {
   private DifferentialDrive m_myRobot;
   private XboxController controller;
   private static final int leftDeviceID = 1; 
-  private static final int rightDeviceID = 3;
   private static final int leftDeviceID2 = 2;
+  private static final int rightDeviceID2 = 4;
   private CANSparkMax m_leftMotor;
   private CANSparkMax m_rightMotor;
+  private static final int rightDeviceID = 3;
   private CANSparkMax m_leftMotor2;
+  private CANSparkMax m_rightMotor2;
   private MotorControllerGroup leftside;
+  private MotorControllerGroup rightside;
 
 
   @Override
@@ -48,7 +51,9 @@ public class Robot extends TimedRobot {
     m_leftMotor = new CANSparkMax(leftDeviceID, MotorType.kBrushless);
     m_rightMotor = new CANSparkMax(rightDeviceID, MotorType.kBrushless);
     m_leftMotor2 = new CANSparkMax(leftDeviceID2, MotorType.kBrushless);
+    m_rightMotor2 = new CANSparkMax(rightDeviceID2, MotorType.kBrushless);
     leftside = new MotorControllerGroup(m_leftMotor, m_leftMotor2);
+    rightside = new MotorControllerGroup(m_rightMotor, m_rightMotor2);
 
 
     /**
@@ -59,7 +64,7 @@ public class Robot extends TimedRobot {
     m_leftMotor.restoreFactoryDefaults();
     m_rightMotor.restoreFactoryDefaults();
 
-    m_myRobot = new DifferentialDrive(leftside, m_rightMotor);
+    m_myRobot = new DifferentialDrive(leftside, rightside);
 
     
   }
@@ -68,4 +73,9 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     m_myRobot.tankDrive(controller.getLeftY(), controller.getRightY());
   }
+
+  public void autonomousInit(){
+    
+  }
+
 }
