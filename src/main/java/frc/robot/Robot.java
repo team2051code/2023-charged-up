@@ -28,10 +28,6 @@ public class Robot extends TimedRobot {
    * initialization code.
    */
   @Override
-
-  private CA
-  //private final DifferentialDrive m_robotDrive = new DifferentialDrive(new )
-
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
