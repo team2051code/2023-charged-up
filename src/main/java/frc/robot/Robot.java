@@ -9,6 +9,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import java.util.List;
+
+import org.photonvision.*;
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import com.revrobotics.CANSparkMax;
 
 
@@ -20,8 +27,8 @@ import com.revrobotics.CANSparkMax;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-
   private RobotContainer m_robotContainer;
+  private PhotonCamera m_camera;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -32,6 +39,10 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    m_camera = new PhotonCamera("Camera_A");
+
+
+
   }
 
   /**
@@ -47,7 +58,48 @@ public class Robot extends TimedRobot {
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
+    var result = m_camera.getLatestResult();
+    boolean hasTargets = result.hasTargets();
+    List<PhotonTrackedTarget> targets = result.getTargets();
+    PhotonTrackedTarget target = result.getBestTarget();
+    // if (target != null)
+    // {
+    //   double yaw = target.getYaw();
+    //   double pitch = target.getPitch();
+    //   double area = target.getArea();
+    //   double skew = target.getSkew();
+    //   System.out.println("" + yaw + ", " + pitch + ", " + area + ", " + skew);
+
+    //   SmartDashboard.putNumber("Yaw", yaw);
+    //   SmartDashboard.putNumber("Pitch", pitch);
+    //   SmartDashboard.putNumber("Area", area);
+    //   SmartDashboard.putNumber("skew", skew);
+
+    // }
+    // else
+    // {
+    //   System.out.println("No targets locked.");
+
+    //   SmartDashboard.putNumber("Yaw", 0);
+    //   SmartDashboard.putNumber("Pitch", 0);
+    //   SmartDashboard.putNumber("Area", 0);
+    //   SmartDashboard.putNumber("skew", 0); 
+    // }
     CommandScheduler.getInstance().run();
+    System.out.println(targets.size() + "targets found: ");
+    if (targets.size() > 0)
+    {
+      for (PhotonTrackedTarget targety: targets)
+      {
+        double yaw = targety.getYaw();
+        double pitch = targety.getPitch();
+        double area = targety.getArea();
+        double skew = targety.getSkew();
+        int id = targety.getFiducialId();
+        System.out.println("ID " + id +  ": " + yaw + ", " + pitch + ", " + area + ", " + skew);
+      }
+    }
+
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
