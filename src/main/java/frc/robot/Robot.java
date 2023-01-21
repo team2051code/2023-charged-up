@@ -12,8 +12,10 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 public class Robot extends TimedRobot {
@@ -27,9 +29,21 @@ public class Robot extends TimedRobot {
   private static final int rightDeviceID = 3;
   private CANSparkMax m_leftMotor2;
   private CANSparkMax m_rightMotor2;
-  private MotorControllerGroup leftside;
-  private MotorControllerGroup rightside;
+  private MotorControllerGroup m_leftSide;
+  private MotorControllerGroup m_rightSide;
+  private RelativeEncoder m_leftMotorRE;
+  private RelativeEncoder m_rightMotorRE;
 
+  // @Override 
+  // public void robotPeriodic(){
+
+  //   double m_leftMotorREPosition = m_leftMotorRE.getPosition();
+  //   double m_rightMotorREPosition = m_rightMotorRE.getPosition();
+
+
+  //   SmartDashboard.putNumber("LeftMotor", m_leftMotorREPosition);
+  //   SmartDashboard.putNumber("RightMotor", m_rightMotorREPosition);
+  // }
 
   @Override
   public void robotInit() {
@@ -52,9 +66,9 @@ public class Robot extends TimedRobot {
     m_rightMotor = new CANSparkMax(rightDeviceID, MotorType.kBrushless);
     m_leftMotor2 = new CANSparkMax(leftDeviceID2, MotorType.kBrushless);
     m_rightMotor2 = new CANSparkMax(rightDeviceID2, MotorType.kBrushless);
-    leftside = new MotorControllerGroup(m_leftMotor, m_leftMotor2);
-    rightside = new MotorControllerGroup(m_rightMotor, m_rightMotor2);
-
+    m_leftSide = new MotorControllerGroup(m_leftMotor, m_leftMotor2);
+    //m_leftSide.setInverted(true);
+    m_rightSide = new MotorControllerGroup(m_rightMotor, m_rightMotor2);
 
     /**
      * The RestoreFactoryDefaults method can be used to reset the configuration parameters
@@ -64,8 +78,11 @@ public class Robot extends TimedRobot {
     m_leftMotor.restoreFactoryDefaults();
     m_rightMotor.restoreFactoryDefaults();
 
-    m_myRobot = new DifferentialDrive(leftside, rightside);
+    m_myRobot = new DifferentialDrive(m_leftSide, m_rightSide);
 
+    //m_leftMotorRE = m_leftMotor.getEncoder();    
+    //m_rightMotorRE = m_rightMotor.getEncoder();
+    //m_leftMotorRE.setInverted(true);
     
   }
 
@@ -77,5 +94,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit(){
     
   }
+
+  
 
 }
