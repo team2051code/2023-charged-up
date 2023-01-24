@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.Joystick;
@@ -34,7 +35,7 @@ public class Robot extends TimedRobot {
   private PhotonCamera m_camera;
   private PhotonCamera m_cameraB;
   private ArrayList<PhotonCamera> cameraList;
-
+ 
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -97,8 +98,20 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("Pose X Value", x);
         SmartDashboard.putNumber("Pose Y Value", y);
         SmartDashboard.putNumber("Pose Z value", z);
-      }
+        if (ID >= -1)
+        {
+        if (ID == 1)
+        {
+        CANSparkMax m_left = new CANSparkMax(1, null);
+        CANSparkMax m_right = new CANSparkMax(2, null);
+        DifferentialDrive m_drive = new DifferentialDrive(m_left, m_right);
+        
+        }
+        
+        }
 
+
+      }
       
     }
     // if (target != null)
