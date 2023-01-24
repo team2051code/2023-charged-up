@@ -7,10 +7,13 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.photonvision.*;
@@ -29,6 +32,8 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
   private PhotonCamera m_camera;
+  private PhotonCamera m_cameraB;
+  private ArrayList<PhotonCamera> cameraList;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -40,7 +45,10 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     m_camera = new PhotonCamera("Camera_A");
-
+    m_cameraB = new PhotonCamera("Camera_B");
+    cameraList = new ArrayList<PhotonCamera>();
+    cameraList.add(m_camera);
+    cameraList.add(m_cameraB);
 
 
   }
@@ -58,16 +66,47 @@ public class Robot extends TimedRobot {
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
-    var result = m_camera.getLatestResult();
-    boolean hasTargets = result.hasTargets();
-    List<PhotonTrackedTarget> targets = result.getTargets();
-    PhotonTrackedTarget target = result.getBestTarget();
+    // var result = m_camera.getLatestResult();
+    // boolean hasTargets = result.hasTargets();
+    // List<PhotonTrackedTarget> targets = result.getTargets();
+    // PhotonTrackedTarget target = result.getBestTarget();
+    for (PhotonCamera camera: cameraList)
+    {
+      SmartDashboard.putString("active", "yes");
+      var result = camera.getLatestResult();
+      double latency = result.getLatencyMillis();
+      List<PhotonTrackedTarget> targets = result.getTargets();
+      System.out.print(camera.getName() + "(" + latency + ")" +  ": ");
+      System.out.println(targets.size() + "targets found");
+      for (PhotonTrackedTarget target: targets)
+      {
+        double yaw = target.getYaw();
+        double pitch = target.getPitch();
+        double area = target.getArea();
+        double skew = target.getSkew();
+        double ID = target.getFiducialId();
+        SmartDashboard.putNumber("AprilTag ID: " ,  ID);
+        SmartDashboard.putNumber("Yaw", yaw);
+        SmartDashboard.putNumber("Pitch", pitch);
+        SmartDashboard.putNumber("Area" , area);
+        SmartDashboard.putNumber("skew", skew);
+        Transform3d pose = target.getBestCameraToTarget();
+        double x = pose.getX();
+        double y = pose.getY();
+        double z = pose.getZ();
+        SmartDashboard.putNumber("Pose X Value", x);
+        SmartDashboard.putNumber("Pose Y Value", y);
+        SmartDashboard.putNumber("Pose Z value", z);
+      }
+
+      
+    }
     // if (target != null)
     // {
-    //   double yaw = target.getYaw();
-    //   double pitch = target.getPitch();
-    //   double area = target.getArea();
-    //   double skew = target.getSkew();
+      // double yaw = target.getYaw();
+      // double pitch = target.getPitch();
+      // double area = target.getArea();
+      // double skew = target.getSkew();
     //   System.out.println("" + yaw + ", " + pitch + ", " + area + ", " + skew);
 
     //   SmartDashboard.putNumber("Yaw", yaw);
@@ -85,20 +124,20 @@ public class Robot extends TimedRobot {
     //   SmartDashboard.putNumber("Area", 0);
     //   SmartDashboard.putNumber("skew", 0); 
     // }
-    CommandScheduler.getInstance().run();
-    System.out.println(targets.size() + "targets found: ");
-    if (targets.size() > 0)
-    {
-      for (PhotonTrackedTarget targety: targets)
-      {
-        double yaw = targety.getYaw();
-        double pitch = targety.getPitch();
-        double area = targety.getArea();
-        double skew = targety.getSkew();
-        int id = targety.getFiducialId();
-        System.out.println("ID " + id +  ": " + yaw + ", " + pitch + ", " + area + ", " + skew);
-      }
-    }
+    // CommandScheduler.getInstance().run();
+    // System.out.println(targets.size() + "targets found: ");
+    // if (targets.size() > 0)
+    // {
+    //   for (PhotonTrackedTarget targety: targets)
+    //   {
+    //     double yaw = targety.getYaw();
+    //     double pitch = targety.getPitch();
+    //     double area = targety.getArea();
+    //     double skew = targety.getSkew();
+    //     int id = targety.getFiducialId();
+    //     System.out.println("ID " + id +  ": " + yaw + ", " + pitch + ", " + area + ", " + skew);
+    //   }
+    // }
 
   }
 
