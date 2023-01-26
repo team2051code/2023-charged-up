@@ -21,6 +21,7 @@ import org.photonvision.*;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 
 /**
@@ -35,6 +36,13 @@ public class Robot extends TimedRobot {
   private PhotonCamera m_camera;
   private PhotonCamera m_cameraB;
   private ArrayList<PhotonCamera> cameraList;
+  private final CANSparkMax m_RightFront = new CANSparkMax(1, MotorType.kBrushed);
+  private final CANSparkMax m_LeftFront = new CANSparkMax(2, MotorType.kBrushed);
+  private final CANSparkMax m_RightBack = new CANSparkMax(3, MotorType.kBrushed);
+  private final CANSparkMax m_LeftBack = new CANSparkMax(4, MotorType.kBrushed);
+ 
+  private final CANSparkMax m_intakeRight = new CANSparkMax(5, MotorType.kBrushed);
+  private final CANSparkMax m_intakeLeft = new CANSparkMax(6, MotorType.kBrushed);
  
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -102,17 +110,14 @@ public class Robot extends TimedRobot {
         {
         if (ID == 1)
         {
-        CANSparkMax m_left = new CANSparkMax(1, null);
-        CANSparkMax m_right = new CANSparkMax(2, null);
-        DifferentialDrive m_drive = new DifferentialDrive(m_left, m_right);
-        
-        }
+        m_intakeLeft.set(1.0);
+        m_intakeRight.set(-1.0);
         
         }
 
 
       }
-      
+    }
     }
     // if (target != null)
     // {
@@ -185,11 +190,16 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+  
+
   }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+
+    
+  }
 
   @Override
   public void testInit() {
