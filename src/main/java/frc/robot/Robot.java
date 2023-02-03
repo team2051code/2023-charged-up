@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.apriltag.AprilTag;
@@ -23,6 +24,7 @@ import org.photonvision.*;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 
@@ -32,23 +34,24 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends TimedRobot {
-  private DifferentialDrive m_myRobot;
+public class Robot extends TimedRobot
+ {
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
   private PhotonCamera m_camera;
   private PhotonCamera m_cameraB;
   private ArrayList<PhotonCamera> cameraList;
-  // private final CANSparkMax m_RightFront = new CANSparkMax(1, MotorType.kBrushless);
-  // private final CANSparkMax m_LeftFront = new CANSparkMax(2, MotorType.kBrushless);
-  // private final CANSparkMax m_RightBack = new CANSparkMax(3, MotorType.kBrushless);
-  // private final CANSparkMax m_LeftBack = new CANSparkMax(4, MotorType.kBrushless);
- 
+  private final CANSparkMax m_RightFront = new CANSparkMax(DriveConstants.kRightMotor1Port, MotorType.kBrushless);
+  private final CANSparkMax m_LeftFront = new CANSparkMax(DriveConstants.kLeftMotor1Port, MotorType.kBrushless);
+  private final CANSparkMax m_RightBack = new CANSparkMax(DriveConstants.kRightMotor2Port, MotorType.kBrushless);
+  private final CANSparkMax m_LeftBack = new CANSparkMax(DriveConstants.kLeftMotor2Port, MotorType.kBrushless);
+  private final RelativeEncoder m_leftEncoder = m_LeftFront.getEncoder();
+  private final RelativeEncoder m_rightEncoder = m_RightFront.getEncoder();
+  private final XboxController m_driverController = new XboxController(1);
   // private final CANSparkMax m_intakeRight = new CANSparkMax(5, MotorType.kBrushed);
   // private final CANSparkMax m_intakeLeft = new CANSparkMax(6, MotorType.kBrushed);
-  // private final MotorControllerGroup m_left = new MotorControllerGroup(m_LeftFront, m_LeftBack);
-  // private final MotorControllerGroup m_right = new MotorControllerGroup(m_RightFront, m_RightBack);
-  // private final DifferentialDrive m_MyRobot = new DifferentialDrive(m_left, m_right);
+  private final MotorControllerGroup m_left = new MotorControllerGroup(m_LeftFront, m_LeftBack);
+  private final MotorControllerGroup m_right = new MotorControllerGroup(m_RightFront, m_RightBack);
   public final double ksVolts = 0.16985;
   public final double kvVoltSecondsPerMeter = 0.12945;
   public final double kaVoltSecondsSquaredPerMeter = 0.025994;
@@ -69,7 +72,10 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-    m_robotContainer = new RobotContainer();
+    m_RightFront.setInverted(true);
+    m_RightBack.setInverted(true);
+    m_RightBack.getEncoder();
+    m_robotContainer = new RobotContainer(m_left, m_right, m_leftEncoder, m_rightEncoder);
     // m_camera = new PhotonCamera("Camera_A");
     // m_cameraB = new PhotonCamera("Camera_B");
     // cameraList = new ArrayList<PhotonCamera>();
@@ -217,8 +223,11 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {
-   // m_MyRobot.tankDrive;
+  public void teleopPeriodic()
+   {
+    //m_robotContainer.arcadeDrive(m_driverController.getLeftX()/1.5, m_driverController.getLeftY()/1.5);
+    //m_myRobot.arcadeDrive(-m_driverController.getLeftY()/1.5, -m_driverController.getLeftX()/1.5);
+    m_robotContainer.tankDrive(-m_driverController.getLeftY(), -m_driverController.getRightY());
     
   }
 

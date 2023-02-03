@@ -6,6 +6,8 @@ package frc.robot;
 
 import java.util.List;
 
+import com.revrobotics.RelativeEncoder;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -18,6 +20,7 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
@@ -35,13 +38,17 @@ public class RobotContainer {
   // private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
   // private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
-  private DriveSubsystem m_robotDrive = new DriveSubsystem();
+  private DriveSubsystem m_robotDrive;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
   }
-
+  public RobotContainer(MotorControllerGroup m_leftMotors, MotorControllerGroup m_rightMotors, RelativeEncoder m_leftEncoder, RelativeEncoder m_RightEncoder)
+  {
+    configureButtonBindings();
+    m_robotDrive = new DriveSubsystem(m_leftMotors, m_rightMotors, m_leftEncoder, m_RightEncoder);
+  }
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
@@ -61,7 +68,7 @@ public class RobotContainer {
       DriveConstants.ksVolts, DriveConstants.kvVoltSecondsPerMeter), DriveConstants.kDriveKinematics, 10);
     var TrajectoryConfig = new TrajectoryConfig(DriveConstants.kMaxSpeedMetersPerSecond,
     DriveConstants.kMaxAccelerationMetersPerSecondSquared).setKinematics(DriveConstants.kDriveKinematics).addConstraint(autoVoltageConstraint);
-    Trajectory trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)), List.of(new Translation2d(.5, 0)), new Pose2d(1, 0, new Rotation2d()), TrajectoryConfig);
+    Trajectory trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)), List.of(), new Pose2d(2, 0, new Rotation2d()), TrajectoryConfig);
     
     System.out.println("Robot will finish in" + trajectory.getTotalTimeSeconds());
     
@@ -84,5 +91,13 @@ public class RobotContainer {
     m_robotDrive.resetOdometry(trajectory.getInitialPose());
     return ramseteCommand.andThen(() -> System.out.println("Finished running RAMSETE"))
     .andThen(() -> m_robotDrive.tankDriveVolts(0, 0));
+  }
+  public void arcadeDrive(double speed, double rotation)
+  {
+    m_robotDrive.arcadeDrive(speed, rotation);
+  }
+  public void tankDrive(double leftSpeed, double rightSpeed)
+  {
+    m_robotDrive.tankDrive(leftSpeed, rightSpeed);
   }
 }
