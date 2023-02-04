@@ -57,13 +57,13 @@ public class DriveSubsystem extends SubsystemBase {
   public DriveSubsystem(MotorControllerGroup m_left, MotorControllerGroup m_right, RelativeEncoder m_leftEncode, RelativeEncoder m_rightEncode) {
     m_leftEncoder = m_leftEncode;
     m_rightEncoder = m_rightEncode;
-    // We need to invert one side of the drivetrain so that positive voltages
-    // result in both sides moving forward. Depending on how your robot's
-    // gearbox is constructed, you might have to invert the left side instead.
+    m_leftEncoder.setPositionConversionFactor(DriveConstants.kLinearDistanceConversionFactor);
+    m_leftEncoder.setVelocityConversionFactor(DriveConstants.kLinearDistanceConversionFactor / 60);
+    m_rightEncoder.setPositionConversionFactor(DriveConstants.kLinearDistanceConversionFactor);
+    m_rightEncoder.setVelocityConversionFactor(DriveConstants.kLinearDistanceConversionFactor / 60);
     m_leftMotors = m_left;
     m_rightMotors = m_right;
     m_drive = new DifferentialDrive(m_leftMotors, m_rightMotors);
-    // m_rightMotors.setInverted(true);
 
     // Sets the distance per pulse for the encoders
     // m_leftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);

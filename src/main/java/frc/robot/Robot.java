@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.DriveConstants;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -72,12 +73,16 @@ public class Robot extends TimedRobot
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-    m_RightFront.setInverted(true);
+    m_LeftBack.restoreFactoryDefaults();
+    m_LeftFront.restoreFactoryDefaults();
+    m_RightBack.restoreFactoryDefaults();
+    m_RightFront.restoreFactoryDefaults();
+    System.out.println(m_LeftFront.getInverted()+" "+m_LeftBack.getInverted()+" "+m_RightFront.getInverted()+" "+m_RightBack.getInverted());
     m_RightBack.setInverted(true);
-    m_RightBack.getEncoder();
+    m_RightFront.setInverted(true);
     m_robotContainer = new RobotContainer(m_left, m_right, m_leftEncoder, m_rightEncoder);
     // m_camera = new PhotonCamera("Camera_A");
-    // m_cameraB = new PhotonCamera("Camera_B");
+    // m_cameraB = new  PhotonCamera("Camera_B");
     // cameraList = new ArrayList<PhotonCamera>();
     // cameraList.add(m_camera);
     // cameraList.add(m_cameraB);
@@ -205,7 +210,6 @@ public class Robot extends TimedRobot
   @Override
   public void autonomousPeriodic()
   {
-
   }
 
   @Override
