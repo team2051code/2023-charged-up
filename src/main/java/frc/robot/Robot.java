@@ -26,6 +26,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 
@@ -77,9 +78,15 @@ public class Robot extends TimedRobot
     m_LeftFront.restoreFactoryDefaults();
     m_RightBack.restoreFactoryDefaults();
     m_RightFront.restoreFactoryDefaults();
-    System.out.println(m_LeftFront.getInverted()+" "+m_LeftBack.getInverted()+" "+m_RightFront.getInverted()+" "+m_RightBack.getInverted());
+
     m_RightBack.setInverted(true);
     m_RightFront.setInverted(true);
+
+    m_LeftBack.setIdleMode(IdleMode.kBrake);
+    m_LeftFront.setIdleMode(IdleMode.kBrake);
+    m_RightBack.setIdleMode(IdleMode.kBrake);
+    m_RightFront.setIdleMode(IdleMode.kBrake);
+
     m_robotContainer = new RobotContainer(m_left, m_right, m_leftEncoder, m_rightEncoder);
     // m_camera = new PhotonCamera("Camera_A");
     // m_cameraB = new  PhotonCamera("Camera_B");
@@ -231,7 +238,11 @@ public class Robot extends TimedRobot
    {
     //m_robotContainer.arcadeDrive(m_driverController.getLeftX()/1.5, m_driverController.getLeftY()/1.5);
     //m_myRobot.arcadeDrive(-m_driverController.getLeftY()/1.5, -m_driverController.getLeftX()/1.5);
-    m_robotContainer.tankDrive(-m_driverController.getLeftY(), -m_driverController.getRightY());
+    System.out.println(m_driverController.getLeftY());
+    if(m_driverController.getLeftY()!=1 && m_driverController.getLeftY() != -1)
+        m_robotContainer.arcadeDrive(-m_driverController.getLeftY()/4,m_driverController.getLeftX()/4);
+    else
+        m_robotContainer.arcadeDrive(-m_driverController.getLeftY()/1.5,m_driverController.getLeftX()/1.5);
     
   }
 
