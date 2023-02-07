@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 import com.revrobotics.RelativeEncoder;
@@ -17,7 +19,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -64,13 +68,26 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    String filePath = "output/output/circle.wpilib.json";
+
     // An ExampleCommand will run in autonomous
+    m_robotDrive.resetEncoders();
     var autoVoltageConstraint = new DifferentialDriveVoltageConstraint(new SimpleMotorFeedforward(
       DriveConstants.ksVolts, DriveConstants.kvVoltSecondsPerMeter), DriveConstants.kDriveKinematics, 10);
     var TrajectoryConfig = new TrajectoryConfig(DriveConstants.kMaxSpeedMetersPerSecond,
     DriveConstants.kMaxAccelerationMetersPerSecondSquared).setKinematics(DriveConstants.kDriveKinematics).addConstraint(autoVoltageConstraint);
-    Trajectory trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)), List.of(), new Pose2d(2, 0, new Rotation2d()), TrajectoryConfig);
+    Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(filePath);
+    Trajectory trajectory;
+    try {
+      trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)), List.of(), new Pose2d(2, 0, new Rotation2d()), TrajectoryConfig);
+    }
+
     
+    System.out.println(trajectory);
     System.out.println("Robot will finish in" + trajectory.getTotalTimeSeconds());
     
     RamseteCommand ramseteCommand =
@@ -90,6 +107,7 @@ public class RobotContainer {
         m_robotDrive::tankDriveVolts,
         m_robotDrive);
     m_robotDrive.resetOdometry(trajectory.getInitialPose());
+    m_robotDrive.resetEncoders();
     return ramseteCommand.andThen(() -> System.out.println("Finished running RAMSETE"))
     .andThen(() -> m_robotDrive.tankDriveVolts(0, 0));
   }

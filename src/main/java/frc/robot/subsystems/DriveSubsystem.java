@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkMax;
@@ -30,6 +31,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final DifferentialDrive m_drive;
   private final RelativeEncoder m_leftEncoder;
   private final RelativeEncoder m_rightEncoder;
+  private final Field2d m_field = new Field2d();
   // The robot's drive
 
   // The left-side drive encoder
@@ -64,6 +66,7 @@ public class DriveSubsystem extends SubsystemBase {
     m_leftMotors = m_left;
     m_rightMotors = m_right;
     m_drive = new DifferentialDrive(m_leftMotors, m_rightMotors);
+    SmartDashboard.putData("Field: ", m_field);
 
     // Sets the distance per pulse for the encoders
     // m_leftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
@@ -80,9 +83,10 @@ public class DriveSubsystem extends SubsystemBase {
     // Update the odometry in the periodic block
     m_odometry.update(
         new Rotation2d(degToRad(m_gyro.getAngle())), m_leftEncoder.getPosition(), m_rightEncoder.getPosition());
-        SmartDashboard.putNumber("left distance", m_leftEncoder.getPosition());
-        SmartDashboard.putNumber("right distance", m_rightEncoder.getPosition());
-        SmartDashboard.putNumber("timestamp", Timer.getFPGATimestamp());
+    SmartDashboard.putNumber("left distance", m_leftEncoder.getPosition());
+    SmartDashboard.putNumber("right distance", m_rightEncoder.getPosition());
+    SmartDashboard.putNumber("timestamp", Timer.getFPGATimestamp());
+    m_field.setRobotPose(m_odometry.getPoseMeters());
   }
 
   /**
