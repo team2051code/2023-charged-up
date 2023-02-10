@@ -1,5 +1,9 @@
 package frc.robot.subsystems;
 
+import java.security.Key;
+
+import javax.crypto.spec.PBEParameterSpec;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 
@@ -11,6 +15,7 @@ import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -85,8 +90,11 @@ public class DriveSubsystem extends SubsystemBase {
         new Rotation2d(degToRad(m_gyro.getAngle())), m_leftEncoder.getPosition(), m_rightEncoder.getPosition());
     SmartDashboard.putNumber("left distance", m_leftEncoder.getPosition());
     SmartDashboard.putNumber("right distance", m_rightEncoder.getPosition());
-    SmartDashboard.putNumber("timestamp", Timer.getFPGATimestamp());
-    m_field.setRobotPose(m_odometry.getPoseMeters());
+    SmartDashboard.putNumber("timestamp", Timer.getFPGATimestamp());    m_field.setRobotPose(m_odometry.getPoseMeters());
+    SmartDashboard.putNumber("angle", getHeading());
+    SmartDashboard.putNumber("x accel", m_gyro.getAccelX());
+    SmartDashboard.putNumber("y accel", m_gyro.getAccelY());
+    SmartDashboard.putNumber("z accel", m_gyro.getAccelZ());
   }
 
   /**
@@ -104,6 +112,10 @@ public class DriveSubsystem extends SubsystemBase {
   private double radToDeg(double radians)
   {
     return radians * 180 / Math.PI;
+  }
+
+  public double getAccelX(){
+    return m_gyro.getAccelX();
   }
 
   /**
@@ -157,6 +169,8 @@ public class DriveSubsystem extends SubsystemBase {
     m_leftEncoder.setPosition(0);
     m_rightEncoder.setPosition(0);
   }
+  
+  
 
   /**
    * Gets the average distance of the two encoders.
@@ -218,6 +232,14 @@ public class DriveSubsystem extends SubsystemBase {
     return -m_gyro.getRate();
   }
  
+  public double getRightEncoder(){
+    return m_rightEncoder.getPosition();
+  }
+
+  public double getLeftEncoder(){
+    return m_leftEncoder.getPosition();
+  }
+
 }
 
   
