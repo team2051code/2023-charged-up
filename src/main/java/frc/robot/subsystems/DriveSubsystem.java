@@ -95,6 +95,9 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("x accel", m_gyro.getAccelX());
     SmartDashboard.putNumber("y accel", m_gyro.getAccelY());
     SmartDashboard.putNumber("z accel", m_gyro.getAccelZ());
+    SmartDashboard.putNumber("x angle", m_gyro.getXComplementaryAngle());
+    SmartDashboard.putNumber("y angle", m_gyro.getYComplementaryAngle());
+    SmartDashboard.putNumber("z angle", m_gyro.getAngle());
   }
 
   /**
@@ -238,6 +241,18 @@ public class DriveSubsystem extends SubsystemBase {
 
   public double getLeftEncoder(){
     return m_leftEncoder.getPosition();
+  }
+  public double getAngle()
+  {
+    return m_gyro.getAngle();
+  }
+  public double getXAngle()
+  {
+    return m_gyro.getXFilteredAccelAngle();
+  }
+  public double getYAngle()
+  {
+    return m_gyro.getYComplementaryAngle();
   }
 
 }
