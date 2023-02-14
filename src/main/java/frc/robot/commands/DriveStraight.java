@@ -31,7 +31,7 @@ public class DriveStraight extends CommandBase {
   //private MedianFilter
   private PIDController m_left = new PIDController(kPDriveVal, kIDriveVal,kDDriveVal);
   private PIDController m_right = new PIDController(kPDriveVal, kIDriveVal, kDDriveVal);
-  private LinearFilter m_gyroFilter = LinearFilter.movingAverage(10);
+  private LinearFilter m_gyroFilter = LinearFilter.movingAverage(20);
   private double m_xAccel;
   private Autostate m_autostate = Autostate.OFFRAMP;
   private boolean monitor = true;
@@ -74,47 +74,46 @@ public class DriveStraight extends CommandBase {
     var wheelSpeeds = m_drive.getWheelSpeeds();
     var leftVelocity = m_left.calculate(wheelSpeeds.leftMetersPerSecond);
     var rightVelocity = m_right.calculate(wheelSpeeds.rightMetersPerSecond);
-    double rawXAngle = m_drive.getXAngle();
-    if (rawXAngle > 180)
+    double rawYAngle = m_drive.getYAngle();
+    if (rawYAngle > 180)
     {
-      rawXAngle -= 360;
+      rawYAngle -= 360;
     }
-    double xAngle = m_gyroFilter.calculate(rawXAngle);
-    SmartDashboard.putNumber("raw x angle", rawXAngle);
-    SmartDashboard.putNumber("x angle", xAngle);
+    double yAngle = m_gyroFilter.calculate(rawYAngle);
+    SmartDashboard.putNumber("raw y angle", rawYAngle);
+    SmartDashboard.putNumber("y angle", yAngle);
     time++;
     if (time > 20)
     {
-      System.out.println(xAngle);
       if (m_autostate.equals(Autostate.OFFRAMP))
       {
         m_drive.tankDrive(leftVelocity, rightVelocity);
-        if (xAngle > 360)
+        if (yAngle > 20)
         {
           m_autostate = Autostate.ONRAMP;
         }
       }
       if (m_autostate.equals(Autostate.ONRAMP))
       {
-        if (xAngle > 2.5)
+        if (yAngle > 2.5)
         {
           if (!monitor){
             monitor = true;
             SPEED_M_S/=2;
           }
-          m_left.setSetpoint(SPEED_M_S);
-          m_right.setSetpoint(SPEED_M_S);
+          m_left.setSetpoint(SPEED_M_S/((yAngle/30)*9+1));
+          m_right.setSetpoint(SPEED_M_S/((yAngle/30)*9+1));
           System.out.println("FORWARD");
           m_drive.tankDrive(leftVelocity, rightVelocity);
         }
-        else if (xAngle < -2.5)
+        else if (yAngle < -2.5)
         {
           if (monitor){
             monitor = false;
             SPEED_M_S/=2;
           }
-          m_left.setSetpoint(-SPEED_M_S);
-          m_right.setSetpoint(-SPEED_M_S);
+          m_left.setSetpoint(-SPEED_M_S/((yAngle/30)*9+1));
+          m_right.setSetpoint(-SPEED_M_S/((yAngle/30)*9+1));
           System.out.println("BACKWARD");
           m_drive.tankDrive(leftVelocity, rightVelocity);
         }

@@ -239,14 +239,6 @@ public class Robot extends TimedRobot
    {
     //m_robotContainer.arcadeDrive(m_driverController.getLeftX()/1.5, m_driverController.getLeftY()/1.5);
     //m_myRobot.arcadeDrive(-m_driverController.getLeftY()/1.5, -m_driverController.getLeftX()/1.5);
-    if(m_driverController.getLeftY()!=1 && m_driverController.getLeftY() != -1)
-      if (m_driverController.getLeftY()>0){
-        m_robotContainer.arcadeDrive(-m_driverController.getLeftY(),m_driverController.getRightX());
-      }
-      else{
-        m_robotContainer.arcadeDrive(-m_driverController.getLeftY(),-m_driverController.getRightX());
-      }
-    else
       if (m_driverController.getLeftY()>0){
         m_robotContainer.arcadeDrive(-m_driverController.getLeftY(),m_driverController.getRightX());
       }

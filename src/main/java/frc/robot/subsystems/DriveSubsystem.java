@@ -249,7 +249,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
   public double getYAngle()
   {
-    return m_gyro.getYComplementaryAngle();
+    return m_gyro.getYFilteredAccelAngle();
   }
 
 }
