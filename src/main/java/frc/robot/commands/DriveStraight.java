@@ -31,7 +31,7 @@ public class DriveStraight extends CommandBase {
   //private MedianFilter
   private PIDController m_left = new PIDController(kPDriveVal, kIDriveVal,kDDriveVal);
   private PIDController m_right = new PIDController(kPDriveVal, kIDriveVal, kDDriveVal);
-  private LinearFilter m_gyroFilter = LinearFilter.movingAverage(20);
+  private LinearFilter m_gyroFilter = LinearFilter.movingAverage(10);
   private double m_xAccel;
   private Autostate m_autostate = Autostate.OFFRAMP;
   private boolean monitor = true;
@@ -53,6 +53,7 @@ public class DriveStraight extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    SPEED_M_S = 0.5;
     m_autostate = Autostate.OFFRAMP;
     m_left.reset();
     m_right.reset();
@@ -69,23 +70,26 @@ public class DriveStraight extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    SmartDashboard.putString("State:", m_autostate.toString());
     var wheelSpeeds = m_drive.getWheelSpeeds();
     var leftVelocity = m_left.calculate(wheelSpeeds.leftMetersPerSecond);
     var rightVelocity = m_right.calculate(wheelSpeeds.rightMetersPerSecond);
-    double xAngle = m_gyroFilter.calculate(m_drive.getXAngle());
-
+    double rawXAngle = m_drive.getXAngle();
+    if (rawXAngle > 180)
+    {
+      rawXAngle -= 360;
+    }
+    double xAngle = m_gyroFilter.calculate(rawXAngle);
+    SmartDashboard.putNumber("raw x angle", rawXAngle);
+    SmartDashboard.putNumber("x angle", xAngle);
     time++;
     if (time > 20)
     {
-      if (xAngle > 180)
-      {
-        xAngle -= 360;
-      }
       System.out.println(xAngle);
       if (m_autostate.equals(Autostate.OFFRAMP))
       {
         m_drive.tankDrive(leftVelocity, rightVelocity);
-        if (xAngle > 10)
+        if (xAngle > 360)
         {
           m_autostate = Autostate.ONRAMP;
         }
@@ -136,7 +140,7 @@ public class DriveStraight extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    
+    SmartDashboard.putString("State:", m_autostate.toString());
     m_drive.tankDrive(0, 0);
   }
 

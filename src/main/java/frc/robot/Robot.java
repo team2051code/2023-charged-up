@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.components.LimitedMotor;
-import frc.robot.subsystems.DriveConstants;
+import frc.robot.subsystems.CompetitionDriveConstants;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -45,13 +45,13 @@ public class Robot extends TimedRobot
   private PhotonCamera m_camera;
   private PhotonCamera m_cameraB;
   private ArrayList<PhotonCamera> cameraList;
-  private final CANSparkMax m_rightFront = new LimitedMotor(DriveConstants.kRightMotor1Port, MotorType.kBrushless, POWER_LIMIT);
-  private final CANSparkMax m_LeftFront = new LimitedMotor(DriveConstants.kLeftMotor1Port, MotorType.kBrushless, POWER_LIMIT);
-  private final CANSparkMax m_RightBack = new LimitedMotor(DriveConstants.kRightMotor2Port, MotorType.kBrushless, POWER_LIMIT);
-  private final CANSparkMax m_LeftBack = new LimitedMotor(DriveConstants.kLeftMotor2Port, MotorType.kBrushless, POWER_LIMIT);
+  private final CANSparkMax m_rightFront = new LimitedMotor(CompetitionDriveConstants.kRightMotor1Port, MotorType.kBrushless, POWER_LIMIT);
+  private final CANSparkMax m_LeftFront = new LimitedMotor(CompetitionDriveConstants.kLeftMotor1Port, MotorType.kBrushless, POWER_LIMIT);
+  private final CANSparkMax m_RightBack = new LimitedMotor(CompetitionDriveConstants.kRightMotor2Port, MotorType.kBrushless, POWER_LIMIT);
+  private final CANSparkMax m_LeftBack = new LimitedMotor(CompetitionDriveConstants.kLeftMotor2Port, MotorType.kBrushless, POWER_LIMIT);
   private final RelativeEncoder m_leftEncoder = m_LeftFront.getEncoder();
   private final RelativeEncoder m_rightEncoder = m_rightFront.getEncoder();
-  private final XboxController m_driverController = new XboxController(1);
+  private final XboxController m_driverController = new XboxController(0);
   // private final CANSparkMax m_intakeRight = new CANSparkMax(5, MotorType.kBrushed);
   // private final CANSparkMax m_intakeLeft = new CANSparkMax(6, MotorType.kBrushed);
   private final MotorControllerGroup m_left = new MotorControllerGroup(m_LeftFront, m_LeftBack);
@@ -241,17 +241,17 @@ public class Robot extends TimedRobot
     //m_myRobot.arcadeDrive(-m_driverController.getLeftY()/1.5, -m_driverController.getLeftX()/1.5);
     if(m_driverController.getLeftY()!=1 && m_driverController.getLeftY() != -1)
       if (m_driverController.getLeftY()>0){
-        m_robotContainer.arcadeDrive(-m_driverController.getLeftY()/2,m_driverController.getRightX()/2);
+        m_robotContainer.arcadeDrive(-m_driverController.getLeftY(),m_driverController.getRightX());
       }
       else{
-        m_robotContainer.arcadeDrive(-m_driverController.getLeftY()/2,-m_driverController.getRightX()/2);
+        m_robotContainer.arcadeDrive(-m_driverController.getLeftY(),-m_driverController.getRightX());
       }
     else
       if (m_driverController.getLeftY()>0){
-        m_robotContainer.arcadeDrive(-m_driverController.getLeftY()/2,m_driverController.getRightX()/1.5);
+        m_robotContainer.arcadeDrive(-m_driverController.getLeftY(),m_driverController.getRightX());
       }
       else{
-        m_robotContainer.arcadeDrive(-m_driverController.getLeftY()/2,-m_driverController.getRightX()/1.5);
+        m_robotContainer.arcadeDrive(-m_driverController.getLeftY(),-m_driverController.getRightX());
       }
     
   }

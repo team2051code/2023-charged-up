@@ -64,10 +64,10 @@ public class DriveSubsystem extends SubsystemBase {
   public DriveSubsystem(MotorControllerGroup m_left, MotorControllerGroup m_right, RelativeEncoder m_leftEncode, RelativeEncoder m_rightEncode) {
     m_leftEncoder = m_leftEncode;
     m_rightEncoder = m_rightEncode;
-    m_leftEncoder.setPositionConversionFactor(DriveConstants.kLinearDistanceConversionFactor);
-    m_leftEncoder.setVelocityConversionFactor(DriveConstants.kLinearDistanceConversionFactor / 60);
-    m_rightEncoder.setPositionConversionFactor(DriveConstants.kLinearDistanceConversionFactor);
-    m_rightEncoder.setVelocityConversionFactor(DriveConstants.kLinearDistanceConversionFactor / 60);
+    m_leftEncoder.setPositionConversionFactor(CompetitionDriveConstants.kLinearDistanceConversionFactor);
+    m_leftEncoder.setVelocityConversionFactor(CompetitionDriveConstants.kLinearDistanceConversionFactor / 60);
+    m_rightEncoder.setPositionConversionFactor(CompetitionDriveConstants.kLinearDistanceConversionFactor);
+    m_rightEncoder.setVelocityConversionFactor(CompetitionDriveConstants.kLinearDistanceConversionFactor / 60);
     m_leftMotors = m_left;
     m_rightMotors = m_right;
     m_drive = new DifferentialDrive(m_leftMotors, m_rightMotors);
@@ -95,9 +95,6 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("x accel", m_gyro.getAccelX());
     SmartDashboard.putNumber("y accel", m_gyro.getAccelY());
     SmartDashboard.putNumber("z accel", m_gyro.getAccelZ());
-    SmartDashboard.putNumber("x angle", m_gyro.getXComplementaryAngle());
-    SmartDashboard.putNumber("y angle", m_gyro.getYComplementaryAngle());
-    SmartDashboard.putNumber("z angle", m_gyro.getAngle());
   }
 
   /**

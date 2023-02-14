@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.DriveConstants;
+import frc.robot.subsystems.CompetitionDriveConstants;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class DriveLinear extends CommandBase {
@@ -30,7 +30,7 @@ public class DriveLinear extends CommandBase {
 
     public DriveLinear(double distance, DriveSubsystem drive){
         this.distance = -distance;
-        targetSpeed = DriveConstants.kMaxSpeedMetersPerSecond;
+        targetSpeed = CompetitionDriveConstants.kMaxSpeedMetersPerSecond;
         m_drive = drive;
     }
     
