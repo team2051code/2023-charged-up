@@ -66,6 +66,8 @@ public class DriveStraight extends CommandBase {
     m_xAccel = m_gyroFilter.calculate(m_drive.getAccelX());
     SmartDashboard.putNumber("Smooth X accel: ", m_xAccel);
     SmartDashboard.putString("Autostate: ", m_autostate.toString());
+
+    SmartDashboard.putString("testAud", m_autostate.toString());
   }
 
   // Called once the command ends or is interrupted.
