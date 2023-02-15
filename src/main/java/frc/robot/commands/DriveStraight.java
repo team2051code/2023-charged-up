@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 
@@ -13,6 +14,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -35,6 +37,8 @@ public class DriveStraight extends CommandBase {
   private double m_xAccel;
   private Autostate m_autostate = Autostate.OFFRAMP;
   private boolean monitor = true;
+  private double m_yAngle;
+  private boolean hasReset = false;
 
 
   private enum Autostate{
@@ -75,6 +79,8 @@ public class DriveStraight extends CommandBase {
     var leftVelocity = m_left.calculate(wheelSpeeds.leftMetersPerSecond);
     var rightVelocity = m_right.calculate(wheelSpeeds.rightMetersPerSecond);
     double rawYAngle = m_drive.getYAngle();
+    if(hasReset)
+      m_autostate = Autostate.ONRAMP;
     if (rawYAngle > 180)
     {
       rawYAngle -= 360;
@@ -85,10 +91,11 @@ public class DriveStraight extends CommandBase {
     time++;
     if (time > 20)
     {
+      
       if (m_autostate.equals(Autostate.OFFRAMP))
       {
         m_drive.tankDrive(leftVelocity, rightVelocity);
-        if (yAngle > 20)
+        if (yAngle > 15)
         {
           m_autostate = Autostate.ONRAMP;
         }
@@ -139,6 +146,20 @@ public class DriveStraight extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    hasReset = false;
+    double rawYAngle = m_drive.getYAngle();
+    if (rawYAngle > 180)
+    {
+      rawYAngle -= 360;
+    }
+    SmartDashboard.putNumber("End Y", rawYAngle);
+    if(rawYAngle > 2.5 || rawYAngle < -2.5)
+    {
+      m_autostate = Autostate.ONRAMP;
+      SmartDashboard.putString("State", m_autostate.toString());
+      hasReset = true;
+      
+    }
     SmartDashboard.putString("State:", m_autostate.toString());
     m_drive.tankDrive(0, 0);
   }
