@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import frc.robot.commands.Balance;
 import frc.robot.commands.DriveLinear;
 import frc.robot.commands.DriveStraight;
 import frc.robot.commands.ExampleCommand;
@@ -69,50 +70,56 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
-    // String filePath = "output/output/circle.wpilib.json";
 
-    // // An ExampleCommand will run in autonomous
-    // m_robotDrive.resetEncoders();
-    // var autoVoltageConstraint = new DifferentialDriveVoltageConstraint(new SimpleMotorFeedforward(
-    //   DriveConstants.ksVolts, DriveConstants.kvVoltSecondsPerMeter), DriveConstants.kDriveKinematics, 10);
-    // var TrajectoryConfig = new TrajectoryConfig(DriveConstants.kMaxSpeedMetersPerSecond,
-    // DriveConstants.kMaxAccelerationMetersPerSecondSquared).setKinematics(DriveConstants.kDriveKinematics).addConstraint(autoVoltageConstraint);
-    // Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(filePath);
-    // Trajectory trajectory;
-    // try {
-    //   trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
-    // } catch (IOException e) {
-    //   // TODO Auto-generated catch block
-    //   e.printStackTrace();
-    //   trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)), List.of(), new Pose2d(2, 0, new Rotation2d()), TrajectoryConfig);
-    // }
+  
+  public Command getTrajectories(){
+    String filePath = "output/output/circle.wpilib.json";
+
+    // An ExampleCommand will run in autonomous
+    m_robotDrive.resetEncoders();
+    var autoVoltageConstraint = new DifferentialDriveVoltageConstraint(new SimpleMotorFeedforward(
+    CompetitionDriveConstants.ksVolts, CompetitionDriveConstants.kvVoltSecondsPerMeter), CompetitionDriveConstants.kDriveKinematics, 10);
+    var TrajectoryConfig = new TrajectoryConfig(CompetitionDriveConstants.kMaxSpeedMetersPerSecond,
+    CompetitionDriveConstants.kMaxAccelerationMetersPerSecondSquared).setKinematics(CompetitionDriveConstants.kDriveKinematics).addConstraint(autoVoltageConstraint);
+    Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(filePath);
+    Trajectory trajectory;
+    try {
+      trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)), List.of(), new Pose2d(2, 0, new Rotation2d()), TrajectoryConfig);
+    }
 
     
-    // System.out.println(trajectory);
-    // System.out.println("Robot will finish in" + trajectory.getTotalTimeSeconds());
-    
-    // RamseteCommand ramseteCommand =
-    // new RamseteCommand(
-    //     trajectory,
-    //     m_robotDrive::getPose,
-    //     new RamseteController(DriveConstants.kRamseteB, DriveConstants.kRamseteZeta),
-    //     new SimpleMotorFeedforward(
-    //         DriveConstants.ksVolts,
-    //         DriveConstants.kvVoltSecondsPerMeter,
-    //         DriveConstants.kaVoltSecondsSquaredPerMeter),
-    //     DriveConstants.kDriveKinematics,
-    //     m_robotDrive::getWheelSpeeds,
-    //     new PIDController(DriveConstants.kPDriveVel, 0, 0),
-    //     new PIDController(DriveConstants.kPDriveVel, 0, 0),
-    //     // RamseteCommand passes volts to the callback
-    //     m_robotDrive::tankDriveVolts,
-    //     m_robotDrive);
-    // m_robotDrive.resetOdometry(trajectory.getInitialPose());
-    // m_robotDrive.resetEncoders();
-    // return ramseteCommand.andThen(() -> System.out.println("Finished running RAMSETE"))
-    // .andThen(() -> m_robotDrive.tankDriveVolts(0, 0));
+    System.out.println(trajectory);
+    System.out.println("Robot will finish in" + trajectory.getTotalTimeSeconds());
+      
+    RamseteCommand ramseteCommand =
+    new RamseteCommand(
+        trajectory,
+        m_robotDrive::getPose,
+        new RamseteController(CompetitionDriveConstants.kRamseteB, CompetitionDriveConstants.kRamseteZeta),
+        new SimpleMotorFeedforward(
+            CompetitionDriveConstants.ksVolts,
+            CompetitionDriveConstants.kvVoltSecondsPerMeter,
+            CompetitionDriveConstants.kaVoltSecondsSquaredPerMeter),
+        CompetitionDriveConstants.kDriveKinematics,
+        m_robotDrive::getWheelSpeeds,
+        new PIDController(CompetitionDriveConstants.kPDriveVel, 0, 0),
+        new PIDController(CompetitionDriveConstants.kPDriveVel, 0, 0),
+        // RamseteCommand passes volts to the callback
+        m_robotDrive::tankDriveVolts,
+        m_robotDrive);
+    m_robotDrive.resetOdometry(trajectory.getInitialPose());
+    m_robotDrive.resetEncoders();
+    return ramseteCommand.andThen(() -> System.out.println("Finished running RAMSETE"))
+    .andThen(() -> m_robotDrive.tankDriveVolts(0, 0));
+  }
+  public Command getBalanceCommand() {
+   
     DriveStraight item = new DriveStraight(m_robotDrive);
+    Balance balancer = new Balance(m_robotDrive);
     //DriveLinear test = new DriveLinear(1, m_robotDrive);
     return item.andThen(() -> m_robotDrive.tankDriveVolts(0, 0));
   }

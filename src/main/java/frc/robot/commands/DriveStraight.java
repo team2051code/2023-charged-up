@@ -14,14 +14,15 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
 public class DriveStraight extends CommandBase {
-  public static double SPEED_M_S = .5;
-  public static final double kPDriveVal = .4;
+  public static final double SPEED_M_S = 1;
+  public static final double kPDriveVal = 0.8;
   public static final double kIDriveVal = .6;
   public static final double kDDriveVal = .03;
   public static final double kOnRampCrosser = 2;
@@ -37,8 +38,7 @@ public class DriveStraight extends CommandBase {
   private double m_xAccel;
   private Autostate m_autostate = Autostate.OFFRAMP;
   private boolean monitor = true;
-  private double m_yAngle;
-  private boolean hasReset = false;
+  private Timer m_timer;
 
 
   private enum Autostate{
@@ -55,14 +55,16 @@ public class DriveStraight extends CommandBase {
   }
 
   // Called when the command is initially scheduled.
+  //resets everything 
   @Override
   public void initialize() {
-    SPEED_M_S = 0.5;
     m_autostate = Autostate.OFFRAMP;
+    m_left = new PIDController(SmartDashboard.getNumber("PVal", kPDriveVal), kIDriveVal, kDDriveVal);
+    m_right = new PIDController(SmartDashboard.getNumber("PVal", kPDriveVal), kIDriveVal, kDDriveVal);
     m_left.reset();
     m_right.reset();
-    m_left.setSetpoint(SPEED_M_S);
-    m_right.setSetpoint(SPEED_M_S);
+    m_left.setSetpoint(SmartDashboard.getNumber("Setpoint",SPEED_M_S));
+    m_right.setSetpoint(SmartDashboard.getNumber("Setpoint", SPEED_M_S));
     m_drive.resetEncoders();
     m_drive.zeroHeading();
     m_gyroFilter.reset();
@@ -74,54 +76,56 @@ public class DriveStraight extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    //Sets initial values
+    SmartDashboard.putNumber("Setpoint: ", m_left.getSetpoint());
     SmartDashboard.putString("State:", m_autostate.toString());
     var wheelSpeeds = m_drive.getWheelSpeeds();
+    SmartDashboard.putNumber("Wheelspeeds: ", wheelSpeeds.leftMetersPerSecond);
     var leftVelocity = m_left.calculate(wheelSpeeds.leftMetersPerSecond);
     var rightVelocity = m_right.calculate(wheelSpeeds.rightMetersPerSecond);
+    SmartDashboard.putNumber("PIDPower", leftVelocity);
     double rawYAngle = m_drive.getYAngle();
-    if(hasReset)
-      m_autostate = Autostate.ONRAMP;
+    //Reduces Y angle to a range from -180-180
     if (rawYAngle > 180)
     {
       rawYAngle -= 360;
     }
+    //filters the yAngle to a moving average 
     double yAngle = m_gyroFilter.calculate(rawYAngle);
     SmartDashboard.putNumber("raw y angle", rawYAngle);
     SmartDashboard.putNumber("y angle", yAngle);
     time++;
+    //forces the robot to move forward 20 u to avoid angle spikes
     if (time > 20)
     {
-      
+      //When off the ramp the robot moves constantly forward
       if (m_autostate.equals(Autostate.OFFRAMP))
       {
         m_drive.tankDrive(leftVelocity, rightVelocity);
+        //Checks for when the robot makes it on the ramp. Looking for a angle spike of 15
         if (yAngle > 15)
         {
+          //changes the state of the robot to on ramp
+          m_timer = new Timer();
+          m_timer.start();
           m_autostate = Autostate.ONRAMP;
         }
       }
-      if (m_autostate.equals(Autostate.ONRAMP))
+      //when the robot is on
+      if (m_autostate.equals(Autostate.ONRAMP) && m_timer.get() > SmartDashboard.getNumber("Dead Time", 0.1))
       {
         if (yAngle > 2.5)
         {
-          if (!monitor){
-            monitor = true;
-            SPEED_M_S/=2;
-          }
-          m_left.setSetpoint(SPEED_M_S/((yAngle/30)*9+1));
-          m_right.setSetpoint(SPEED_M_S/((yAngle/30)*9+1));
-          System.out.println("FORWARD");
+          m_left.setSetpoint(SPEED_M_S/((Math.abs(yAngle)/30)*9+1));
+          m_right.setSetpoint(SPEED_M_S/((Math.abs(yAngle)/30)*9+1));
           m_drive.tankDrive(leftVelocity, rightVelocity);
         }
         else if (yAngle < -2.5)
         {
-          if (monitor){
-            monitor = false;
-            SPEED_M_S/=2;
-          }
-          m_left.setSetpoint(-SPEED_M_S/((yAngle/30)*9+1));
-          m_right.setSetpoint(-SPEED_M_S/((yAngle/30)*9+1));
-          System.out.println("BACKWARD");
+          System.out.println("BACKWARDS");
+          m_left.setSetpoint(-(SPEED_M_S/((Math.abs(yAngle)/30)*9+1)));
+          m_right.setSetpoint(-(SPEED_M_S/((Math.abs(yAngle)/30)*9+1)));
+          System.out.println(m_left.getSetpoint() + " " + m_right.getSetpoint());
           m_drive.tankDrive(leftVelocity, rightVelocity);
         }
         else 
@@ -146,22 +150,11 @@ public class DriveStraight extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    hasReset = false;
-    double rawYAngle = m_drive.getYAngle();
-    if (rawYAngle > 180)
-    {
-      rawYAngle -= 360;
-    }
-    SmartDashboard.putNumber("End Y", rawYAngle);
-    if(rawYAngle > 2.5 || rawYAngle < -2.5)
-    {
-      m_autostate = Autostate.ONRAMP;
-      SmartDashboard.putString("State", m_autostate.toString());
-      hasReset = true;
-      
-    }
-    SmartDashboard.putString("State:", m_autostate.toString());
-    m_drive.tankDrive(0, 0);
+    if(m_timer != null)
+      m_timer.stop();
+    SmartDashboard.putString("State: ", m_autostate.toString());
+    Balance balance = new Balance(m_drive);
+    balance.andThen(() -> m_drive.tankDriveVolts(0, 0)).schedule();
   }
 
   // Returns true when the command should end.
@@ -179,6 +172,7 @@ public class DriveStraight extends CommandBase {
     //   case PIVOT:
     //     return true;
     // }
-    return m_autostate.equals(Autostate.PIVOT);
+    // return false;
+     return m_autostate.equals(Autostate.PIVOT);
   }
 }

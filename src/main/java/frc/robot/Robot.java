@@ -39,8 +39,9 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
  */
 public class Robot extends TimedRobot
  {
-  private static final double POWER_LIMIT = 0.25;
-  private Command m_autonomousCommand;
+  private static final double POWER_LIMIT = 1;
+  private Command m_balanceCommand;
+  private Command m_trajectory;
   private RobotContainer m_robotContainer;
   private PhotonCamera m_camera;
   private PhotonCamera m_cameraB;
@@ -76,6 +77,9 @@ public class Robot extends TimedRobot
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
+    SmartDashboard.putNumber("Dead Time", 0);
+    SmartDashboard.putNumber("Setpoint", 0);
+    SmartDashboard.putNumber("PVal", 0);
     m_LeftBack.restoreFactoryDefaults();
     m_LeftFront.restoreFactoryDefaults();
     m_RightBack.restoreFactoryDefaults();
@@ -179,6 +183,7 @@ public class Robot extends TimedRobot
     //   SmartDashboard.putNumber("skew", 0); 
     // }
     SmartDashboard.putNumber("right motor speed:", m_rightFront.get());
+
     CommandScheduler.getInstance().run();
     // System.out.println(targets.size() + "targets found: ");
     // if (targets.size() > 0)
@@ -206,10 +211,13 @@ public class Robot extends TimedRobot
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    //m_trajectory = m_robotContainer.getTrajectories();
+    m_balanceCommand = m_robotContainer.getBalanceCommand();
     // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
+    // if(m_trajectory != null)
+    //   m_trajectory.schedule();
+    if (m_balanceCommand != null) {
+      m_balanceCommand.schedule();
     }
   }
 
@@ -226,8 +234,12 @@ public class Robot extends TimedRobot
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
+    if (m_balanceCommand != null) 
+    {
+      m_balanceCommand.cancel();
+    }if (m_trajectory!= null) 
+    {
+      m_trajectory.cancel();
     }
   
 
