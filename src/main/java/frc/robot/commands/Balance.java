@@ -63,6 +63,10 @@ public class Balance extends CommandBase {
     var rightVelocity = m_right.calculate(wheelSpeeds.rightMetersPerSecond);
     SmartDashboard.putNumber("PIDPower", leftVelocity);
     double rawYAngle = m_drive.getYAngle();
+
+    double overrideYAngle = SmartDashboard.getNumber("Gyro Override", 0);
+    rawYAngle = overrideYAngle != 0? overrideYAngle : rawYAngle;
+    
     if (rawYAngle > 180)
     {
       rawYAngle -= 360;

@@ -80,6 +80,9 @@ public class Robot extends TimedRobot
     SmartDashboard.putNumber("Dead Time", 0);
     SmartDashboard.putNumber("Setpoint", 0);
     SmartDashboard.putNumber("PVal", 0);
+
+    SmartDashboard.putNumber("Gyro Override", 0);
+
     m_LeftBack.restoreFactoryDefaults();
     m_LeftFront.restoreFactoryDefaults();
     m_RightBack.restoreFactoryDefaults();
