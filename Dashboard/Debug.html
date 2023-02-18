@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<title>Debug</title>		
+	</head>
+
+	<body>
+		
+		<frc-dashboard onload="ntLoaded()">
+
+			<frc-number-bar source-key="/SmartDashboard/" precision="" 
+			style=""></frc-number-bar>
+
+			<frc-number-bar source-key="/SmartDashboard/" precision="" 
+			style=""></frc-number-bar>
+
+		<!--Audio testing-->
+		<audio src="mixkit-sci-fi-ship-alert-768.wav" id="soundTest" controls></audio>
+
+		</frc-dashboard>
+		<!--------------------------------------------------------------------------------------------------->
+		
+		<!--------------------------------------------------------------------------------------------------->
+		<script language="javascript">
+			function ntLoaded(){
+			NetworkTables.addGlobalListener((key, value, isNew)=>{
+				if (isNew){
+					console.log(key," ", value);
+				}
+			},true)
+
+				NetworkTables.addKeyListener('/SmartDashboard/', (key, value, isNew)=>{},true);
+				NetworkTables.addKeyListener('/SmartDashboard/', (key, value, isNew)=>{},true);
+			
+			//Audio//////////Audio//////////Audio/////////////
+			JSSoundTest = document.getElementById("soundTest");
+			NetworkTables.addKeyListener('/SmartDashboard/', (key, value, isNew)=>{
+					JSSoundTest.currentTime = 0;
+					JSSoundTest.play()
+			},true);
+
+
+			}
+
+		</script>
+	</body>
+	<script src="/frc-web-components.js"></script>
+</html>
