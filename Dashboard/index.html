@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<title>Driver</title>		
+	</head>
+
+	<body>
+		
+		<frc-dashboard onload="ntLoaded()">
+
+			<frc-number-bar source-key="/SmartDashboard/leftStick" precision="2" 
+			style="position: absolute; top: 50px; left: 675px;"></frc-number-bar>
+
+			<frc-number-bar source-key="/SmartDashboard/rightStick" precision="2" 
+			style="position: absolute; top: 150px; left: 675px;"></frc-number-bar>
+
+		<!--image and canvas tags-->
+		 <img id="cameraOut" crossorigin="anonymous" src=""
+		 	alt="Camera ERROR!" idx="1"
+		 	style="object-fit: contain; height: 350px; width: 622px; font-size: 10rem; 
+			position: absolute; top: 20px; left: 20px;">
+		<canvas id="canvas" width="622px" height="350px" style="border:1px solid #000; position: absolute; top: 19px; left: 19px;"></canvas>
+
+		<!--Audio testing-->
+		<audio src="mixkit-sci-fi-ship-alert-768.wav" id="soundTest" controls></audio>
+
+		<!--buttons to toggle between cameras and pis-->
+		 <button id ="toggleCamera" onclick="toggleCam()" style="position:absolute; top:380px; left: 20px;"><h1>CAMERA TOGGLE</h1></button>
+		 <button id ="toggleRaspberry" onclick="togglePi()" style="position:absolute; top:380px; left: 300px;"><h1>PI TOGGLE</h1></button>
+
+		</frc-dashboard>
+		<!------------------------------------------------------------------------------------------------------------------------------->
+		
+		<!------------------------------------------------------------------------------------------------------------------------------->
+		<script language="javascript">
+			function ntLoaded(){
+			NetworkTables.addGlobalListener((key, value, isNew)=>{
+				if (isNew){
+					console.log(key," ", value);
+				}
+			},true)
+
+				NetworkTables.addKeyListener('/SmartDashboard/leftStick', (key, value, isNew)=>{},true);
+				NetworkTables.addKeyListener('/SmartDashboard/rightStick', (key, value, isNew)=>{},true);
+			
+
+			//code for the buttons to toggle between pis
+			const cameraPorts = [1183,1181];
+			let currentCamera = 0;
+
+			const piProtocols=[22,20,16];
+			let currentPi = 0;
+
+			function toggleCam() {
+				currentCamera=(currentCamera+1)%cameraPorts.length;
+				const port=cameraPorts[currentCamera];
+				const piIp=piProtocols[currentPi];
+				setCameraPort(piIp, port);
+			}
+
+			function togglePi(){
+				currentPi=(currentPi+1)%piProtocols.length;
+				const piIp=piProtocols[currentPi];
+				const port=cameraPorts[currentCamera];
+				setCameraPort(piIp, port);
+			}
+
+			function setCameraPort(piIp, port){
+				const url=`http://10.20.51.${piIp}:${port}/stream.mjpg?1674930762001`;
+				document.getElementById ("cameraOut").src=url;
+			}
+
+			setCameraPort(piProtocols[0], cameraPorts[0]);
+
+			//////canvas element to draw over the camera//////
+			var canvas=document.getElementById("canvas");
+			var ctx=canvas.getContext("2d");
+
+				ctx.moveTo(150,350);
+				ctx.lineTo(207,175);
+				ctx.strokeStyle="#0FF"
+				ctx.stroke();
+
+				ctx.moveTo(460,350);
+				ctx.lineTo(415,175);
+				ctx.stroke();
+
+			//Audio//////////Audio//////////Audio/////////////
+			JSSoundTest = document.getElementById("soundTest");
+			NetworkTables.addKeyListener('/SmartDashboard/testAud', (key, value, isNew)=>{
+					JSSoundTest.currentTime = 0;
+					JSSoundTest.play()
+			},true);
+
+
+			}
+
+		</script>
+	</body>
+	<script src="/frc-web-components.js"></script>
+</html>
