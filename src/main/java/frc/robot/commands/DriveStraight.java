@@ -108,30 +108,33 @@ public class DriveStraight extends CommandBase {
           //changes the state of the robot to on ramp
           m_timer = new Timer();
           m_timer.start();
+          m_timer.reset();
           m_autostate = Autostate.ONRAMP;
         }
       }
       //when the robot is on
-      if (m_autostate.equals(Autostate.ONRAMP) && m_timer.get() > SmartDashboard.getNumber("Dead Time", 0.1))
+      if(m_timer != null)
+        SmartDashboard.putNumber("Timer", m_timer.get());
+      if (m_autostate.equals(Autostate.ONRAMP) && m_timer.get() > SmartDashboard.getNumber("Dead Time", 0.4))
       {
         if (yAngle > 2.5)
         {
-          m_left.setSetpoint(SPEED_M_S/((Math.abs(yAngle)/30)*9+1));
-          m_right.setSetpoint(SPEED_M_S/((Math.abs(yAngle)/30)*9+1));
+          m_left.setSetpoint(SmartDashboard.getNumber("Setpoint",SPEED_M_S)/((Math.abs(yAngle)/30)*9+1));
+          m_right.setSetpoint(SmartDashboard.getNumber("Setpoint",SPEED_M_S)/((Math.abs(yAngle)/30)*9+1));
           m_drive.tankDrive(leftVelocity, rightVelocity);
         }
         else if (yAngle < -2.5)
         {
           System.out.println("BACKWARDS");
-          m_left.setSetpoint(-(SPEED_M_S/((Math.abs(yAngle)/30)*9+1)));
-          m_right.setSetpoint(-(SPEED_M_S/((Math.abs(yAngle)/30)*9+1)));
+          m_left.setSetpoint(-(SmartDashboard.getNumber("Setpoint", SPEED_M_S)/((Math.abs(yAngle)/30)*9+1)));
+          m_right.setSetpoint(-(SmartDashboard.getNumber("Setpoint", SPEED_M_S)/((Math.abs(yAngle)/30)*9+1)));
           System.out.println(m_left.getSetpoint() + " " + m_right.getSetpoint());
           m_drive.tankDrive(leftVelocity, rightVelocity);
         }
         else 
         {
           System.out.println("pro");
-          m_drive.tankDrive(0, 0);
+          m_drive.tankDrive(-0.1, -0.1);
           m_autostate = Autostate.PIVOT;
         }
       }

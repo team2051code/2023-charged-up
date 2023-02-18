@@ -41,11 +41,13 @@ public class Balance extends CommandBase {
   public void initialize() 
   {
     System.out.println("Balance reached");
+    m_left = new PIDController(SmartDashboard.getNumber("BPVal", kPDriveVal), kIDriveVal, kDDriveVal);
+    m_right = new PIDController(SmartDashboard.getNumber("BPVal", kPDriveVal), kIDriveVal, kDDriveVal);
     SPEED_M_S = 0.5;
     m_left.reset();
     m_right.reset();
-    m_left.setSetpoint(SPEED_M_S);
-    m_right.setSetpoint(SPEED_M_S);
+    m_left.setSetpoint(SmartDashboard.getNumber("BSetpoint",SPEED_M_S));
+    m_right.setSetpoint(SmartDashboard.getNumber("BSetpoint",SPEED_M_S));
     m_drive.resetEncoders();
     m_drive.zeroHeading();
     m_gyroFilter.reset();
@@ -72,19 +74,21 @@ public class Balance extends CommandBase {
     SmartDashboard.putNumber("y angle", yAngle);
     if (rawYAngle > 2.5)
     {
-      m_left.setSetpoint(SPEED_M_S/(((30-Math.abs(yAngle))/30)*4+1));
-      m_right.setSetpoint(SPEED_M_S/(((30-Math.abs(yAngle))/30)*4+1));
+      SmartDashboard.putBoolean("Finished", false);
+      m_left.setSetpoint(SmartDashboard.getNumber("BSetpoint",SPEED_M_S)/(((30-Math.abs(yAngle))/30)*4+1));
+      m_right.setSetpoint(SmartDashboard.getNumber("BSetpoint",SPEED_M_S)/(((30-Math.abs(yAngle))/30)*4+1));
       m_drive.tankDrive(leftVelocity, rightVelocity);
     }else if (rawYAngle < -2.5)
     {
-      SmartDashboard.putNumber("Reverse Speed: ", -(SPEED_M_S/((yAngle/30)*9+1)));
-      m_left.setSetpoint(-(SPEED_M_S/(((30-Math.abs(yAngle))/30)*4+1)));
-      m_right.setSetpoint(-(SPEED_M_S/(((30-Math.abs(yAngle))/30)*4+1)));
+      SmartDashboard.putBoolean("Finished", false);
+      m_left.setSetpoint(-(SmartDashboard.getNumber("BSetpoint",SPEED_M_S)/(((30-Math.abs(yAngle))/30)*4+1)));
+      m_right.setSetpoint(-(SmartDashboard.getNumber("BSetpoint",SPEED_M_S)/(((30-Math.abs(yAngle))/30)*4+1)));
       m_drive.tankDrive(leftVelocity, rightVelocity);
     }else
     {
-      m_left.setSetpoint(0);
-      m_right.setSetpoint(0);
+      SmartDashboard.putBoolean("Finished", true);
+      // m_left.setSetpoint(0);
+      // m_right.setSetpoint(0);
       m_drive.tankDrive(0, 0);
     }
   }
