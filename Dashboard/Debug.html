@@ -9,11 +9,9 @@
 		
 		<frc-dashboard onload="ntLoaded()">
 
-			<frc-number-bar source-key="/SmartDashboard/" precision="" 
-			style=""></frc-number-bar>
+			<frc-number-bar source-key="/SmartDashboard/" precision="" ></frc-number-bar>
 
-			<frc-number-bar source-key="/SmartDashboard/" precision="" 
-			style=""></frc-number-bar>
+			<frc-number-bar source-key="/SmartDashboard/" precision="" ></frc-number-bar>
 
 		<!--Audio testing-->
 		<audio src="mixkit-sci-fi-ship-alert-768.wav" id="soundTest" controls></audio>
@@ -22,28 +20,7 @@
 		<!--------------------------------------------------------------------------------------------------->
 		
 		<!--------------------------------------------------------------------------------------------------->
-		<script language="javascript">
-			function ntLoaded(){
-			NetworkTables.addGlobalListener((key, value, isNew)=>{
-				if (isNew){
-					console.log(key," ", value);
-				}
-			},true)
-
-				NetworkTables.addKeyListener('/SmartDashboard/', (key, value, isNew)=>{},true);
-				NetworkTables.addKeyListener('/SmartDashboard/', (key, value, isNew)=>{},true);
-			
-			//Audio//////////Audio//////////Audio/////////////
-			JSSoundTest = document.getElementById("soundTest");
-			NetworkTables.addKeyListener('/SmartDashboard/', (key, value, isNew)=>{
-					JSSoundTest.currentTime = 0;
-					JSSoundTest.play()
-			},true);
-
-
-			}
-
-		</script>
+		<script language="javascript" href="dashboard.js"></script>
 	</body>
 	<script src="/frc-web-components.js"></script>
 </html>
