@@ -12,6 +12,7 @@ import frc.robot.components.LimitedMotor;
 import frc.robot.subsystems.CompetitionDriveConstants;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.Joystick;
@@ -46,17 +47,17 @@ public class Robot extends TimedRobot
   private PhotonCamera m_camera;
   private PhotonCamera m_cameraB;
   private ArrayList<PhotonCamera> cameraList;
-  private final CANSparkMax m_rightFront = new LimitedMotor(CompetitionDriveConstants.kRightMotor1Port, MotorType.kBrushless, POWER_LIMIT);
+  private final CANSparkMax m_RightFront = new LimitedMotor(CompetitionDriveConstants.kRightMotor1Port, MotorType.kBrushless, POWER_LIMIT);
   private final CANSparkMax m_LeftFront = new LimitedMotor(CompetitionDriveConstants.kLeftMotor1Port, MotorType.kBrushless, POWER_LIMIT);
   private final CANSparkMax m_RightBack = new LimitedMotor(CompetitionDriveConstants.kRightMotor2Port, MotorType.kBrushless, POWER_LIMIT);
   private final CANSparkMax m_LeftBack = new LimitedMotor(CompetitionDriveConstants.kLeftMotor2Port, MotorType.kBrushless, POWER_LIMIT);
   private final RelativeEncoder m_leftEncoder = m_LeftFront.getEncoder();
-  private final RelativeEncoder m_rightEncoder = m_rightFront.getEncoder();
-  private final XboxController m_driverController = new XboxController(0);
+  private final RelativeEncoder m_rightEncoder = m_RightFront.getEncoder();
+  private final XboxController m_driverController = new XboxController(1);
   // private final CANSparkMax m_intakeRight = new CANSparkMax(5, MotorType.kBrushed);
   // private final CANSparkMax m_intakeLeft = new CANSparkMax(6, MotorType.kBrushed);
   private final MotorControllerGroup m_left = new MotorControllerGroup(m_LeftFront, m_LeftBack);
-  private final MotorControllerGroup m_right = new MotorControllerGroup(m_rightFront, m_RightBack);
+  private final MotorControllerGroup m_right = new MotorControllerGroup(m_RightFront, m_RightBack);
   public final double ksVolts = 0.16985;
   public final double kvVoltSecondsPerMeter = 0.12945;
   public final double kaVoltSecondsSquaredPerMeter = 0.025994;
@@ -88,15 +89,18 @@ public class Robot extends TimedRobot
     m_LeftBack.restoreFactoryDefaults();
     m_LeftFront.restoreFactoryDefaults();
     m_RightBack.restoreFactoryDefaults();
-    m_rightFront.restoreFactoryDefaults();
+    m_RightFront.restoreFactoryDefaults();
 
-    m_RightBack.setInverted(true);
-    m_rightFront.setInverted(true);
+
+    m_LeftFront.setInverted(CompetitionDriveConstants.kLeftMotorsReversed);
+    m_LeftBack.setInverted(CompetitionDriveConstants.kLeftMotorsReversed);
+    m_RightBack.setInverted(CompetitionDriveConstants.kRightMotorsReversed);
+    m_RightFront.setInverted(CompetitionDriveConstants.kRightMotorsReversed);
 
     m_LeftBack.setIdleMode(IdleMode.kBrake);
     m_LeftFront.setIdleMode(IdleMode.kBrake);
     m_RightBack.setIdleMode(IdleMode.kBrake);
-    m_rightFront.setIdleMode(IdleMode.kBrake);
+    m_RightFront.setIdleMode(IdleMode.kBrake);
 
     m_robotContainer = new RobotContainer(m_left, m_right, m_leftEncoder, m_rightEncoder);
     // m_camera = new PhotonCamera("Camera_A");
@@ -187,7 +191,7 @@ public class Robot extends TimedRobot
     //   SmartDashboard.putNumber("Area", 0);
     //   SmartDashboard.putNumber("skew", 0); 
     // }
-    SmartDashboard.putNumber("right motor speed:", m_rightFront.get());
+    SmartDashboard.putNumber("right motor speed:", m_RightFront.get());
 
     CommandScheduler.getInstance().run();
     // System.out.println(targets.size() + "targets found: ");
@@ -218,11 +222,13 @@ public class Robot extends TimedRobot
   public void autonomousInit() {
     //m_trajectory = m_robotContainer.getTrajectories();
     m_balanceCommand = m_robotContainer.getBalanceCommand();
+    Command driveTwoMeter = m_robotContainer.ramsetePose(new Pose2d(0, 0,  new Rotation2d(0)), List.of(), new Pose2d(5, 1, new Rotation2d(0)));
+    //Command drive = m_robotContainer.getTrajectories();
     // schedule the autonomous command (example)
     // if(m_trajectory != null)
     //   m_trajectory.schedule();
-    if (m_balanceCommand != null) {
-      m_balanceCommand.schedule();
+    if (driveTwoMeter != null) {
+      driveTwoMeter.schedule();
     }
   }
 
@@ -246,6 +252,9 @@ public class Robot extends TimedRobot
     {
       m_trajectory.cancel();
     }
+    m_robotContainer.resetOdometry();
+  
+    
   
 
   }

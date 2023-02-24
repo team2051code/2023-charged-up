@@ -4,7 +4,7 @@ import com.revrobotics.CANSparkMax;
 
 // Motor controller that limits maximum voltage output
 public class LimitedMotor extends CANSparkMax {
-    private static final double MAX_VOLTAGE = 12;
+    private static final double MAX_VOLTAGE = .25;
     // ratio, between 0 and 1, to limit power
     private double m_limit = 1;
 
