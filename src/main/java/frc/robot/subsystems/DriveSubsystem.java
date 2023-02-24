@@ -14,6 +14,8 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -28,6 +30,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 
 public class DriveSubsystem extends SubsystemBase {
+
+  public enum Gear{LOW, HIGH};
   // The motors on the left side of the drive.
 
   private final MotorControllerGroup m_leftMotors;
@@ -37,6 +41,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final RelativeEncoder m_leftEncoder;
   private final RelativeEncoder m_rightEncoder;
   private final Field2d m_field = new Field2d();
+  private final Solenoid m_gearshift = new Solenoid(PneumaticsModuleType.REVPH, 0);
   // The robot's drive
 
   // The left-side drive encoder
@@ -252,6 +257,19 @@ public class DriveSubsystem extends SubsystemBase {
     return m_gyro.getYFilteredAccelAngle();
   }
 
+
+//switch to low or high gear
+  public void setGear(Gear gear){
+    switch(gear) {
+      case LOW:
+        m_gearshift.set(false);
+      break;
+      
+      case HIGH:
+        m_gearshift.set(true);
+      break;
+    }
+  } 
 
 }
 
