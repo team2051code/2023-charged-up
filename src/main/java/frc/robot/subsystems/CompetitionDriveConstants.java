@@ -21,7 +21,7 @@ public class CompetitionDriveConstants {
     public static final int kGripperRotatorMotorPort = 7;
     public static final int kGripperPivotMotorPort = 10;
     public static final int kArmPivotMotorPort1 = 6;
-    public static final int kArmPivotMotorPort2 = 2;
+    public static final int kArmPivotMotorPort2 = 8;
     public static final int kExtenderMotorPort = 5;
     public static final int kIntakeLeft = 9;
     public static final int kIntakeRight = 11;
