@@ -53,7 +53,8 @@ public class Robot extends TimedRobot
   private final CANSparkMax m_LeftBack = new LimitedMotor(CompetitionDriveConstants.kLeftMotor2Port, MotorType.kBrushless, POWER_LIMIT);
   private final RelativeEncoder m_leftEncoder = m_LeftFront.getEncoder();
   private final RelativeEncoder m_rightEncoder = m_RightFront.getEncoder();
-  private final XboxController m_driverController = new XboxController(1);
+  private final XboxController m_XboxController = new XboxController(CompetitionDriveConstants.XboxPort);
+  private final Joystick m_joystickController = new Joystick(CompetitionDriveConstants.joyStickPort);
   // private final CANSparkMax m_intakeRight = new CANSparkMax(5, MotorType.kBrushed);
   // private final CANSparkMax m_intakeLeft = new CANSparkMax(6, MotorType.kBrushed);
   private final MotorControllerGroup m_left = new MotorControllerGroup(m_LeftFront, m_LeftBack);
@@ -67,6 +68,7 @@ public class Robot extends TimedRobot
   public final double kMaxSpeedMetersPerSecond = 2.5;
   public final double kRamseteB = 2;
   public final double kRamseteZeta = 0.7;
+  public boolean useButtonBoard = true;
 
 
  
@@ -265,11 +267,21 @@ public class Robot extends TimedRobot
    {
     //m_robotContainer.arcadeDrive(m_driverController.getLeftX()/1.5, m_driverController.getLeftY()/1.5);
     //m_myRobot.arcadeDrive(-m_driverController.getLeftY()/1.5, -m_driverController.getLeftX()/1.5);
-      if (m_driverController.getLeftY()>0){
-        m_robotContainer.arcadeDrive(-m_driverController.getLeftY(),m_driverController.getRightX());
+      if (useButtonBoard)
+      {
       }
-      else{
-        m_robotContainer.arcadeDrive(-m_driverController.getLeftY(),-m_driverController.getRightX());
+      else
+      {
+        if (m_XboxController.getLeftY()>0){
+          m_robotContainer.arcadeDrive(-m_XboxController.getLeftY(),m_XboxController.getRightX());
+        }
+        else{
+          m_robotContainer.arcadeDrive(-m_XboxController.getLeftY(),-m_XboxController.getRightX());
+        }
+        if (m_XboxController.getXButton())
+        {
+          
+        }
       }
     
   }
