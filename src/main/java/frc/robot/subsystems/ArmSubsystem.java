@@ -80,12 +80,17 @@ public class ArmSubsystem extends SubsystemBase {
         var armPivotVoltage = m_armPIDController.calculate(m_absArmPivotEncoder.get());
         var extenderVoltage = m_extenderPIDController.calculate(m_absExtenderEncoder.get());
         var gripperPivotVoltage = m_gripperPivotPIDController.calculate(m_absGripperPivotEncoder.get());
-        if(m_absArmPivotEncoder.get()>45 && m_absArmPivotEncoder.get() < 325) //imagining 0 means vertically down
+        var armPivotPosition = m_absArmPivotEncoder.get();
+        var extenderPosition = m_absExtenderEncoder.get();
+        var gripperPivotPosition = m_absGripperPivotEncoder.get();
+        if(Math.abs(armPivotPosition - m_armPIDController.getSetpoint())<0.4999)
+            toggleBreak();
+        if(armPivotPosition>45 && armPivotPosition < 325) //imagining 0 means vertically down
             m_armPivot.setVoltage(armPivotVoltage);
-        if(!(m_absExtenderEncoder.get() == 40 && extenderVoltage>0)||!(m_absExtenderEncoder.get()==0 && extenderVoltage < 0))
+        if(!(extenderPosition == 40 && extenderVoltage>0)||!(extenderPosition==0 && extenderVoltage < 0))
             m_Extender.setVoltage(extenderVoltage);
-        
-        m_GripperPivot.setVoltage(gripperPivotVoltage);
+        if(gripperPivotPosition>35 && gripperPivotPosition<145) //imagining 0 means vertically down
+            m_GripperPivot.setVoltage(gripperPivotVoltage);
     }
 
     public void incrementArmPivotSetpoint(double increment){
@@ -93,6 +98,15 @@ public class ArmSubsystem extends SubsystemBase {
         m_armPIDController.setSetpoint(setpoint+(increment/50.0));
     }
 
+    public void incrementExtenderSetpoint(double increment){
+        double setpoint = m_extenderPIDController.getSetpoint();
+        m_armPIDController.setSetpoint(setpoint+(increment/50.0));
+    }
+
+    public void incrementGripperPivotSetpoint(double increment){
+        double setpoint = m_gripperPivotPIDController.getSetpoint();
+        m_armPIDController.setSetpoint(setpoint+(increment/50.0));
+    }
 
     public void setArmPivotSetpoint(double setpoint){
         m_armPIDController.setSetpoint(setpoint);
