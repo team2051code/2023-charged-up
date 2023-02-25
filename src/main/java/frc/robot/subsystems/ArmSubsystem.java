@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.components.LimitedMotor;
 
@@ -83,8 +84,13 @@ public class ArmSubsystem extends SubsystemBase {
         var armPivotPosition = m_absArmPivotEncoder.get();
         var extenderPosition = m_absExtenderEncoder.get();
         var gripperPivotPosition = m_absGripperPivotEncoder.get();
+        SmartDashboard.putNumber("armPivotVoltage", armPivotVoltage);
+        SmartDashboard.putNumber("armPivotSetpoint", m_armPIDController.getSetpoint());
+        SmartDashboard.putBoolean("Brake", getBreakSol());
         if(Math.abs(armPivotPosition - m_armPIDController.getSetpoint())<0.4999)
-            toggleBreak();
+            m_breakSolenoid.set(true);
+        else
+            m_breakSolenoid.set(false);
         if(armPivotPosition>45 && armPivotPosition < 325) //imagining 0 means vertically down
             m_armPivot.setVoltage(armPivotVoltage);
         if(!(extenderPosition == 40 && extenderVoltage>0)||!(extenderPosition==0 && extenderVoltage < 0))
