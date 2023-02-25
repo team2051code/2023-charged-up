@@ -277,10 +277,10 @@ public class Robot extends TimedRobot
       m_robotContainer.arcadeDrive(-m_DriveController.getLeftY(), -m_DriveController.getRightX());
     }
     if (m_ArmController.getXButton()) {
-
+      m_arm.incrementGripperPivotSetpoint(-20);
     }
     if (m_ArmController.getYButton()) {
-
+      m_arm.incrementGripperPivotSetpoint(20);
     }
     if (m_ArmController.getAButton()) {
 
@@ -308,7 +308,7 @@ public class Robot extends TimedRobot
     }
 
     m_arm.incrementArmPivotSetpoint(-m_ArmController.getLeftY() * 60);
-    //m_arm.incrementArmPivotSetpoint(-m_XboxController.getRightY() * 10);
+    m_arm.incrementExtenderSetpoint(-m_ArmController.getRightY() * 10);
 
     }
   
