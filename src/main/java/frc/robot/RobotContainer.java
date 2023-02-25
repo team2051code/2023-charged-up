@@ -34,6 +34,7 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CompetitionDriveConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.PneumaticSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 
@@ -48,6 +49,7 @@ public class RobotContainer {
   // private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
   // private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
+  private PneumaticSubsystem m_pneumaticSubsystem = new PneumaticSubsystem();
   private DriveSubsystem m_robotDrive;
   private ArmSubsystem m_robotArm;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */

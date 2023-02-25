@@ -11,7 +11,9 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
-      "/SmartDashboard/Field: ": "Field2d"
+      "/SmartDashboard/Field: ": "Field2d",
+      "/SmartDashboard/MotorControllerGroup[1]": "Motor Controller",
+      "/SmartDashboard/motorPutTst": "Motor Controller"
     }
   },
   "NetworkTables": {
@@ -22,7 +24,13 @@
       "open": false
     },
     "transitory": {
+      "Shuffleboard": {
+        "open": true
+      },
       "SmartDashboard": {
+        "motorPutTst": {
+          "open": true
+        },
         "open": true
       }
     }

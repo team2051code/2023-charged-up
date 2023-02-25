@@ -128,12 +128,12 @@ public class ArmSubsystem extends SubsystemBase {
 
     public void incrementExtenderSetpoint(double increment){
         double setpoint = m_extenderPIDController.getSetpoint();
-        m_armPIDController.setSetpoint(setpoint+(increment/50.0));
+        m_extenderPIDController.setSetpoint(setpoint+(increment/50.0));
     }
 
     public void incrementGripperPivotSetpoint(double increment){
         double setpoint = m_gripperPivotPIDController.getSetpoint();
-        m_armPIDController.setSetpoint(setpoint+(increment/50.0));
+        m_gripperPivotPIDController.setSetpoint(setpoint+(increment/50.0));
     }
 
     public void incrementGripperRotatorSetpoint(double increment){
