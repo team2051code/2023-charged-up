@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Camera</title>
+        <link rel="stylesheet" href="dashboard.css">
+        <script language="javascript" src="camera.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script language="javascript">addEventListener("load", cameraInit)</script>
+    </head>
+
+    <body>
+        <a href="index.html">Driver</a>
+
+        <div class="row">
+            <img id="cameraOut" crossorigin="anonymous" src=""
+		 	    alt="Camera ERROR!" idx="1">
+		    <canvas id="canvas"></canvas>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <button id ="toggleCamera" onclick="toggleCam()"><h1>CAMERA TOGGLE</h1></button>
+            </div>
+            <div class="col">
+		        <button id ="toggleRaspberry" onclick="togglePi()"><h1>PI TOGGLE</h1></button>
+            </div>
+        </div>
+    </body>
+
+</html>

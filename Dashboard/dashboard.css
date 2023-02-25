@@ -2,31 +2,32 @@ body {
     color: #FFF;
     background-color: #000;
 }
+
+a {
+    font-size: 30;
+    color: #0069c2;
+    right: 0px;
+    position: absolute;
+}
 /*Camera styles/////Camera styles/////Camera styles/////Camera styles/////*/
 img {
+    width: 500px;
     object-fit: contain;
-    height: 350px;
-    width: 622px;
     font-size: 10rem; 
 	position: absolute;
-    top: 20px;
-    left: 20px;
 }
 
 canvas {
-    width: 622px;
+    width: 500px;
     height: 350px;
-    border: 1px solid #000;
+    border: 1px solid #FF0;
     position: absolute;
-    top: 19px; 
-    left: 19px;
 }
 
 /*FRC webcomponents styles/////FRC webcomponents styles/////FRC webcomponents styles/////*/
 .numberBar {
     color: #000;
     fill: white;
-    position: absolute;
 }
 
 #number0 {

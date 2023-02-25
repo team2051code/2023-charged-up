@@ -2,25 +2,29 @@
 <html>
 
 	<head>
-		<title>Debug</title>		
+		<title>Debug</title>
+		<link rel="stylesheet" href="debug.css">
+		<script language="javascript" src="dashboard.js"></script>		
 	</head>
 
 	<body>
-		
+		<a href="index.html">Driver</a>
+
 		<frc-dashboard onload="ntLoaded()">
-
-			<frc-number-bar source-key="/SmartDashboard/" precision="" ></frc-number-bar>
-
-			<frc-number-bar source-key="/SmartDashboard/" precision="" ></frc-number-bar>
+			<h3>Enabled</h3>
+			<frc-boolean-box class="boolean" source-key="/SmartDashboard/compressor/Enabled">enabled</frc-boolean-box>
+			
+			<h3>Pressure Switch</h3>
+			<frc-boolean-box class="boolean" source-key="/SmartDashboard/compressor/Pressure switch">pressure</frc-boolean-box>
 
 		<!--Audio testing-->
-		<audio src="mixkit-sci-fi-ship-alert-768.wav" id="soundTest" controls></audio>
+		<audio src="mixkit-sci-fi-ship-alert-768.wav" id="soundTest"></audio>
 
 		</frc-dashboard>
 		<!--------------------------------------------------------------------------------------------------->
 		
 		<!--------------------------------------------------------------------------------------------------->
-		<script language="javascript" href="dashboard.js"></script>
+		
 	</body>
 	<script src="/frc-web-components.js"></script>
 </html>

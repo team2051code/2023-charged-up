@@ -3,30 +3,24 @@
 
 	<head>
 		<title>Driver</title>
-		<link rel="stylesheet" href="dashboard.css">		
+		<link rel="stylesheet" href="dashboard.css">	
+		<script language="javascript" src="dashboard.js"></script>	
 	</head>
 
-	<body>
+	<body id="teamColor">
+		<a href="Debug.html">Debug</a>
+		<a href="cameraDashboard.HTML" style="top: 30px;">Camera</a>
 		
 		<frc-dashboard onload="ntLoaded()">
 
 			<frc-number-bar id="number0" class="numberBar" source-key="/SmartDashboard/leftStick" precision="2" ></frc-number-bar>
 			<frc-number-bar id="number1" class="numberBar" source-key="/SmartDashboard/rightStick" precision="2" ></frc-number-bar>
 
-		<!--image and canvas tags-->
-		 <img id="cameraOut" crossorigin="anonymous" src=""
-		 	alt="Camera ERROR!" idx="1">
-		<canvas id="canvas"></canvas>
-
 		<!--Audio testing-->
 		<audio src="mixkit-sci-fi-ship-alert-768.wav" id="soundTest"></audio>
 
-		<!--buttons to toggle between cameras and pis-->
-		 <button id ="toggleCamera" onclick="toggleCam()"><h1>CAMERA TOGGLE</h1></button>
-		 <button id ="toggleRaspberry" onclick="togglePi()"><h1>PI TOGGLE</h1></button>
-
 		</frc-dashboard>
-		<script language="javascript" href="dashboard.js"></script>
+		<!--<script language="javascript" src="dashboard.js"></script>-->
 	</body>
 	<script src="/frc-web-components.js"></script>
 </html>
