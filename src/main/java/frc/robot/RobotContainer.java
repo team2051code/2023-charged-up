@@ -223,4 +223,9 @@ public class RobotContainer {
   {
     m_robotDrive.tankDrive(leftSpeed, rightSpeed);
   }
+
+public ArmSubsystem getArmSubsystem(){
+  return m_robotArm;
+}
+
 }
