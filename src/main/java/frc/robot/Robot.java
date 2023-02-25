@@ -54,8 +54,6 @@ public class Robot extends TimedRobot
   private final RelativeEncoder m_leftEncoder = m_LeftFront.getEncoder();
   private final RelativeEncoder m_rightEncoder = m_RightFront.getEncoder();
   private final XboxController m_driverController = new XboxController(1);
-  // private final CANSparkMax m_intakeRight = new CANSparkMax(5, MotorType.kBrushed);
-  // private final CANSparkMax m_intakeLeft = new CANSparkMax(6, MotorType.kBrushed);
   private final MotorControllerGroup m_left = new MotorControllerGroup(m_LeftFront, m_LeftBack);
   private final MotorControllerGroup m_right = new MotorControllerGroup(m_RightFront, m_RightBack);
   public final double ksVolts = 0.16985;

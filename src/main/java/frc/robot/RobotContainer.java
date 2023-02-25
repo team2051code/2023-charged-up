@@ -30,6 +30,7 @@ import frc.robot.commands.Balance;
 import frc.robot.commands.DriveLinear;
 import frc.robot.commands.DriveStraight;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CompetitionDriveConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
@@ -48,6 +49,7 @@ public class RobotContainer {
 
   // private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
   private DriveSubsystem m_robotDrive;
+  private ArmSubsystem m_robotArm;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
@@ -57,6 +59,7 @@ public class RobotContainer {
   {
     configureButtonBindings();
     m_robotDrive = new DriveSubsystem(m_leftMotors, m_rightMotors, m_leftEncoder, m_RightEncoder);
+    m_robotArm = new ArmSubsystem();
   }
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
