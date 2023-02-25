@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.components.LimitedMotor;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CompetitionDriveConstants;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -53,7 +54,8 @@ public class Robot extends TimedRobot
   private final CANSparkMax m_LeftBack = new LimitedMotor(CompetitionDriveConstants.kLeftMotor2Port, MotorType.kBrushless, POWER_LIMIT);
   private final RelativeEncoder m_leftEncoder = m_LeftFront.getEncoder();
   private final RelativeEncoder m_rightEncoder = m_RightFront.getEncoder();
-  private final XboxController m_XboxController = new XboxController(CompetitionDriveConstants.XboxPort);
+  private final XboxController m_ArmController = new XboxController(CompetitionDriveConstants.XboxArmPort);
+  private final XboxController m_DriveController = new XboxController(CompetitionDriveConstants.XboxDrivePort);
   private final Joystick m_joystickController = new Joystick(CompetitionDriveConstants.joyStickPort);
   // private final CANSparkMax m_intakeRight = new CANSparkMax(5, MotorType.kBrushed);
   // private final CANSparkMax m_intakeLeft = new CANSparkMax(6, MotorType.kBrushed);
@@ -69,6 +71,7 @@ public class Robot extends TimedRobot
   public final double kRamseteB = 2;
   public final double kRamseteZeta = 0.7;
   public boolean useButtonBoard = true;
+  public ArmSubsystem m_arm;
 
 
  
@@ -105,6 +108,7 @@ public class Robot extends TimedRobot
     m_RightFront.setIdleMode(IdleMode.kBrake);
 
     m_robotContainer = new RobotContainer(m_left, m_right, m_leftEncoder, m_rightEncoder);
+    m_arm = m_robotContainer.getArmSubsystem();
     // m_camera = new PhotonCamera("Camera_A");
     // m_cameraB = new  PhotonCamera("Camera_B");
     // cameraList = new ArrayList<PhotonCamera>();
@@ -267,24 +271,47 @@ public class Robot extends TimedRobot
    {
     //m_robotContainer.arcadeDrive(m_driverController.getLeftX()/1.5, m_driverController.getLeftY()/1.5);
     //m_myRobot.arcadeDrive(-m_driverController.getLeftY()/1.5, -m_driverController.getLeftX()/1.5);
-      if (useButtonBoard)
-      {
-      }
-      else
-      {
-        if (m_XboxController.getLeftY()>0){
-          m_robotContainer.arcadeDrive(-m_XboxController.getLeftY(),m_XboxController.getRightX());
-        }
-        else{
-          m_robotContainer.arcadeDrive(-m_XboxController.getLeftY(),-m_XboxController.getRightX());
-        }
-        if (m_XboxController.getXButton())
-        {
-          
-        }
-      }
-    
-  }
+    if (m_DriveController.getLeftY() > 0) {
+      m_robotContainer.arcadeDrive(-m_DriveController.getLeftY(), m_DriveController.getRightX());
+    } else {
+      m_robotContainer.arcadeDrive(-m_DriveController.getLeftY(), -m_DriveController.getRightX());
+    }
+    if (m_ArmController.getXButton()) {
+
+    }
+    if (m_ArmController.getYButton()) {
+
+    }
+    if (m_ArmController.getAButton()) {
+
+    }
+    if (m_ArmController.getBButton()) {
+
+    }
+    if (m_ArmController.getRightBumper()) {
+
+    }
+    if (m_ArmController.getLeftBumper()) {
+
+    }
+    if (m_ArmController.getRightStickButton()) {
+
+    }
+    if (m_ArmController.getLeftStickButton()) {
+
+    }
+    if (m_ArmController.getBackButton()) {
+
+    }
+    if (m_ArmController.getStartButton()) {
+  
+    }
+
+    m_arm.incrementArmPivotSetpoint(-m_ArmController.getLeftY() * 60);
+    //m_arm.incrementArmPivotSetpoint(-m_XboxController.getRightY() * 10);
+
+    }
+  
 
   @Override
   public void testInit() {
