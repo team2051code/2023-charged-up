@@ -9,9 +9,11 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.components.LimitedMotor;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CompetitionDriveConstants;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.Joystick;
@@ -46,17 +48,19 @@ public class Robot extends TimedRobot
   private PhotonCamera m_camera;
   private PhotonCamera m_cameraB;
   private ArrayList<PhotonCamera> cameraList;
-  private final CANSparkMax m_rightFront = new LimitedMotor(CompetitionDriveConstants.kRightMotor1Port, MotorType.kBrushless, POWER_LIMIT);
+  private final CANSparkMax m_RightFront = new LimitedMotor(CompetitionDriveConstants.kRightMotor1Port, MotorType.kBrushless, POWER_LIMIT);
   private final CANSparkMax m_LeftFront = new LimitedMotor(CompetitionDriveConstants.kLeftMotor1Port, MotorType.kBrushless, POWER_LIMIT);
   private final CANSparkMax m_RightBack = new LimitedMotor(CompetitionDriveConstants.kRightMotor2Port, MotorType.kBrushless, POWER_LIMIT);
   private final CANSparkMax m_LeftBack = new LimitedMotor(CompetitionDriveConstants.kLeftMotor2Port, MotorType.kBrushless, POWER_LIMIT);
   private final RelativeEncoder m_leftEncoder = m_LeftFront.getEncoder();
-  private final RelativeEncoder m_rightEncoder = m_rightFront.getEncoder();
-  private final XboxController m_driverController = new XboxController(0);
+  private final RelativeEncoder m_rightEncoder = m_RightFront.getEncoder();
+  private final XboxController m_ArmController = new XboxController(CompetitionDriveConstants.XboxArmPort);
+  private final XboxController m_DriveController = new XboxController(CompetitionDriveConstants.XboxDrivePort);
+  private final Joystick m_joystickController = new Joystick(CompetitionDriveConstants.joyStickPort);
   // private final CANSparkMax m_intakeRight = new CANSparkMax(5, MotorType.kBrushed);
   // private final CANSparkMax m_intakeLeft = new CANSparkMax(6, MotorType.kBrushed);
   private final MotorControllerGroup m_left = new MotorControllerGroup(m_LeftFront, m_LeftBack);
-  private final MotorControllerGroup m_right = new MotorControllerGroup(m_rightFront, m_RightBack);
+  private final MotorControllerGroup m_right = new MotorControllerGroup(m_RightFront, m_RightBack);
   public final double ksVolts = 0.16985;
   public final double kvVoltSecondsPerMeter = 0.12945;
   public final double kaVoltSecondsSquaredPerMeter = 0.025994;
@@ -66,6 +70,8 @@ public class Robot extends TimedRobot
   public final double kMaxSpeedMetersPerSecond = 2.5;
   public final double kRamseteB = 2;
   public final double kRamseteZeta = 0.7;
+  public boolean useButtonBoard = true;
+  public ArmSubsystem m_arm;
 
 
  
@@ -88,17 +94,21 @@ public class Robot extends TimedRobot
     m_LeftBack.restoreFactoryDefaults();
     m_LeftFront.restoreFactoryDefaults();
     m_RightBack.restoreFactoryDefaults();
-    m_rightFront.restoreFactoryDefaults();
+    m_RightFront.restoreFactoryDefaults();
 
-    m_RightBack.setInverted(true);
-    m_rightFront.setInverted(true);
+
+    m_LeftFront.setInverted(CompetitionDriveConstants.kLeftMotorsReversed);
+    m_LeftBack.setInverted(CompetitionDriveConstants.kLeftMotorsReversed);
+    m_RightBack.setInverted(CompetitionDriveConstants.kRightMotorsReversed);
+    m_RightFront.setInverted(CompetitionDriveConstants.kRightMotorsReversed);
 
     m_LeftBack.setIdleMode(IdleMode.kBrake);
     m_LeftFront.setIdleMode(IdleMode.kBrake);
     m_RightBack.setIdleMode(IdleMode.kBrake);
-    m_rightFront.setIdleMode(IdleMode.kBrake);
+    m_RightFront.setIdleMode(IdleMode.kBrake);
 
     m_robotContainer = new RobotContainer(m_left, m_right, m_leftEncoder, m_rightEncoder);
+    m_arm = m_robotContainer.getArmSubsystem();
     // m_camera = new PhotonCamera("Camera_A");
     // m_cameraB = new  PhotonCamera("Camera_B");
     // cameraList = new ArrayList<PhotonCamera>();
@@ -187,7 +197,7 @@ public class Robot extends TimedRobot
     //   SmartDashboard.putNumber("Area", 0);
     //   SmartDashboard.putNumber("skew", 0); 
     // }
-    SmartDashboard.putNumber("right motor speed:", m_rightFront.get());
+    SmartDashboard.putNumber("right motor speed:", m_RightFront.get());
 
     CommandScheduler.getInstance().run();
     // System.out.println(targets.size() + "targets found: ");
@@ -218,11 +228,13 @@ public class Robot extends TimedRobot
   public void autonomousInit() {
     //m_trajectory = m_robotContainer.getTrajectories();
     m_balanceCommand = m_robotContainer.getBalanceCommand();
+    Command driveTwoMeter = m_robotContainer.ramsetePose(new Pose2d(0, 0,  new Rotation2d(0)), List.of(), new Pose2d(5, 1, new Rotation2d(0)));
+    //Command drive = m_robotContainer.getTrajectories();
     // schedule the autonomous command (example)
     // if(m_trajectory != null)
     //   m_trajectory.schedule();
-    if (m_balanceCommand != null) {
-      m_balanceCommand.schedule();
+    if (driveTwoMeter != null) {
+      driveTwoMeter.schedule();
     }
   }
 
@@ -246,6 +258,9 @@ public class Robot extends TimedRobot
     {
       m_trajectory.cancel();
     }
+    m_robotContainer.resetOdometry();
+  
+    
   
 
   }
@@ -256,14 +271,47 @@ public class Robot extends TimedRobot
    {
     //m_robotContainer.arcadeDrive(m_driverController.getLeftX()/1.5, m_driverController.getLeftY()/1.5);
     //m_myRobot.arcadeDrive(-m_driverController.getLeftY()/1.5, -m_driverController.getLeftX()/1.5);
-      if (m_driverController.getLeftY()>0){
-        m_robotContainer.arcadeDrive(-m_driverController.getLeftY(),m_driverController.getRightX());
-      }
-      else{
-        m_robotContainer.arcadeDrive(-m_driverController.getLeftY(),-m_driverController.getRightX());
-      }
-    
-  }
+    if (m_DriveController.getLeftY() > 0) {
+      m_robotContainer.arcadeDrive(-m_DriveController.getLeftY(), m_DriveController.getRightX());
+    } else {
+      m_robotContainer.arcadeDrive(-m_DriveController.getLeftY(), -m_DriveController.getRightX());
+    }
+    if (m_ArmController.getXButton()) {
+
+    }
+    if (m_ArmController.getYButton()) {
+
+    }
+    if (m_ArmController.getAButton()) {
+
+    }
+    if (m_ArmController.getBButton()) {
+
+    }
+    if (m_ArmController.getRightBumper()) {
+
+    }
+    if (m_ArmController.getLeftBumper()) {
+
+    }
+    if (m_ArmController.getRightStickButton()) {
+
+    }
+    if (m_ArmController.getLeftStickButton()) {
+
+    }
+    if (m_ArmController.getBackButton()) {
+
+    }
+    if (m_ArmController.getStartButton()) {
+  
+    }
+
+    m_arm.incrementArmPivotSetpoint(-m_ArmController.getLeftY() * 60);
+    //m_arm.incrementArmPivotSetpoint(-m_XboxController.getRightY() * 10);
+
+    }
+  
 
   @Override
   public void testInit() {

@@ -13,6 +13,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.CAN;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -41,7 +42,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final RelativeEncoder m_leftEncoder;
   private final RelativeEncoder m_rightEncoder;
   private final Field2d m_field = new Field2d();
-  private final Solenoid m_gearshift = new Solenoid(PneumaticsModuleType.REVPH, 0);
+  private final Solenoid m_gearSolenoid;
   // The robot's drive
 
   // The left-side drive encoder
@@ -66,15 +67,16 @@ public class DriveSubsystem extends SubsystemBase {
   private final DifferentialDriveOdometry m_odometry;
 
   /** Creates a new DriveSubsystem. */
-  public DriveSubsystem(MotorControllerGroup m_left, MotorControllerGroup m_right, RelativeEncoder m_leftEncode, RelativeEncoder m_rightEncode) {
-    m_leftEncoder = m_leftEncode;
-    m_rightEncoder = m_rightEncode;
+  public DriveSubsystem(MotorControllerGroup left, MotorControllerGroup right, RelativeEncoder leftEncode, RelativeEncoder rightEncode) {
+    m_leftEncoder = leftEncode;
+    m_rightEncoder = rightEncode;
     m_leftEncoder.setPositionConversionFactor(CompetitionDriveConstants.kLinearDistanceConversionFactor);
     m_leftEncoder.setVelocityConversionFactor(CompetitionDriveConstants.kLinearDistanceConversionFactor / 60);
     m_rightEncoder.setPositionConversionFactor(CompetitionDriveConstants.kLinearDistanceConversionFactor);
     m_rightEncoder.setVelocityConversionFactor(CompetitionDriveConstants.kLinearDistanceConversionFactor / 60);
-    m_leftMotors = m_left;
-    m_rightMotors = m_right;
+    m_leftMotors = left;
+    m_rightMotors = right;
+    m_gearSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 0);
     m_drive = new DifferentialDrive(m_leftMotors, m_rightMotors);
     SmartDashboard.putData("Field: ", m_field);
 
@@ -256,21 +258,14 @@ public class DriveSubsystem extends SubsystemBase {
   {
     return m_gyro.getYFilteredAccelAngle();
   }
+  public void toggleGear(){
+    m_gearSolenoid.toggle();
+  }
 
-
-//switch to low or high gear
-  public void setGear(Gear gear){
-    switch(gear) {
-      case LOW:
-        m_gearshift.set(false);
-      break;
-      
-      case HIGH:
-        m_gearshift.set(true);
-      break;
-    }
-  } 
-
+  public boolean getGear(){
+    return m_gearSolenoid.get();
+  }
 }
-
+  
+  
   
