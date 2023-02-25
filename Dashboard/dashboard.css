@@ -1,0 +1,54 @@
+body {
+    color: #FFF;
+    background-color: #000;
+}
+/*Camera styles/////Camera styles/////Camera styles/////Camera styles/////*/
+img {
+    object-fit: contain;
+    height: 350px;
+    width: 622px;
+    font-size: 10rem; 
+	position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+canvas {
+    width: 622px;
+    height: 350px;
+    border: 1px solid #000;
+    position: absolute;
+    top: 19px; 
+    left: 19px;
+}
+
+/*FRC webcomponents styles/////FRC webcomponents styles/////FRC webcomponents styles/////*/
+.numberBar {
+    color: #000;
+    fill: white;
+    position: absolute;
+}
+
+#number0 {
+    top: 50px; 
+    left: 675px;
+}
+
+#number1 {
+    top: 150px; 
+    left: 675px;
+}
+
+/*Button styles/////Button styles/////Button styles/////Button styles/////*/
+#toggleCamera {
+    position:absolute;
+    top:380px;
+    left: 20px;
+}
+
+#toggleRaspberry {
+    position:absolute;
+    top:380px;
+    left: 300px;
+}
+

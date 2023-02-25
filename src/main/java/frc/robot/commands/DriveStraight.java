@@ -115,29 +115,28 @@ public class DriveStraight extends CommandBase {
           m_autostate = Autostate.ONRAMP;
         }
       }
-      //when the robot is on
+      // when the robot is on
       if(m_timer != null)
         SmartDashboard.putNumber("Timer", m_timer.get());
       if (m_autostate.equals(Autostate.ONRAMP) && m_timer.get() > SmartDashboard.getNumber("Dead Time", 0.4))
       {
         if (yAngle > 2.5)
         {
-          m_left.setSetpoint(SmartDashboard.getNumber("Setpoint",SPEED_M_S)/((Math.abs(yAngle)/30)*9+1));
-          m_right.setSetpoint(SmartDashboard.getNumber("Setpoint",SPEED_M_S)/((Math.abs(yAngle)/30)*9+1));
+          m_left.setSetpoint(SmartDashboard.getNumber("Setpoint ",SPEED_M_S)/((Math.abs(yAngle)/30)*9+1));
+          m_right.setSetpoint(SmartDashboard.getNumber("Setpoint ",SPEED_M_S)/((Math.abs(yAngle)/30)*9+1));
           m_drive.tankDrive(leftVelocity, rightVelocity);
         }
         else if (yAngle < -2.5)
         {
           System.out.println("BACKWARDS");
-          m_left.setSetpoint(-(SmartDashboard.getNumber("Setpoint", SPEED_M_S)/((Math.abs(yAngle)/30)*9+1)));
-          m_right.setSetpoint(-(SmartDashboard.getNumber("Setpoint", SPEED_M_S)/((Math.abs(yAngle)/30)*9+1)));
+          m_left.setSetpoint(-(SmartDashboard.getNumber("Setpoint ", SPEED_M_S)/((Math.abs(yAngle)/30)*9+1)));
+          m_right.setSetpoint(-(SmartDashboard.getNumber("Setpoint ", SPEED_M_S)/((Math.abs(yAngle)/30)*9+1)));
           System.out.println(m_left.getSetpoint() + " " + m_right.getSetpoint());
           m_drive.tankDrive(leftVelocity, rightVelocity);
         }
         else 
         {
           System.out.println("pro");
-          m_drive.tankDrive(-0.1, -0.1);
           m_autostate = Autostate.PIVOT;
         }
       }
@@ -158,7 +157,7 @@ public class DriveStraight extends CommandBase {
   public void end(boolean interrupted) {
     if(m_timer != null)
       m_timer.stop();
-    SmartDashboard.putString("State: ", m_autostate.toString());
+    SmartDashboard.putString("State:", m_autostate.toString());
     Balance balance = new Balance(m_drive);
     balance.andThen(() -> m_drive.tankDriveVolts(0, 0)).schedule();
   }
