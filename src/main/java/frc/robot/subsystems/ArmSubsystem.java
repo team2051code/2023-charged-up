@@ -92,6 +92,8 @@ public class ArmSubsystem extends SubsystemBase {
         var armPivotVoltage = m_armPIDController.calculate(m_absArmPivotEncoder.get());
         var extenderVoltage = m_extenderPIDController.calculate(m_absExtenderEncoder.get());
         var gripperPivotVoltage = m_gripperPivotPIDController.calculate(m_absGripperPivotEncoder.get());
+        var gripperRotationVoltage = m_gripperRotatorPIDController.calculate(m_gripperRotatorEncoder.getPosition());
+        var intakeVoltage = m_intakePIDController.calculate(m_intakeEncoder.getPosition());
         var armPivotPosition = m_absArmPivotEncoder.get();
         var extenderPosition = m_absExtenderEncoder.get();
         var gripperPivotPosition = m_absGripperPivotEncoder.get();
@@ -119,6 +121,8 @@ public class ArmSubsystem extends SubsystemBase {
             m_Extender.setVoltage(extenderVoltage);
         if(gripperPivotPosition>35 && gripperPivotPosition<145) //imagining 0 means vertically down
             m_GripperPivot.setVoltage(gripperPivotVoltage);
+        m_GripperRotator.setVoltage(gripperRotationVoltage);
+        m_intake.setVoltage(intakeVoltage);
     }
 
     public void incrementArmPivotSetpoint(double increment){
@@ -204,6 +208,18 @@ public class ArmSubsystem extends SubsystemBase {
 
     public double getIntakeEnc(){
         return m_intakeEncoder.getPosition();
+    }
+
+    public double getArmPivotAbs(){
+        return m_absArmPivotEncoder.get();
+    }
+
+    public double getExtendorAbs(){
+        return m_absExtenderEncoder.get();
+    }
+
+    public double getGripperPivotAbs(){
+        return m_absGripperPivotEncoder.get();
     }
 
     public void toggleBreak(){

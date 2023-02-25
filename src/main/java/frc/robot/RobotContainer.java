@@ -29,7 +29,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.Balance;
 import frc.robot.commands.DriveLinear;
 import frc.robot.commands.DriveStraight;
-import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.Place;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CompetitionDriveConstants;
 import frc.robot.subsystems.DriveSubsystem;

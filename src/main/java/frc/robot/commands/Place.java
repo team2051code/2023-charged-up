@@ -9,34 +9,72 @@ import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
-public class ToggleSide extends CommandBase {
+public class Place extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final ArmSubsystem robot_Arm;
+  private final ArmSubsystem m_subsystem;
+  private final int level;
+  private final boolean isCube;
   private boolean finished;
-  private double initialArmPos = 0;
+
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ToggleSide(ArmSubsystem subsystem) {
-    robot_Arm = subsystem;
+  public Place(ArmSubsystem subsystem,int level,boolean isCube) {
+    m_subsystem = subsystem;
+    this.level = level;
+    this.isCube = isCube;
+    finished = false;
     // Use addRequirements() here to declare subsystem dependencies.
-    // addRequirements(subsystem);
+    //addRequirements(subsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    initialArmPos = robot_Arm.getArmPivotAbs();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    robot_Arm.setArmPivotSetpoint((180-initialArmPos)+180);
-    if(Math.abs(robot_Arm.getArmPivotAbs() - ((180-initialArmPos)+180))<0.4999)
-      finished = true;
+    if(isCube)
+    {
+      if(level==0)
+      {
+        
+      }
+      else if(level == 1)
+      {
+
+      }
+      else if(level == 2)
+      {
+
+      }
+      else
+      {
+        finished = true;
+      }
+    }else
+    {
+      if(level==0)
+      {
+
+      }
+      else if(level == 1)
+      {
+
+      }
+      else if(level == 2)
+      {
+
+      }
+      else
+      {
+        finished = true;
+      }
+    }
   }
 
   // Called once the command ends or is interrupted.
