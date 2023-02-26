@@ -10,14 +10,18 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.components.LimitedMotor;
+import frc.robot.subsystems.simulated.AnalogPotentiometerSimulation;
+import frc.robot.subsystems.simulated.ArmSimulation;
+import frc.robot.subsystems.simulated.CANSparkMaxSimulated;
 
 public class ArmSubsystem extends SubsystemBase {
-    public final static double kArmP = 0; public final static double kArmI = 0; public final static double kArmD = 0;
+    public final static double kArmP = 0.001; public final static double kArmI = 0; public final static double kArmD = 0;
     public final static double kextenderP = 0; public final static double kextenderI = 0; public final static double kextenderD = 0;
     public final static double kgripperP = 0; public final static double kgripperI = 0; public final static double kgripperD = 0;
     public final static double kgripperRotatorP = 0; public final static double kgripperRotatorI = 0; public final static double kgripperRotatorD = 0;
@@ -36,7 +40,7 @@ public class ArmSubsystem extends SubsystemBase {
     private RelativeEncoder m_gripperRotatorEncoder;
     private RelativeEncoder m_gripperPivotEncoder;
     private RelativeEncoder m_intakeEncoder;
-    private final CANSparkMax m_ArmPivot1;
+    private CANSparkMax m_ArmPivot1;
     private final CANSparkMax m_ArmPivot2;
     private final CANSparkMax m_Extender;
     private final CANSparkMax m_GripperRotator;
@@ -50,8 +54,17 @@ public class ArmSubsystem extends SubsystemBase {
     private AnalogPotentiometer m_absExtenderEncoder;
     private AnalogPotentiometer m_absGripperPivotEncoder;
 
+    // These are non-null in simulation only
+    private ArmSimulation m_ArmSimulation;
+
     public ArmSubsystem(){
-        m_ArmPivot1 = new LimitedMotor(CompetitionDriveConstants.kArmPivotMotorPort1, MotorType.kBrushless, POWER_LIMIT);
+        if (RobotBase.isSimulation()) {
+            var simulatedArmPivotEncoder = new AnalogPotentiometerSimulation(0, 360, 0);
+            m_absArmPivotEncoder = simulatedArmPivotEncoder;
+            m_ArmPivot1 = new CANSparkMaxSimulated(CompetitionDriveConstants.kArmPivotMotorPort1, MotorType.kBrushless);
+            m_ArmSimulation = new ArmSimulation(simulatedArmPivotEncoder, m_ArmPivot1);
+        }
+
         m_ArmPivot2 = new LimitedMotor(CompetitionDriveConstants.kArmPivotMotorPort2, MotorType.kBrushless, POWER_LIMIT);
         m_Extender = new LimitedMotor(CompetitionDriveConstants.kExtenderMotorPort, MotorType.kBrushless, POWER_LIMIT);
         m_GripperRotator = new LimitedMotor(CompetitionDriveConstants.kGripperRotatorMotorPort, MotorType.kBrushless, POWER_LIMIT);
@@ -60,12 +73,11 @@ public class ArmSubsystem extends SubsystemBase {
         m_IntakeRight = new LimitedMotor(CompetitionDriveConstants.kIntakeRight, MotorType.kBrushless, POWER_LIMIT);
         m_breakSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 1);
         m_gripperSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 2);
-        m_armPivotEncoder = m_ArmPivot1.getEncoder();
-        m_extenderEncoder = m_Extender.getEncoder();
-        m_gripperRotatorEncoder = m_GripperRotator.getEncoder();
-        m_gripperPivotEncoder = m_GripperPivot.getEncoder();
         m_intakeEncoder = m_IntakeRight.getEncoder();
-        m_absArmPivotEncoder = new AnalogPotentiometer(0, 360, 0);
+        if (!RobotBase.isSimulation()) {
+            m_ArmPivot1 = new LimitedMotor(CompetitionDriveConstants.kArmPivotMotorPort1, MotorType.kBrushless, POWER_LIMIT);
+            m_absArmPivotEncoder = new AnalogPotentiometer(0, 360, 0);
+        }
         m_absExtenderEncoder = new AnalogPotentiometer(1, 40, 0);
         m_absGripperPivotEncoder = new AnalogPotentiometer(2,360, 0);
         m_armPIDController = new PIDController(kArmP, kArmI, kArmD);
@@ -84,11 +96,29 @@ public class ArmSubsystem extends SubsystemBase {
         m_ArmPivot2.setInverted(true);
         m_intake = new MotorControllerGroup(m_IntakeLeft, m_IntakeRight);
         m_armPivot = new MotorControllerGroup(m_ArmPivot1, m_ArmPivot2);
+
+        m_armPivotEncoder = m_ArmPivot1.getEncoder();
+        m_extenderEncoder = m_Extender.getEncoder();
+        m_gripperRotatorEncoder = m_GripperRotator.getEncoder();
+        m_gripperPivotEncoder = m_GripperPivot.getEncoder();
+
+        SmartDashboard.putNumber("Arm PID P", 0);
+        SmartDashboard.putNumber("Arm PID I", 0);
+        SmartDashboard.putNumber("Arm PID D", 0);
+
+
     }
 
     @Override
     public void periodic() {
         double relativeAngle;
+        double armPidP = SmartDashboard.getNumber("Arm PID P", 0);
+        double armPidI = SmartDashboard.getNumber("Arm PID I", 0);
+        double armPidD = SmartDashboard.getNumber("Arm PID D", 0);
+
+        m_armPIDController.setP(armPidP);
+        m_armPIDController.setI(armPidI);
+        m_armPIDController.setD(armPidD);
         var armPivotVoltage = m_armPIDController.calculate(m_absArmPivotEncoder.get());
         var extenderVoltage = m_extenderPIDController.calculate(m_absExtenderEncoder.get());
         var gripperPivotVoltage = m_gripperPivotPIDController.calculate(m_absGripperPivotEncoder.get());
@@ -99,6 +129,7 @@ public class ArmSubsystem extends SubsystemBase {
         var gripperPivotPosition = m_absGripperPivotEncoder.get();
         SmartDashboard.putNumber("armPivotVoltage", armPivotVoltage);
         SmartDashboard.putNumber("armPivotSetpoint", m_armPIDController.getSetpoint());
+        SmartDashboard.putNumber("arm potentiometer", armPivotPosition);
         SmartDashboard.putBoolean("Brake", getBreakSol());
         if(m_absArmPivotEncoder.get()>180)
             relativeAngle = 270-m_absArmPivotEncoder.get();
@@ -123,6 +154,11 @@ public class ArmSubsystem extends SubsystemBase {
             m_GripperPivot.setVoltage(gripperPivotVoltage);
         m_GripperRotator.setVoltage(gripperRotationVoltage);
         m_intake.setVoltage(intakeVoltage);
+    }
+
+    @Override
+    public void simulationPeriodic() {
+        m_ArmSimulation.calculate();
     }
 
     public void incrementArmPivotSetpoint(double increment){

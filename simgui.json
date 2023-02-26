@@ -11,9 +11,17 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Arm Sim": "Mechanism2d",
       "/SmartDashboard/Field: ": "Field2d",
       "/SmartDashboard/MotorControllerGroup[1]": "Motor Controller",
       "/SmartDashboard/motorPutTst": "Motor Controller"
+    },
+    "windows": {
+      "/SmartDashboard/Arm Sim": {
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables": {
