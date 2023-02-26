@@ -58,6 +58,8 @@ public class ArmSubsystem extends SubsystemBase {
     private ArmSimulation m_ArmSimulation;
 
     public ArmSubsystem(){
+        // If we're simulating the robot, set up a bunch of simulated components
+        // to replace the normal ones.
         if (RobotBase.isSimulation()) {
             var simulatedArmPivotEncoder = new AnalogPotentiometerSimulation(0, 360, 0);
             m_absArmPivotEncoder = simulatedArmPivotEncoder;
@@ -74,10 +76,14 @@ public class ArmSubsystem extends SubsystemBase {
         m_breakSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 1);
         m_gripperSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 2);
         m_intakeEncoder = m_IntakeRight.getEncoder();
+
+        // Some components got replaced for simulation, so don't set them up here if they're
+        // simulated.
         if (!RobotBase.isSimulation()) {
             m_ArmPivot1 = new LimitedMotor(CompetitionDriveConstants.kArmPivotMotorPort1, MotorType.kBrushless, POWER_LIMIT);
             m_absArmPivotEncoder = new AnalogPotentiometer(0, 360, 0);
         }
+
         m_absExtenderEncoder = new AnalogPotentiometer(1, 40, 0);
         m_absGripperPivotEncoder = new AnalogPotentiometer(2,360, 0);
         m_armPIDController = new PIDController(kArmP, kArmI, kArmD);
@@ -102,6 +108,7 @@ public class ArmSubsystem extends SubsystemBase {
         m_gripperRotatorEncoder = m_GripperRotator.getEncoder();
         m_gripperPivotEncoder = m_GripperPivot.getEncoder();
 
+        // Init some arm PID values
         SmartDashboard.putNumber("Arm PID P", 0);
         SmartDashboard.putNumber("Arm PID I", 0);
         SmartDashboard.putNumber("Arm PID D", 0);
@@ -112,6 +119,8 @@ public class ArmSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         double relativeAngle;
+
+        // We read in arm PID values and take advantage of them.
         double armPidP = SmartDashboard.getNumber("Arm PID P", 0);
         double armPidI = SmartDashboard.getNumber("Arm PID I", 0);
         double armPidD = SmartDashboard.getNumber("Arm PID D", 0);

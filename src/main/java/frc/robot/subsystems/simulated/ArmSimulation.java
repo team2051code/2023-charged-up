@@ -12,6 +12,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 
+/**
+ * A simulation of a "shoulder-joint" robotic arm, with associated rendering logic.
+ * 
+ * This takes control of a simulated potentiometer and reads a CANSparkMax
+ * to drive an arm simulation.
+ */
 public class ArmSimulation {
     public static final double ARM_MASS_KG = 8.0;
     public static final double ARM_LENGTH_M = Units.inchesToMeters(30);
@@ -57,6 +63,9 @@ public class ArmSimulation {
         SmartDashboard.putData("Arm Sim", m_armWindowDisplay);
     }
 
+    /**
+     * Call this every frame from simulationPeriodic to update the simulated arm.
+     */
     public void calculate() {
         SmartDashboard.putNumber("Simulated arm motor", m_drivingMotor.get());
         m_armSim.setInput(m_drivingMotor.get() * 12 /* volts */);

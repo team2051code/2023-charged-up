@@ -2,6 +2,9 @@ package frc.robot.subsystems.simulated;
 
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 
+/*
+ * An analog potentiometer that lets you set a value to override the one that is read
+ */
 public class AnalogPotentiometerSimulation extends AnalogPotentiometer{
     private double m_value;
 
