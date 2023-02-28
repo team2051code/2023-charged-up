@@ -14,6 +14,7 @@ public class Place extends CommandBase {
   private final ArmSubsystem m_subsystem;
   private final int level;
   private final boolean isCube;
+  private final boolean biggerSide;
   private boolean finished;
 
   /**
@@ -21,10 +22,11 @@ public class Place extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public Place(ArmSubsystem subsystem,int level,boolean isCube) {
+  public Place(ArmSubsystem subsystem,int level,boolean isCube,boolean side) {
     m_subsystem = subsystem;
     this.level = level;
     this.isCube = isCube;
+    biggerSide = side;
     finished = false;
     // Use addRequirements() here to declare subsystem dependencies.
     //addRequirements(subsystem);
@@ -38,44 +40,86 @@ public class Place extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(isCube)
-    {
-      if(level==0)
+    if(biggerSide)
+      if(isCube)
       {
-        
-      }
-      else if(level == 1)
-      {
+        if(level==0)
+        {
+          m_subsystem.setArmPivotSetpoint(325);
+          m_subsystem.setExtenderSetpoint(40);
+          m_subsystem.toggleGripper();
+        }
+        else if(level == 1)
+        {
 
-      }
-      else if(level == 2)
-      {
+        }
+        else if(level == 2)
+        {
 
-      }
-      else
+        }
+        else
+        {
+          finished = true;
+        }
+      }else
       {
-        finished = true;
-      }
-    }else
-    {
-      if(level==0)
-      {
+        if(level==0)
+        {
 
-      }
-      else if(level == 1)
-      {
+        }
+        else if(level == 1)
+        {
 
-      }
-      else if(level == 2)
-      {
+        }
+        else if(level == 2)
+        {
 
+        }
+        else
+        {
+          finished = true;
+        }
       }
-      else
+    else 
+      if(isCube)
       {
-        finished = true;
+        if(level==0)
+        {
+          
+        }
+        else if(level == 1)
+        {
+
+        }
+        else if(level == 2)
+        {
+
+        }
+        else
+        {
+          finished = true;
+        }
+      }else
+      {
+        if(level==0)
+        {
+
+        }
+        else if(level == 1)
+        {
+
+        }
+        else if(level == 2)
+        {
+
+        }
+        else
+        {
+          finished = true;
+        }
       }
-    }
   }
+  
 
   // Called once the command ends or is interrupted.
   @Override
