@@ -11,20 +11,25 @@
 		<a href="index.html">Driver</a>
 
 		<frc-dashboard onload="ntLoaded()">
-			<h3>Enabled</h3>
-			<frc-boolean-box class="boolean" source-key="/SmartDashboard/compressor/Enabled">enabled</frc-boolean-box>
+
+			<div class="row">
+				<h3 id="enabledT">Compressor Enabled</h3>
+				<h3 id="pressureT">Pressure Switch</h3>
+				<h3 id="brakeT">Brake</h3>
+				
+				<h3 id="setpointT">Arm Pivot Setpoint</h3>
+				<h3 id="voltageT">Arm Pivot Voltage</h3>
+			</div>
+
+			<div class="row">
+					<frc-boolean-box id="enabled" class="boolean" source-key="/SmartDashboard/compressor/Enabled">enabled</frc-boolean-box>
+					<frc-boolean-box id="pressure" class="boolean" source-key="/SmartDashboard/compressor/Pressure switch">pressure</frc-boolean-box>
+					<frc-boolean-box id="brake" class="boolean" source-key="/SmartDashboard/Brake">brake</frc-boolean-box>
+
+					<frc-number-bar id="setpoint" class="number" source-key="/SmartDashboard/armPivotSetpoint">armPivotSetpoint</frc-number-bar>
+					<frc-number-bar id="voltage" class="number" source-key="/SmartDashboard/armPivotVoltage">armPivotVoltage</frc-number-bar>
+			</div>
 			
-			<h3>Pressure Switch</h3>
-			<frc-boolean-box class="boolean" source-key="/SmartDashboard/compressor/Pressure switch">pressure</frc-boolean-box>
-
-			<h3>brake</h3>
-			<frc-boolean-box class="boolean" source-key="/SmartDashboard/Brake">brake</frc-boolean-box>
-			<h3>Arm Pivot Setpoint</h3>
-			<frc-number-bar class="number" source-key="/SmartDashboard/armPivotSetpoint">armPivotSetpoint</frc-number-bar>
-			<h3>Arm Pivot voltage</h3>
-			<frc-number-bar class="number" source-key="/SmartDashboard/armPivotVoltage">armPivotVoltage</frc-number-bar>
-
-
 
 		<!--Audio testing-->
 		<audio src="mixkit-sci-fi-ship-alert-768.wav" id="soundTest"></audio>

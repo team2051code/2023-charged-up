@@ -29,4 +29,23 @@ function ntLoaded() {
         }
     }, true)
 
+    //adapt the webpage to account for width reletive to the number of elements in a row
+    //this sucked to make it is also just manual bootstrap
+
+    var title1 = ["enabledT", "pressureT", "brakeT", "setpointT", "voltageT"];
+    var display1 = ["enabled", "pressure", "brake", "setpoint", "voltage"];
+
+     function WidthAdjust(value, index, array){
+        document.getElementById(value).style.left = window.innerWidth/array.length*index + "px";
+     }
+
+     function adapt(){
+        title1.forEach(WidthAdjust);
+        display1.forEach(WidthAdjust);
+     }
+     
+
+     //developer console shrinks the window so adapt has to repeat
+     setInterval(adapt, 2500);
+
 }
