@@ -12,8 +12,11 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class Place extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final ArmSubsystem m_subsystem;
+  // The level we want to place, from 0 (low) to 2 (high).
   private final int level;
+  // Whether the claw is currently holding a cube.
   private final boolean isCube;
+  // Whether the robot is moving with "front" as the bigger side.
   private final boolean biggerSide;
   private boolean finished;
 
