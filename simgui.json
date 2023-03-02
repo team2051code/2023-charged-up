@@ -10,6 +10,16 @@
         "header": {
           "open": true
         }
+      },
+      "SPARK MAX [11]": {
+        "header": {
+          "open": true
+        }
+      },
+      "SPARK MAX [9]": {
+        "header": {
+          "open": true
+        }
       }
     }
   },
@@ -50,6 +60,9 @@
         "open": true
       },
       "SmartDashboard": {
+        "PIDS": {
+          "open": true
+        },
         "motorPutTst": {
           "open": true
         },

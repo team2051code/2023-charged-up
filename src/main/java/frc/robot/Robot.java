@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.components.LimitedMotor;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CompetitionDriveConstants;
+import frc.robot.subsystems.ArmSubsystem.IntakeMode;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -23,6 +24,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.lang.model.util.ElementScanner14;
 
 import org.photonvision.*;
 import org.photonvision.targeting.PhotonTrackedTarget;
@@ -297,23 +300,19 @@ public class Robot extends TimedRobot {
     } else {
       m_robotContainer.arcadeDrive(-m_DriveController.getLeftY(), -m_DriveController.getRightX());
     }
+    //gripper pivot controller
     if (m_ArmController.getXButton()) {
       m_arm.incrementGripperPivotSetpoint(-20);
     }
     if (m_ArmController.getYButton()) {
       m_arm.incrementGripperPivotSetpoint(20);
     }
+    //gripper rotate controller
     if (m_ArmController.getAButton()) {
-
+      m_arm.incrementGripperRotatorSetpoint(180);
     }
     if (m_ArmController.getBButton()) {
-
-    }
-    if (m_ArmController.getRightBumper()) {
-
-    }
-    if (m_ArmController.getLeftBumper()) {
-
+      m_arm.incrementGripperRotatorSetpoint(-180);
     }
     if (m_ArmController.getRightStickButton()) {
 
@@ -326,6 +325,18 @@ public class Robot extends TimedRobot {
     }
     if (m_ArmController.getStartButton()) {
 
+    }
+
+    //intake controller
+    if (m_ArmController.getRightBumper()) {
+      m_arm.setIntakeMode(IntakeMode.BACKWARD);
+    }
+    else if (m_ArmController.getLeftBumper()) {
+      m_arm.setIntakeMode(IntakeMode.FORWARD);
+    }
+    else
+    {
+      m_arm.setIntakeMode(IntakeMode.OFF);
     }
 
     m_arm.incrementArmPivotSetpoint(-m_ArmController.getLeftY() * 60);
