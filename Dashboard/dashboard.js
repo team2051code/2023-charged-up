@@ -10,9 +10,6 @@ function ntLoaded() {
         }
     }, true)
 
-    NetworkTables.addKeyListener('/SmartDashboard/leftStick', (key, value, isNew) => { }, true);
-    NetworkTables.addKeyListener('/SmartDashboard/rightStick', (key, value, isNew) => { }, true);
-
     /////Audio/////Audio/////Audio/////Audio/////Audio/////Audio/////
     JSSoundTest = document.getElementById("soundTest");
     NetworkTables.addKeyListener('/SmartDashboard/State:', (key, value, isNew) => {
@@ -29,23 +26,22 @@ function ntLoaded() {
         }
     }, true)
 
+
     //adapt the webpage to account for width reletive to the number of elements in a row
-    //this sucked to make it is also just manual bootstrap
+    //IDs need to stay generic because file is shared
+    var title1 = ["title0", "title1", "title2", "title3", "title4"];
+    var display1 = ["component0", "component1", "component2", "component3", "component4"];
 
-    var title1 = ["enabledT", "pressureT", "brakeT", "setpointT", "voltageT"];
-    var display1 = ["enabled", "pressure", "brake", "setpoint", "voltage"];
+    function WidthAdjust(value, index, array){
+        document.getElementById(value).style.left = (window.innerWidth/array.length)*index + "px";
+    }
 
-     function WidthAdjust(value, index, array){
-        document.getElementById(value).style.left = window.innerWidth/array.length*index + "px";
-     }
-
-     function adapt(){
+    function adapt(){
         title1.forEach(WidthAdjust);
         display1.forEach(WidthAdjust);
-     }
-     
+    }     
 
-     //developer console shrinks the window so adapt has to repeat
-     setInterval(adapt, 2500);
+    //developer console shrinks the window so adapt has to repeat
+    setInterval(adapt, 2500);
 
 }
