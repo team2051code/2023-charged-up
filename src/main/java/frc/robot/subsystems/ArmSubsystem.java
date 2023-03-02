@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import javax.lang.model.util.ElementScanner14;
+
 import com.revrobotics.AnalogInput;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -53,6 +55,9 @@ public class ArmSubsystem extends SubsystemBase {
     private AnalogPotentiometer m_absArmPivotEncoder;
     private AnalogPotentiometer m_absExtenderEncoder;
     private AnalogPotentiometer m_absGripperPivotEncoder;
+    private enum Quadrant{
+        Q1,Q2,Q3,Q4
+    }
 
     // These are non-null in simulation only
     private ArmSimulation m_ArmSimulation;
@@ -109,9 +114,9 @@ public class ArmSubsystem extends SubsystemBase {
         m_gripperPivotEncoder = m_GripperPivot.getEncoder();
 
         // Init some arm PID values
-        SmartDashboard.putNumber("Arm PID P", 0);
+        SmartDashboard.putNumber("Arm PID P", 1);
         SmartDashboard.putNumber("Arm PID I", 0);
-        SmartDashboard.putNumber("Arm PID D", 0);
+        SmartDashboard.putNumber("Arm PID D", .1);
 
 
     }
@@ -128,6 +133,7 @@ public class ArmSubsystem extends SubsystemBase {
         m_armPIDController.setP(armPidP);
         m_armPIDController.setI(armPidI);
         m_armPIDController.setD(armPidD);
+        Quadrant quadrant;
         var armPivotVoltage = m_armPIDController.calculate(m_absArmPivotEncoder.get());
         var extenderVoltage = m_extenderPIDController.calculate(m_absExtenderEncoder.get());
         var gripperPivotVoltage = m_gripperPivotPIDController.calculate(m_absGripperPivotEncoder.get());
@@ -140,29 +146,59 @@ public class ArmSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("armPivotSetpoint", m_armPIDController.getSetpoint());
         SmartDashboard.putNumber("arm potentiometer", armPivotPosition);
         SmartDashboard.putBoolean("Brake", getBreakSol());
-        if(m_absArmPivotEncoder.get()>180)
-            relativeAngle = 270-m_absArmPivotEncoder.get();
-        else
+        if(m_absArmPivotEncoder.get()<90)
+        {
+            relativeAngle = 90 - m_absArmPivotEncoder.get();
+            quadrant = Quadrant.Q1;
+        }
+        else if(m_absArmPivotEncoder.get()<180)
+        {
             relativeAngle = m_absArmPivotEncoder.get() - 90;
-
-        if((armPivotPosition+ksolidArmDistance)*Math.sin(relativeAngle)>52)
-            setExtenderSetpoint((52/Math.sin(relativeAngle)-ksolidArmDistance)-2);
-        if((armPivotPosition+ksolidArmDistance)*Math.cos(relativeAngle)>62)
-            setExtenderSetpoint((62/Math.cos(relativeAngle)-ksolidArmDistance)-2);
-
-        if(Math.abs(armPivotPosition - m_armPIDController.getSetpoint())<0.4999)
-            m_breakSolenoid.set(false);
-        else
-            m_breakSolenoid.set(true);
+            quadrant = Quadrant.Q2;
+        }
+        else if(m_absArmPivotEncoder.get()<270)
+        {
+            relativeAngle = 270-m_absArmPivotEncoder.get();
+            quadrant = Quadrant.Q3;
+        }
+        else 
+        {
+            relativeAngle = m_absArmPivotEncoder.get()-270;
+            quadrant = Quadrant.Q4;
+        }
+        if(quadrant.equals(Quadrant.Q2)||quadrant.equals(Quadrant.Q3))
+        {
+            if((extenderPosition+ksolidArmDistance)*Math.sin(relativeAngle)>52)
+                setExtenderSetpoint((52/Math.sin(relativeAngle)-ksolidArmDistance)-2);
+            if((extenderPosition+ksolidArmDistance)*Math.cos(relativeAngle)>62)
+                setExtenderSetpoint((62/Math.cos(relativeAngle)-ksolidArmDistance)-2);
+        }else
+            if((extenderPosition+ksolidArmDistance)*Math.sin(relativeAngle)>24)
+                setExtenderSetpoint((24/Math.sin(relativeAngle)-ksolidArmDistance)-2);
 
         if(armPivotPosition>45 && armPivotPosition < 325) //imagining 0 means vertically down
             m_armPivot.setVoltage(armPivotVoltage);
+        else
+            m_Extender.setVoltage(0);
         if(!(extenderPosition == 40 && extenderVoltage>0)||!(extenderPosition==0 && extenderVoltage < 0))
             m_Extender.setVoltage(extenderVoltage);
+        else
+            m_Extender.setVoltage(0);
         if(gripperPivotPosition>35 && gripperPivotPosition<145) //imagining 0 means vertically down
             m_GripperPivot.setVoltage(gripperPivotVoltage);
+        else
+            m_Extender.setVoltage(0);
         m_GripperRotator.setVoltage(gripperRotationVoltage);
         m_intake.setVoltage(intakeVoltage);
+        
+        if(Math.abs(armPivotPosition - m_armPIDController.getSetpoint())<0.4999){
+            m_breakSolenoid.set(false);
+            m_armPivot.setVoltage(0);
+        }
+        else{
+            m_armPivot.setVoltage(armPivotVoltage);
+            m_breakSolenoid.set(true);
+        }
     }
 
     @Override

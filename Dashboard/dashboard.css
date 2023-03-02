@@ -5,7 +5,7 @@ body {
 
 a {
     font-size: 30;
-    color: #0069c2;
+    color: #FFF;
     right: 0px;
     position: absolute;
 }
@@ -25,19 +25,27 @@ canvas {
 }
 
 /*FRC webcomponents styles/////FRC webcomponents styles/////FRC webcomponents styles/////*/
-.numberBar {
+
+h3 {
+    position: absolute;
+    top: 0px;
+}
+
+.tRow0 {
+    position: absolute;
+    top: 0px;
+}
+
+.number0 {
     color: #000;
     fill: white;
+    position: absolute;
+    top: 45px;
 }
 
-#number0 {
-    top: 50px; 
-    left: 675px;
-}
-
-#number1 {
-    top: 150px; 
-    left: 675px;
+.boolean0 {
+    position: absolute;
+    top: 45px;
 }
 
 /*Button styles/////Button styles/////Button styles/////Button styles/////*/

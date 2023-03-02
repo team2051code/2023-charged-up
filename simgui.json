@@ -1,5 +1,10 @@
 {
   "HALProvider": {
+    "Analog Inputs": {
+      "window": {
+        "visible": true
+      }
+    },
     "Other Devices": {
       "ADIS16470[0]": {
         "header": {
@@ -25,14 +30,23 @@
     }
   },
   "NetworkTables": {
-    "Persistent Values": {
-      "open": false
-    },
-    "Retained Values": {
-      "open": false
-    },
     "transitory": {
+      "FMSInfo": {
+        "open": true
+      },
+      "LiveWindow": {
+        ".status": {
+          "open": true
+        },
+        "open": true
+      },
       "Shuffleboard": {
+        ".metadata": {
+          "open": true
+        },
+        ".recording": {
+          "open": true
+        },
         "open": true
       },
       "SmartDashboard": {

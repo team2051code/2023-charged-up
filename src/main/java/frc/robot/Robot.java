@@ -91,6 +91,8 @@ public class Robot extends TimedRobot
 
     SmartDashboard.putNumber("Gyro Override", 0);
 
+    SmartDashboard.putNumber("boardButton", 10);
+
     m_LeftBack.restoreFactoryDefaults();
     m_LeftFront.restoreFactoryDefaults();
     m_RightBack.restoreFactoryDefaults();
