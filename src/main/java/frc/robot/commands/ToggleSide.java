@@ -12,7 +12,8 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class ToggleSide extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final ArmSubsystem robot_Arm;
-
+  private boolean finished;
+  private double initialArmPos = 0;
   /**
    * Creates a new ExampleCommand.
    *
@@ -26,11 +27,17 @@ public class ToggleSide extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    initialArmPos = robot_Arm.getArmPivotAbs();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    robot_Arm.setArmPivotSetpoint((180-initialArmPos)+180);
+    if(Math.abs(robot_Arm.getArmPivotAbs() - ((180-initialArmPos)+180))<0.4999)
+      finished = true;
+  }
 
   // Called once the command ends or is interrupted.
   @Override
@@ -39,6 +46,6 @@ public class ToggleSide extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return finished;
   }
 }
