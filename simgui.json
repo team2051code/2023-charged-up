@@ -25,6 +25,7 @@
       "/SmartDashboard/Arm Sim": "Mechanism2d",
       "/SmartDashboard/Extender PID": "PIDController",
       "/SmartDashboard/Field: ": "Field2d",
+      "/SmartDashboard/Gripper PID": "PIDController",
       "/SmartDashboard/MotorControllerGroup[1]": "Motor Controller",
       "/SmartDashboard/motorPutTst": "Motor Controller"
     },
@@ -61,6 +62,9 @@
           "open": true
         },
         "Extender PID": {
+          "open": true
+        },
+        "Gripper PID": {
           "open": true
         },
         "PIDS": {
