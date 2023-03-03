@@ -13,11 +13,11 @@ public class Place extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final ArmSubsystem m_subsystem;
   // The level we want to place, from 0 (low) to 2 (high).
-  private final int level;
+  private final DriveToScore.Level level;
   // Whether the claw is currently holding a cube.
   private final boolean isCube;
   // Whether the robot is moving with "front" as the bigger side.
-  private final boolean biggerSide;
+  private final boolean frontSide;
   private boolean finished;
 
   /**
@@ -25,11 +25,11 @@ public class Place extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public Place(ArmSubsystem subsystem,int level,boolean isCube,boolean side) {
+  public Place(ArmSubsystem subsystem, DriveToScore.Level level,boolean isCube,boolean side) {
     m_subsystem = subsystem;
     this.level = level;
     this.isCube = isCube;
-    biggerSide = side;
+    frontSide = side;
     finished = false;
     // Use addRequirements() here to declare subsystem dependencies.
     //addRequirements(subsystem);
@@ -43,38 +43,41 @@ public class Place extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(biggerSide)
+    if(frontSide)
       if(isCube)
       {
-        if(level==0)
+        if(level == DriveToScore.Level.BOTTOM)
         {
-          m_subsystem.setArmPivotSetpoint(325);
+          m_subsystem.setArmPivotSetpoint(45);
           m_subsystem.setExtenderSetpoint(40);
           m_subsystem.toggleGripper();
         }
-        else if(level == 1)
+        else if(level == DriveToScore.Level.MIDDLE)
         {
-
+          m_subsystem.setArmPivotSetpoint(90);
+          m_subsystem.setExtenderSetpoint(40);
+          m_subsystem.toggleGripper();
         }
-        else if(level == 2)
+        else if(level == DriveToScore.Level.TOP)
         {
-
+          m_subsystem.setArmPivotSetpoint(135);
+          m_subsystem.setExtenderSetpoint(40);
+          m_subsystem.toggleGripper();
         }
         else
         {
-          finished = true;
         }
       }else
       {
-        if(level==0)
+        if(level == DriveToScore.Level.BOTTOM)
         {
 
         }
-        else if(level == 1)
+        else if(level == DriveToScore.Level.MIDDLE)
         {
 
         }
-        else if(level == 2)
+        else if(level == DriveToScore.Level.TOP)
         {
 
         }
@@ -86,15 +89,15 @@ public class Place extends CommandBase {
     else 
       if(isCube)
       {
-        if(level==0)
+        if(level == DriveToScore.Level.BOTTOM)
         {
           
         }
-        else if(level == 1)
+        else if(level == DriveToScore.Level.MIDDLE)
         {
 
         }
-        else if(level == 2)
+        else if(level == DriveToScore.Level.TOP)
         {
 
         }
@@ -104,15 +107,15 @@ public class Place extends CommandBase {
         }
       }else
       {
-        if(level==0)
+        if(level == DriveToScore.Level.BOTTOM)
         {
 
         }
-        else if(level == 1)
+        else if(level == DriveToScore.Level.MIDDLE)
         {
 
         }
-        else if(level == 2)
+        else if(level == DriveToScore.Level.TOP)
         {
 
         }
@@ -121,6 +124,7 @@ public class Place extends CommandBase {
           finished = true;
         }
       }
+    finished = true;
   }
   
 
