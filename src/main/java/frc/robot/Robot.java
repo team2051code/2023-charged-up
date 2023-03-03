@@ -256,14 +256,12 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     // m_trajectory = m_robotContainer.getTrajectories();
     m_balanceCommand = m_robotContainer.getBalanceCommand();
-    Command driveTwoMeter = m_robotContainer.ramsetePose(new Pose2d(0, 0, new Rotation2d(0)), List.of(),
-        new Pose2d(5, 1, new Rotation2d(0)));
     // Command drive = m_robotContainer.getTrajectories();
     // schedule the autonomous command (example)
     // if(m_trajectory != null)
     // m_trajectory.schedule();
-    if (driveTwoMeter != null) {
-      driveTwoMeter.schedule();
+    if (m_balanceCommand != null) {
+      m_balanceCommand.schedule();
     }
   }
 
@@ -344,7 +342,7 @@ public class Robot extends TimedRobot {
     }
 
     m_arm.incrementArmPivotSetpoint(-m_ArmController.getLeftY() * 60);
-    m_arm.incrementExtenderSetpoint(-m_ArmController.getRightY() * 10);
+    m_arm.incrementExtenderSetpoint(-m_ArmController.getRawAxis(3) * 10);
 
   }
   private void handleButtonBoard(){
@@ -389,10 +387,7 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().schedule(highPlace);
   }
 
-    
-    
-
-
+  
 
   @Override
   public void testInit() {

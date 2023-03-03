@@ -9,6 +9,7 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -28,6 +29,7 @@ public class ArmSubsystem extends SubsystemBase {
     public final static double kgripperP = 0; public final static double kgripperI = 0; public final static double kgripperD = 0;
     public final static double kgripperRotatorP = 0; public final static double kgripperRotatorI = 0; public final static double kgripperRotatorD = 0;
     public final static double ksolidArmDistance = 28;
+    public final static double MAX_ARM_EXTENSION_LENGTH = Units.inchesToMeters(40);
     //reverse one of the sides of the intake and the arm before we make them a group
     private final PIDController m_gripperRotatorPIDController;
     private final PIDController m_armPIDController;
@@ -70,7 +72,7 @@ public class ArmSubsystem extends SubsystemBase {
         if (RobotBase.isSimulation()) {
             var simulatedArmPivotEncoder = new AnalogPotentiometerSimulation(0, 360, 0);
             m_absArmPivotEncoder = simulatedArmPivotEncoder;
-            var simulatedExtenderEncoder = new AnalogPotentiometerSimulation(1, 40, 0);
+            var simulatedExtenderEncoder = new AnalogPotentiometerSimulation(1, MAX_ARM_EXTENSION_LENGTH, 0);
             m_absExtenderEncoder = simulatedExtenderEncoder;
             m_ArmPivot1 = new CANSparkMaxSimulated(CompetitionDriveConstants.kArmPivotMotorPort1, MotorType.kBrushless);
             m_Extender = new CANSparkMaxSimulated(CompetitionDriveConstants.kExtenderMotorPort, MotorType.kBrushless);
@@ -92,7 +94,7 @@ public class ArmSubsystem extends SubsystemBase {
             m_ArmPivot1 = new LimitedMotor(CompetitionDriveConstants.kArmPivotMotorPort1, MotorType.kBrushless, POWER_LIMIT);
             m_Extender = new LimitedMotor(CompetitionDriveConstants.kExtenderMotorPort, MotorType.kBrushless, POWER_LIMIT);
             m_absArmPivotEncoder = new AnalogPotentiometer(0, 360, 0);
-            m_absExtenderEncoder = new AnalogPotentiometer(1, 40, 0);
+            m_absExtenderEncoder = new AnalogPotentiometer(1, MAX_ARM_EXTENSION_LENGTH, 0);
         }
 
         m_absGripperPivotEncoder = new AnalogPotentiometer(2,360, 0);
@@ -117,16 +119,8 @@ public class ArmSubsystem extends SubsystemBase {
         m_gripperRotatorEncoder = m_GripperRotator.getEncoder();
         m_gripperPivotEncoder = m_GripperPivot.getEncoder();
 
-        // Init some arm PID values
-        SmartDashboard.putNumber("PIDS/Arm PID P", 1);
-        SmartDashboard.putNumber("PIDS/Arm PID I", 0);
-        SmartDashboard.putNumber("PIDS/Arm PID D", 0.5);
-
-        SmartDashboard.putNumber("PIDS/Extender PID P", 0);
-        SmartDashboard.putNumber("PIDS/Extender PID I", 0);
-        SmartDashboard.putNumber("PIDS/Extender PID D", 0);
-
-
+        SmartDashboard.putData("Arm PID", m_armPIDController);
+        SmartDashboard.putData("Extender PID",m_extenderPIDController);
 
 
     }
@@ -136,17 +130,9 @@ public class ArmSubsystem extends SubsystemBase {
         double relativeAngle;
         updateIntake();
         // We read in arm PID values and take advantage of them.
-        double armPidP = SmartDashboard.getNumber("PIDS/Arm PID P", 0);
-        double armPidI = SmartDashboard.getNumber("PIDS/Arm PID I", 0);
-        double armPidD = SmartDashboard.getNumber("PIDS/Arm PID D", 0);
 
-        double extenderPidP = SmartDashboard.getNumber("PIDS/Extender PID P", 0);
-        double extenderPidI = SmartDashboard.getNumber("PIDS/Extender PID I", 0);
-        double extenderPidD = SmartDashboard.getNumber("PIDS/Extender PID D", 0);
+        SmartDashboard.putNumber("Extension motor", m_Extender.get());
 
-        m_armPIDController.setP(armPidP);
-        m_armPIDController.setI(armPidI);
-        m_armPIDController.setD(armPidD);
         Quadrant quadrant;
         var armPivotVoltage = m_armPIDController.calculate(m_absArmPivotEncoder.get());
         var extenderVoltage = m_extenderPIDController.calculate(m_absExtenderEncoder.get());
@@ -192,15 +178,13 @@ public class ArmSubsystem extends SubsystemBase {
         if(armPivotPosition>45 && armPivotPosition < 325) //imagining 0 means vertically down
             m_armPivot.setVoltage(armPivotVoltage);
         else
-            m_Extender.setVoltage(0);
-        if(!(extenderPosition == 40 && extenderVoltage>0)||!(extenderPosition==0 && extenderVoltage < 0))
-            m_Extender.setVoltage(extenderVoltage);
-        else
-            m_Extender.setVoltage(0);
+            m_armPivot.setVoltage(0);
+         m_Extender.setVoltage(extenderVoltage);
+        
         if(gripperPivotPosition>35 && gripperPivotPosition<145) //imagining 0 means vertically down
             m_GripperPivot.setVoltage(gripperPivotVoltage);
         else
-            m_Extender.setVoltage(0);
+            m_GripperPivot.setVoltage(0);
         m_GripperRotator.setVoltage(gripperRotationVoltage);
         
         if(Math.abs(armPivotPosition - m_armPIDController.getSetpoint())<0.4999){

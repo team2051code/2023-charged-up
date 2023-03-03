@@ -2,6 +2,7 @@ package frc.robot.subsystems.simulated;
 
 import com.revrobotics.CANSparkMax;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -11,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import frc.robot.subsystems.ArmSubsystem;
 
 /**
  * A simulation of a "shoulder-joint" robotic arm, with associated rendering logic.
@@ -22,7 +24,7 @@ public class ArmSimulation {
     public static final double ARM_MASS_KG = 8.0;
     public static final double ARM_BASE_LENGTH_M = Units.inchesToMeters(28);
     public static final double ARM_GEAR_REDUCTION = 2.0;
-    public static final double ARM_MAX_EXTENSION = Units.inchesToMeters(40);
+    public static final double EXTENSION_MAX_SPEED_M_S = 0.5;
 
     private AnalogPotentiometerSimulation m_armPotentiometer;
     private CANSparkMax m_armMotor;
@@ -56,8 +58,8 @@ public class ArmSimulation {
             Units.degreesToRadians(360 - 50),
             true);
 
-        m_armWindowDisplay = new Mechanism2d(60, 60);
-        m_armRootDisplay = m_armWindowDisplay.getRoot("ArmRoot", 30, 30);
+        m_armWindowDisplay = new Mechanism2d(100, 100);
+        m_armRootDisplay = m_armWindowDisplay.getRoot("ArmRoot", 50, 30);
         m_armTowerDisplay = m_armRootDisplay.append(new MechanismLigament2d(
             "ArmTower", 
             30, -90));
@@ -67,6 +69,14 @@ public class ArmSimulation {
             Units.radiansToDegrees(m_armSim.getAngleRads()),
             6,
             new Color8Bit(Color.kYellow)));
+        m_armExtensionDisplay = m_armDisplay.append(new MechanismLigament2d(
+            "Arm Extension",
+            0,
+            0,
+            6,
+            new Color8Bit(Color.kAqua)));
+
+             m_extensionPotentiometer.set(0);
 
         SmartDashboard.putData("Arm Sim", m_armWindowDisplay);
     }
@@ -76,7 +86,7 @@ public class ArmSimulation {
      */
     public void calculate() {
         SmartDashboard.putNumber("Simulated arm motor", m_armMotor.get());
-        // TODO: currently, arm sim ignores telescoping mass change and we need to sim te arm itself.
+        // TODO: currently, arm sim ignores telescoping mass change and we need to sim the arm itself.
         m_armSim.setInput(m_armMotor.get() * 12 /* volts */);
         m_armSim.update(0.02);
         SmartDashboard.putNumber("new arm angle", Units.radiansToDegrees(m_armSim.getAngleRads()));
@@ -84,6 +94,15 @@ public class ArmSimulation {
         var newAngleDegrees = Units.radiansToDegrees(m_armSim.getAngleRads());
         m_armPotentiometer.set(newAngleDegrees);
         m_armDisplay.setAngle(270 - newAngleDegrees);
+
+        var currentArmExtension = m_extensionPotentiometer.get();
+
+        currentArmExtension += m_extensionMotor.get() * EXTENSION_MAX_SPEED_M_S;
+        currentArmExtension = MathUtil.clamp(currentArmExtension, 0, ArmSubsystem.MAX_ARM_EXTENSION_LENGTH);
+        m_extensionPotentiometer.set(currentArmExtension);
+
+        m_armExtensionDisplay.setLength(currentArmExtension * 40);
+
 
     }
 
