@@ -1,10 +1,5 @@
 {
   "HALProvider": {
-    "Analog Inputs": {
-      "window": {
-        "visible": true
-      }
-    },
     "Other Devices": {
       "ADIS16470[0]": {
         "header": {
@@ -26,7 +21,9 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Arm PID": "PIDController",
       "/SmartDashboard/Arm Sim": "Mechanism2d",
+      "/SmartDashboard/Extender PID": "PIDController",
       "/SmartDashboard/Field: ": "Field2d",
       "/SmartDashboard/MotorControllerGroup[1]": "Motor Controller",
       "/SmartDashboard/motorPutTst": "Motor Controller"
@@ -60,6 +57,12 @@
         "open": true
       },
       "SmartDashboard": {
+        "Arm PID": {
+          "open": true
+        },
+        "Extender PID": {
+          "open": true
+        },
         "PIDS": {
           "open": true
         },
