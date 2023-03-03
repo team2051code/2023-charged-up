@@ -118,9 +118,9 @@ public class ArmSubsystem extends SubsystemBase {
         m_gripperPivotEncoder = m_GripperPivot.getEncoder();
 
         // Init some arm PID values
-        SmartDashboard.putNumber("PIDS/Arm PID P", 0);
+        SmartDashboard.putNumber("PIDS/Arm PID P", 1);
         SmartDashboard.putNumber("PIDS/Arm PID I", 0);
-        SmartDashboard.putNumber("PIDS/Arm PID D", 0);
+        SmartDashboard.putNumber("PIDS/Arm PID D", 0.5);
 
         SmartDashboard.putNumber("PIDS/Extender PID P", 0);
         SmartDashboard.putNumber("PIDS/Extender PID I", 0);

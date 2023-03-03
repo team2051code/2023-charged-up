@@ -8,6 +8,10 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.DriveToScore;
+import frc.robot.commands.Place;
+import frc.robot.commands.DriveToScore.Level;
+import frc.robot.commands.DriveToScore.Offset;
 import frc.robot.components.LimitedMotor;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CompetitionDriveConstants;
@@ -351,19 +355,44 @@ public class Robot extends TimedRobot {
     m_lastBoardButtonValue = boardButton;
 
     if (boardButton == 1){
-      
+      scorePiece(Level.TOP, Offset.LEFT);
+    }
+    if (boardButton == 2){
+      scorePiece(Level.TOP, Offset.CENTER);
+    }
+    if (boardButton == 3){
+      scorePiece(Level.TOP, Offset.RIGHT);
+    }
+    if (boardButton == 4){
+      scorePiece(Level.MIDDLE, Offset.LEFT);
+    }
+    if (boardButton == 5){
+      scorePiece(Level.MIDDLE, Offset.CENTER);
+    }
+    if (boardButton == 6){
+      scorePiece(Level.MIDDLE, Offset.RIGHT);
+    }
+    if (boardButton == 7){
+      scorePiece(Level.BOTTOM, Offset.LEFT);
+    }
+    if (boardButton == 8){
+      scorePiece(Level.BOTTOM, Offset.CENTER);
+    }
+    if (boardButton == 9){
+      scorePiece(Level.BOTTOM, Offset.RIGHT);
     }
         
   }
 
-  private void scorePiece(){
-
+  private void scorePiece(DriveToScore.Level level, DriveToScore.Offset offset){
+    Place highPlace = new Place(m_arm, level, true, true); //is a cube and facing forwards //p = 1 and d = 0.5 works well
+    CommandScheduler.getInstance().schedule(highPlace);
   }
 
     
     
 
-  }
+
 
   @Override
   public void testInit() {
