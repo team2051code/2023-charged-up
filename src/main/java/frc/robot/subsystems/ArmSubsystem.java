@@ -25,11 +25,11 @@ import frc.robot.subsystems.simulated.CANSparkMaxSimulated;
 
 public class ArmSubsystem extends SubsystemBase {
     public final static double kArmP = 1; public final static double kArmI = 0; public final static double kArmD = .1;
-    public final static double kextenderP = 1; public final static double kextenderI = 0; public final static double kextenderD = 0;
+    public final static double kextenderP = .1; public final static double kextenderI = 0; public final static double kextenderD = 0;
     public final static double kgripperP = .1; public final static double kgripperI = 0; public final static double kgripperD = 0;
     public final static double kgripperRotatorP = 0; public final static double kgripperRotatorI = 0; public final static double kgripperRotatorD = 0;
     public final static double ksolidArmDistance = 28;
-    public final static double MAX_ARM_EXTENSION_LENGTH = Units.inchesToMeters(40);
+    public final static double MAX_ARM_EXTENSION_LENGTH_INCHES = 40;
     //reverse one of the sides of the intake and the arm before we make them a group
     private final PIDController m_gripperRotatorPIDController;
     private final PIDController m_armPIDController;
@@ -72,7 +72,7 @@ public class ArmSubsystem extends SubsystemBase {
         if (RobotBase.isSimulation()) {
             var simulatedArmPivotEncoder = new AnalogPotentiometerSimulation(0, 360, 0);
             m_absArmPivotEncoder = simulatedArmPivotEncoder;
-            var simulatedExtenderEncoder = new AnalogPotentiometerSimulation(1, MAX_ARM_EXTENSION_LENGTH, 0);
+            var simulatedExtenderEncoder = new AnalogPotentiometerSimulation(1, MAX_ARM_EXTENSION_LENGTH_INCHES, 0);
             m_absExtenderEncoder = simulatedExtenderEncoder;
             var simulatedGripperEncoder = new AnalogPotentiometerSimulation(2, 360, 0);
             m_absGripperPivotEncoder = simulatedGripperEncoder;
@@ -103,7 +103,7 @@ public class ArmSubsystem extends SubsystemBase {
             m_Extender = new LimitedMotor(CompetitionDriveConstants.kExtenderMotorPort, MotorType.kBrushless, POWER_LIMIT);
             m_GripperPivot = new LimitedMotor(CompetitionDriveConstants.kGripperPivotMotorPort, MotorType.kBrushless, POWER_LIMIT);
             m_absArmPivotEncoder = new AnalogPotentiometer(0, 360, 0);
-            m_absExtenderEncoder = new AnalogPotentiometer(1, MAX_ARM_EXTENSION_LENGTH, 0);
+            m_absExtenderEncoder = new AnalogPotentiometer(1, MAX_ARM_EXTENSION_LENGTH_INCHES, 0);
             m_absGripperPivotEncoder = new AnalogPotentiometer(2,360, 0);
         }
 
