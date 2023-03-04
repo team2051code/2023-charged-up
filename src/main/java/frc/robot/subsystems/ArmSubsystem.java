@@ -24,12 +24,12 @@ import frc.robot.subsystems.simulated.ArmSimulation;
 import frc.robot.subsystems.simulated.CANSparkMaxSimulated;
 
 public class ArmSubsystem extends SubsystemBase {
-    public final static double kArmP = 0.001; public final static double kArmI = 0; public final static double kArmD = 0;
-    public final static double kextenderP = 0; public final static double kextenderI = 0; public final static double kextenderD = 0;
-    public final static double kgripperP = 0; public final static double kgripperI = 0; public final static double kgripperD = 0;
+    public final static double kArmP = 1; public final static double kArmI = 0; public final static double kArmD = .1;
+    public final static double kextenderP = .1; public final static double kextenderI = 0; public final static double kextenderD = 0;
+    public final static double kgripperP = .1; public final static double kgripperI = 0; public final static double kgripperD = 0;
     public final static double kgripperRotatorP = 0; public final static double kgripperRotatorI = 0; public final static double kgripperRotatorD = 0;
     public final static double ksolidArmDistance = 28;
-    public final static double MAX_ARM_EXTENSION_LENGTH = 40;
+    public final static double MAX_ARM_EXTENSION_LENGTH_INCHES = 40;
     //reverse one of the sides of the intake and the arm before we make them a group
     private final PIDController m_gripperRotatorPIDController;
     private final PIDController m_armPIDController;
@@ -46,7 +46,7 @@ public class ArmSubsystem extends SubsystemBase {
     private final CANSparkMax m_ArmPivot2;
     private CANSparkMax m_Extender;
     private final CANSparkMax m_GripperRotator;
-    private final CANSparkMax m_GripperPivot;
+    private CANSparkMax m_GripperPivot;
     private final CANSparkMax m_IntakeLeft;
     private final CANSparkMax m_IntakeRight;
     private final MotorControllerGroup m_intake;
@@ -72,16 +72,24 @@ public class ArmSubsystem extends SubsystemBase {
         if (RobotBase.isSimulation()) {
             var simulatedArmPivotEncoder = new AnalogPotentiometerSimulation(0, 360, 0);
             m_absArmPivotEncoder = simulatedArmPivotEncoder;
-            var simulatedExtenderEncoder = new AnalogPotentiometerSimulation(1, MAX_ARM_EXTENSION_LENGTH, 0);
+            var simulatedExtenderEncoder = new AnalogPotentiometerSimulation(1, MAX_ARM_EXTENSION_LENGTH_INCHES, 0);
             m_absExtenderEncoder = simulatedExtenderEncoder;
+            var simulatedGripperEncoder = new AnalogPotentiometerSimulation(2, 360, 0);
+            m_absGripperPivotEncoder = simulatedGripperEncoder;
             m_ArmPivot1 = new CANSparkMaxSimulated(CompetitionDriveConstants.kArmPivotMotorPort1, MotorType.kBrushless);
             m_Extender = new CANSparkMaxSimulated(CompetitionDriveConstants.kExtenderMotorPort, MotorType.kBrushless);
-            m_ArmSimulation = new ArmSimulation(simulatedArmPivotEncoder, m_ArmPivot1, simulatedExtenderEncoder, m_Extender);
+            m_GripperPivot = new CANSparkMaxSimulated(CompetitionDriveConstants.kGripperPivotMotorPort, MotorType.kBrushless);
+            m_ArmSimulation = new ArmSimulation(
+                simulatedArmPivotEncoder, 
+                m_ArmPivot1, 
+                simulatedExtenderEncoder, 
+                m_Extender,
+                simulatedGripperEncoder,
+                m_GripperPivot);
         }
 
         m_ArmPivot2 = new LimitedMotor(CompetitionDriveConstants.kArmPivotMotorPort2, MotorType.kBrushless, POWER_LIMIT);
         m_GripperRotator = new LimitedMotor(CompetitionDriveConstants.kGripperRotatorMotorPort, MotorType.kBrushless, POWER_LIMIT);
-        m_GripperPivot = new LimitedMotor(CompetitionDriveConstants.kGripperPivotMotorPort, MotorType.kBrushless, POWER_LIMIT);
         m_IntakeLeft = new LimitedMotor(CompetitionDriveConstants.kIntakeLeft, MotorType.kBrushless, POWER_LIMIT);
         m_IntakeRight = new LimitedMotor(CompetitionDriveConstants.kIntakeRight, MotorType.kBrushless, POWER_LIMIT);
         m_breakSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 1);
@@ -93,11 +101,12 @@ public class ArmSubsystem extends SubsystemBase {
         if (!RobotBase.isSimulation()) {
             m_ArmPivot1 = new LimitedMotor(CompetitionDriveConstants.kArmPivotMotorPort1, MotorType.kBrushless, POWER_LIMIT);
             m_Extender = new LimitedMotor(CompetitionDriveConstants.kExtenderMotorPort, MotorType.kBrushless, POWER_LIMIT);
+            m_GripperPivot = new LimitedMotor(CompetitionDriveConstants.kGripperPivotMotorPort, MotorType.kBrushless, POWER_LIMIT);
             m_absArmPivotEncoder = new AnalogPotentiometer(0, 360, 0);
-            m_absExtenderEncoder = new AnalogPotentiometer(1, MAX_ARM_EXTENSION_LENGTH, 0);
+            m_absExtenderEncoder = new AnalogPotentiometer(1, MAX_ARM_EXTENSION_LENGTH_INCHES, 0);
+            m_absGripperPivotEncoder = new AnalogPotentiometer(2,360, 0);
         }
 
-        m_absGripperPivotEncoder = new AnalogPotentiometer(2,360, 0);
         m_armPIDController = new PIDController(kArmP, kArmI, kArmD);
         m_extenderPIDController = new PIDController(kextenderP, kextenderI, kextenderD);
         m_gripperPivotPIDController = new PIDController(kgripperP, kgripperI, kgripperD);
@@ -119,8 +128,11 @@ public class ArmSubsystem extends SubsystemBase {
         m_gripperRotatorEncoder = m_GripperRotator.getEncoder();
         m_gripperPivotEncoder = m_GripperPivot.getEncoder();
 
+        m_gripperPivotPIDController.setSetpoint(180);
+
         SmartDashboard.putData("Arm PID", m_armPIDController);
         SmartDashboard.putData("Extender PID",m_extenderPIDController);
+        SmartDashboard.putData("Gripper PID", m_gripperPivotPIDController);
 
 
     }
@@ -132,6 +144,8 @@ public class ArmSubsystem extends SubsystemBase {
         // We read in arm PID values and take advantage of them.
 
         SmartDashboard.putNumber("Extension motor", m_Extender.get());
+        SmartDashboard.putNumber("Gripper motor", m_GripperPivot.get());
+        SmartDashboard.putNumber("Gripper encoder", m_absGripperPivotEncoder.get());
 
         Quadrant quadrant;
         var armPivotVoltage = m_armPIDController.calculate(m_absArmPivotEncoder.get());
@@ -181,10 +195,10 @@ public class ArmSubsystem extends SubsystemBase {
             m_armPivot.setVoltage(0);
          m_Extender.setVoltage(extenderVoltage);
         
-        if(gripperPivotPosition>35 && gripperPivotPosition<145) //imagining 0 means vertically down
+        //if(gripperPivotPosition>35 && gripperPivotPosition<145) //imagining 0 means vertically down
             m_GripperPivot.setVoltage(gripperPivotVoltage);
-        else
-            m_GripperPivot.setVoltage(0);
+        //else
+        //    m_GripperPivot.setVoltage(0);
         m_GripperRotator.setVoltage(gripperRotationVoltage);
         
         if(Math.abs(armPivotPosition - m_armPIDController.getSetpoint())<0.4999){
@@ -305,7 +319,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     public double getGripperPivotAbs(){
         return m_absGripperPivotEncoder.get();
-    }
+     }
 
     public void toggleBreak(){
         m_breakSolenoid.toggle();

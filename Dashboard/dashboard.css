@@ -10,18 +10,23 @@ a {
     position: absolute;
 }
 /*Camera styles/////Camera styles/////Camera styles/////Camera styles/////*/
-img {
-    width: 500px;
-    object-fit: contain;
+#cameraOut {
+    object-fit: scale-down;
     font-size: 10rem; 
+    height: 370px;
+    width: 587px;
 	position: absolute;
+    top: 0px;
+    left: 0px;
 }
 
-canvas {
-    width: 500px;
-    height: 350px;
+#canvas {
     border: 1px solid #FF0;
+    height: 370px;
+    width: 587px;
     position: absolute;
+    top: 0px;
+    left: 0px;
 }
 
 /*FRC webcomponents styles/////FRC webcomponents styles/////FRC webcomponents styles/////*/
@@ -51,13 +56,13 @@ h3 {
 /*Button styles/////Button styles/////Button styles/////Button styles/////*/
 #toggleCamera {
     position:absolute;
-    top:380px;
-    left: 20px;
+    top:80px;
+    right: 20px;
 }
 
 #toggleRaspberry {
     position:absolute;
-    top:380px;
-    left: 300px;
+    top:200px;
+    right: 20px;
 }
 
