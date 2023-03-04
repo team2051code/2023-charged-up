@@ -103,7 +103,7 @@ public class ArmSimulation {
 
         m_armSim.setArmLengthMeters(currentArmExtensionMeters + ARM_BASE_LENGTH_M);
 
-        m_armSim.setInput(m_armMotor.get() * 12 /* volts */);
+        m_armSim.setInput(m_armMotor.get() * 24 /* volts * 2, for two motors*/);
         m_armSim.update(0.02);
 
         var newAngleDegrees = Units.radiansToDegrees(m_armSim.getAngleRads());
