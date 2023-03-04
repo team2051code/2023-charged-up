@@ -5,22 +5,32 @@ body {
 
 a {
     font-size: 30;
-    color: #0069c2;
+    color: #FFF;
     position: absolute;
     right: 0px;
 }
 
-.boolean{
-    
+h3 {
+    position: absolute;
+    left: 0px;
+    top: 0px;
 }
 
-.number{
-    fill: #FFF;
-}
 
 
 /*FRC webcomponents styles/////FRC webcomponents styles/////FRC webcomponents styles/////*/
 
+.boolean{
+    position: absolute;
+    left: 0px;
+    top: 45px;
+}
 
-
+.number{
+    color: #000;
+    fill: #FFF;
+    position: absolute;
+    left: 0px;
+    top: 45px;
+}
 

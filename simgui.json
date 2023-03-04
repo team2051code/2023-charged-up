@@ -5,29 +5,71 @@
         "header": {
           "open": true
         }
+      },
+      "SPARK MAX [11]": {
+        "header": {
+          "open": true
+        }
+      },
+      "SPARK MAX [9]": {
+        "header": {
+          "open": true
+        }
       }
     }
   },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Arm PID": "PIDController",
+      "/SmartDashboard/Arm Sim": "Mechanism2d",
+      "/SmartDashboard/Extender PID": "PIDController",
       "/SmartDashboard/Field: ": "Field2d",
+      "/SmartDashboard/Gripper PID": "PIDController",
       "/SmartDashboard/MotorControllerGroup[1]": "Motor Controller",
       "/SmartDashboard/motorPutTst": "Motor Controller"
+    },
+    "windows": {
+      "/SmartDashboard/Arm Sim": {
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables": {
-    "Persistent Values": {
-      "open": false
-    },
-    "Retained Values": {
-      "open": false
-    },
     "transitory": {
+      "FMSInfo": {
+        "open": true
+      },
+      "LiveWindow": {
+        ".status": {
+          "open": true
+        },
+        "open": true
+      },
       "Shuffleboard": {
+        ".metadata": {
+          "open": true
+        },
+        ".recording": {
+          "open": true
+        },
         "open": true
       },
       "SmartDashboard": {
+        "Arm PID": {
+          "open": true
+        },
+        "Extender PID": {
+          "open": true
+        },
+        "Gripper PID": {
+          "open": true
+        },
+        "PIDS": {
+          "open": true
+        },
         "motorPutTst": {
           "open": true
         },

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Button Board</title>
+        <link rel="stylesheet" href="buttonBoard.css">
+        <!--Botstrap Local install-->
+        <script language="javascript" src="buttonBoard.js"></script>
+    </head>
+
+    <body>
+
+        <frc-dashboard onload="ntLoaded()">
+            <table>    
+                <tr>
+                    <td> 
+                        <button onclick="sendButton(1)" id="lawfulGood" class="Good">O</button>
+                    </td>
+                    <td>
+                        <button onclick="sendButton(2)" id="good" class="Good">O</button>
+                    </td>
+                    <td>
+                        <button onclick="sendButton(3)" id="chaoticGood" class="Good">O</button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <button onclick="sendButton(4)" id="lawful" class="Chaotic">O</button>
+                    </td>
+                    <td>
+                        <button onclick="sendButton(5)" id="trueNeutral" class="Chaotic">O</button>
+                    <td>
+                        <button onclick="sendButton(6)" id="chaotic" class="Chaotic">O</button>
+                    </td>
+                <tr>
+
+                <tr>
+                    <td>
+                        <button onclick="sendButton(7)" id="lawfulEvil" class="Evil">O</button>
+                    </td>
+                    <td>
+                        <button onclick="sendButton(8)" id="evil" class="Evil">O</button>
+                    </td>
+                    <td>
+                        <button onclick="sendButton(9)" id="chaoticEvil" class="Evil">O</button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <button onclick="sendButton(10)" id="cone" class="Mode">cone</button>
+                    </td>
+                    <td>
+                        <button onclick="sendButton(11)" id="mode" class="Mode">mode</button>
+                    </td>
+                    <td>
+                        <button onclick="sendButton(12)" id="cube" class="Mode">cube</button>
+                    </td>
+                </tr>
+            </table>
+        </frc-dashboard>
+    </body>
+    <script src="/frc-web-components.js"></script>
+</html>
