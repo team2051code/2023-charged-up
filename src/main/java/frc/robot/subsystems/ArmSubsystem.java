@@ -220,7 +220,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     public double getGripperPivotAbs(){
         return m_absGripperPivotEncoder.get();
-    }
+     }
 
     public void toggleBreak(){
         m_breakSolenoid.toggle();
