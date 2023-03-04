@@ -101,7 +101,7 @@ public class ArmSimulation {
         currentArmExtension = MathUtil.clamp(currentArmExtension, 0, ArmSubsystem.MAX_ARM_EXTENSION_LENGTH);
         m_extensionPotentiometer.set(currentArmExtension);
 
-        m_armExtensionDisplay.setLength(currentArmExtension * 40);
+        m_armExtensionDisplay.setLength(currentArmExtension);
 
 
     }

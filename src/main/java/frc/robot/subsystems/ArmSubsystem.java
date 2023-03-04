@@ -29,7 +29,7 @@ public class ArmSubsystem extends SubsystemBase {
     public final static double kgripperP = 0; public final static double kgripperI = 0; public final static double kgripperD = 0;
     public final static double kgripperRotatorP = 0; public final static double kgripperRotatorI = 0; public final static double kgripperRotatorD = 0;
     public final static double ksolidArmDistance = 28;
-    public final static double MAX_ARM_EXTENSION_LENGTH = Units.inchesToMeters(40);
+    public final static double MAX_ARM_EXTENSION_LENGTH = 40;
     //reverse one of the sides of the intake and the arm before we make them a group
     private final PIDController m_gripperRotatorPIDController;
     private final PIDController m_armPIDController;
