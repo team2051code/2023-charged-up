@@ -220,6 +220,7 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putNumber("skew", 0);
     // }
     SmartDashboard.putNumber("right motor speed:", m_RightFront.get());
+    SmartDashboard.putNumber("leftStick", m_DriveController.getLeftX());
 
     CommandScheduler.getInstance().run();
     // System.out.println(targets.size() + "targets found: ");

@@ -9,14 +9,15 @@
     </head>
 
     <body>
+    <frc-dashboard onload="ntLoaded()"></frc-dashboard>
         <a href="index.html">Driver</a>
 
             <img id="cameraOut" crossorigin="anonymous" src=""
 		 	    alt="Camera ERROR!" idx="1">
 		    <canvas id="canvas"></canvas>
 
-            <button id ="toggleCamera" onclick="toggleCam()"><h1>CAMERA TOGGLE</h1></button>
-            <button id ="toggleRaspberry" onclick="togglePi()"><h1>PI TOGGLE</h1></button>
+            <button id ="toggleCamera" onclick="toggleCam()"><h1>CAMERA<br>TOGGLE</h1></button>
+            <button id ="toggleRaspberry" onclick="togglePi()"><h1>PI<br>TOGGLE</h1></button>
     </body>
-
+    <script src="/frc-web-components.js"></script>
 </html>
