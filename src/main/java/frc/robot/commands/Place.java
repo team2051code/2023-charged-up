@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
@@ -19,17 +20,19 @@ public class Place extends CommandBase {
   // Whether the robot is moving with "front" as the bigger side.
   private final boolean frontSide;
   private boolean finished;
+  private final double distance; //distance from front of nodes
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public Place(ArmSubsystem subsystem, DriveToScore.Level level,boolean isCube,boolean side) {
+  public Place(ArmSubsystem subsystem, DriveToScore.Level level,boolean isCube,boolean frontSide, double distance) {
     m_subsystem = subsystem;
     this.level = level;
     this.isCube = isCube;
-    frontSide = side;
+    this.frontSide = frontSide;
+    this.distance = distance;
     finished = false;
     // Use addRequirements() here to declare subsystem dependencies.
     //addRequirements(subsystem);
@@ -43,29 +46,32 @@ public class Place extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    double theta = 0;
     if(frontSide)
       if(isCube)
       {
         if(level == DriveToScore.Level.BOTTOM)
         {
-          m_subsystem.setArmPivotSetpoint(45);
-          m_subsystem.setExtenderSetpoint(40);
+          theta = Units.radiansToDegrees(Math.atan((16+distance)/24.0));
+          m_subsystem.setArmPivotSetpoint(theta);
+          m_subsystem.setExtenderSetpoint(Math.sqrt((Math.pow((distance+16), 2)+Math.pow(24, 2)))-28);
+          m_subsystem.setGripperPivotSetpoint(theta-90);
           m_subsystem.toggleGripper();
         }
         else if(level == DriveToScore.Level.MIDDLE)
         {
-          m_subsystem.setArmPivotSetpoint(90);
-          m_subsystem.setExtenderSetpoint(40);
+          theta = Units.radiansToDegrees(Math.atan(6/(16+distance)));
+          m_subsystem.setArmPivotSetpoint(theta+90);
+          m_subsystem.setExtenderSetpoint(Math.sqrt((Math.pow(6,2)+Math.pow((16+distance), 2))-28));
+          m_subsystem.setGripperPivotSetpoint(180+theta);
           m_subsystem.toggleGripper();
         }
         else if(level == DriveToScore.Level.TOP)
         {
-          m_subsystem.setArmPivotSetpoint(135);
-          m_subsystem.setExtenderSetpoint(40);
-          m_subsystem.toggleGripper();
-        }
-        else
-        {
+          theta = Units.radiansToDegrees(Math.atan(18/(16+distance)));
+          m_subsystem.setArmPivotSetpoint(theta+90);
+          m_subsystem.setExtenderSetpoint(Math.sqrt((Math.pow(18,2)+Math.pow((16+distance), 2))-28));
+          m_subsystem.setGripperPivotSetpoint(180+theta);
         }
       }else
       {
@@ -80,10 +86,6 @@ public class Place extends CommandBase {
         else if(level == DriveToScore.Level.TOP)
         {
 
-        }
-        else
-        {
-          finished = true;
         }
       }
     else 
@@ -101,10 +103,6 @@ public class Place extends CommandBase {
         {
 
         }
-        else
-        {
-          finished = true;
-        }
       }else
       {
         if(level == DriveToScore.Level.BOTTOM)
@@ -118,10 +116,6 @@ public class Place extends CommandBase {
         else if(level == DriveToScore.Level.TOP)
         {
 
-        }
-        else
-        {
-          finished = true;
         }
       }
     finished = true;

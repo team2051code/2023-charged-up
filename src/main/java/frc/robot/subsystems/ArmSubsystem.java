@@ -24,9 +24,9 @@ import frc.robot.subsystems.simulated.ArmSimulation;
 import frc.robot.subsystems.simulated.CANSparkMaxSimulated;
 
 public class ArmSubsystem extends SubsystemBase {
-    public final static double kArmP = 1; public final static double kArmI = 0; public final static double kArmD = .1;
+    public final static double kArmP = 0.5; public final static double kArmI = 0; public final static double kArmD = 0.05;
     public final static double kextenderP = .1; public final static double kextenderI = 0; public final static double kextenderD = 0;
-    public final static double kgripperP = .1; public final static double kgripperI = 0; public final static double kgripperD = 0;
+    public final static double kgripperP = .01; public final static double kgripperI = 0; public final static double kgripperD = 0;
     public final static double kgripperRotatorP = 0; public final static double kgripperRotatorI = 0; public final static double kgripperRotatorD = 0;
     public final static double ksolidArmDistance = 28;
     public final static double MAX_ARM_EXTENSION_LENGTH_INCHES = 40;
@@ -161,7 +161,7 @@ public class ArmSubsystem extends SubsystemBase {
         SmartDashboard.putBoolean("Brake", getBreakSol());
         if(m_absArmPivotEncoder.get()<90)
         {
-            relativeAngle = 90 - m_absArmPivotEncoder.get();
+            relativeAngle = m_absArmPivotEncoder.get();
             quadrant = Quadrant.Q1;
         }
         else if(m_absArmPivotEncoder.get()<180)
@@ -179,15 +179,15 @@ public class ArmSubsystem extends SubsystemBase {
             relativeAngle = m_absArmPivotEncoder.get()-270;
             quadrant = Quadrant.Q4;
         }
-        if(quadrant.equals(Quadrant.Q2)||quadrant.equals(Quadrant.Q3))
-        {
-            if((extenderPosition+ksolidArmDistance)*Math.sin(relativeAngle)>52)
-                setExtenderSetpoint((52/Math.sin(relativeAngle)-ksolidArmDistance)-2);
-            if((extenderPosition+ksolidArmDistance)*Math.cos(relativeAngle)>62)
-                setExtenderSetpoint((62/Math.cos(relativeAngle)-ksolidArmDistance)-2);
-        }else
-            if((extenderPosition+ksolidArmDistance)*Math.sin(relativeAngle)>24)
-                setExtenderSetpoint((24/Math.sin(relativeAngle)-ksolidArmDistance)-2);
+        // if(quadrant.equals(Quadrant.Q2)||quadrant.equals(Quadrant.Q3))
+        // {
+        //     if((extenderPosition+ksolidArmDistance)*Math.sin(relativeAngle)>52)
+        //         setExtenderSetpoint((52/Math.sin(relativeAngle)-ksolidArmDistance)-2);
+        //     if((extenderPosition+ksolidArmDistance)*Math.cos(relativeAngle)>62)
+        //         setExtenderSetpoint((62/Math.cos(relativeAngle)-ksolidArmDistance)-2);
+        // }else
+        //     if((extenderPosition+ksolidArmDistance)*Math.sin(relativeAngle)>24)
+        //         setExtenderSetpoint((24/Math.sin(relativeAngle)-ksolidArmDistance)-2);
 
         if(armPivotPosition>45 && armPivotPosition < 325) //imagining 0 means vertically down
             m_armPivot.setVoltage(armPivotVoltage);

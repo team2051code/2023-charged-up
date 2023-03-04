@@ -23,7 +23,7 @@ import frc.robot.subsystems.ArmSubsystem;
 public class ArmSimulation {
     public static final double ARM_MASS_KG = 8.0;
     public static final double ARM_BASE_LENGTH_M = Units.inchesToMeters(28);
-    public static final double ARM_GEAR_REDUCTION = 2.0;
+    public static final double ARM_GEAR_REDUCTION = 89;
     public static final double EXTENSION_MAX_SPEED_M_S = 0.25;
     public static final double GRIPPER_MAX_SPEED_M_S = 90.0;
 
@@ -62,18 +62,18 @@ public class ArmSimulation {
             ARM_GEAR_REDUCTION, 
             SingleJointedArmSim.estimateMOI(ARM_BASE_LENGTH_M, ARM_MASS_KG), 
             ARM_BASE_LENGTH_M, 
-            Units.degreesToRadians(50),
-            Units.degreesToRadians(360 - 50),
+            Units.degreesToRadians(0),
+            Units.degreesToRadians(360 - 0),
             true);
 
         m_armWindowDisplay = new Mechanism2d(140, 140);
         m_armRootDisplay = m_armWindowDisplay.getRoot("ArmRoot", 70, 70);
         m_armTowerDisplay = m_armRootDisplay.append(new MechanismLigament2d(
             "ArmTower", 
-            30, -90));
+            24, -90));
         m_armDisplay = m_armRootDisplay.append(new MechanismLigament2d(
             "Arm",
-            30, 
+            28, 
             Units.radiansToDegrees(m_armSim.getAngleRads()),
             6,
             new Color8Bit(Color.kYellow)));
