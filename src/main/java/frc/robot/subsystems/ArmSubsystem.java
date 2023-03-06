@@ -179,15 +179,19 @@ public class ArmSubsystem extends SubsystemBase {
             relativeAngle = m_absArmPivotEncoder.get()-270;
             quadrant = Quadrant.Q4;
         }
+        SmartDashboard.putNumber("RelativeAngle", relativeAngle);
+        SmartDashboard.putNumber("Height", (extenderPosition+ksolidArmDistance)*Math.sin(Units.degreesToRadians(relativeAngle)));
+        SmartDashboard.putNumber("Distance", (extenderPosition+ksolidArmDistance)*Math.cos(Units.degreesToRadians(relativeAngle)));
+
         if(quadrant.equals(Quadrant.Q2)||quadrant.equals(Quadrant.Q3))
         {
-            if((extenderPosition+ksolidArmDistance)*Math.sin(relativeAngle)>52)
-                setExtenderSetpoint((52/Math.sin(relativeAngle)-ksolidArmDistance)-2);
-            if((extenderPosition+ksolidArmDistance)*Math.cos(relativeAngle)>62)
-                setExtenderSetpoint((62/Math.cos(relativeAngle)-ksolidArmDistance)-2);
+            if((extenderPosition+ksolidArmDistance)*Math.sin(Units.degreesToRadians(relativeAngle))>52)
+                setExtenderSetpoint((52/Math.sin(Units.degreesToRadians(relativeAngle))-ksolidArmDistance)-2);
+            if((extenderPosition+ksolidArmDistance)*Math.cos(Units.degreesToRadians(relativeAngle))>62)
+                setExtenderSetpoint((62/Math.cos(Units.degreesToRadians(relativeAngle))-ksolidArmDistance)-2);
         }else
-            if((extenderPosition+ksolidArmDistance)*Math.sin(relativeAngle)>24)
-                setExtenderSetpoint((24/Math.sin(relativeAngle)-ksolidArmDistance)-2);
+            if((extenderPosition+ksolidArmDistance)*Math.sin(Units.degreesToRadians(relativeAngle))>24)
+                setExtenderSetpoint((24/Math.sin(Units.degreesToRadians(relativeAngle))-ksolidArmDistance)-2);
 
         if(armPivotPosition>45 && armPivotPosition < 325) //imagining 0 means vertically down
             m_armPivot.setVoltage(armPivotVoltage);
@@ -195,7 +199,7 @@ public class ArmSubsystem extends SubsystemBase {
             m_armPivot.setVoltage(0);
          m_Extender.setVoltage(extenderVoltage);
         
-        //if(gripperPivotPosition>35 && gripperPivotPosition<145) //imagining 0 means vertically down
+        if(gripperPivotPosition>35 && gripperPivotPosition<145) //imagining 0 means vertically down
             m_GripperPivot.setVoltage(gripperPivotVoltage);
         //else
         //    m_GripperPivot.setVoltage(0);

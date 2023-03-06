@@ -66,12 +66,15 @@ public class Place extends CommandBase {
         }
         else
         {
+          m_subsystem.setArmPivotSetpoint(315);
+          m_subsystem.setExtenderSetpoint(40);
+          m_subsystem.toggleGripper();
         }
       }else
       {
         if(level == DriveToScore.Level.BOTTOM)
         {
-
+          
         }
         else if(level == DriveToScore.Level.MIDDLE)
         {
