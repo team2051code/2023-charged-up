@@ -98,6 +98,7 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our
     // autonomous chooser on the dashboard.
+    SmartDashboard.putNumber("Distance", 0);
     SmartDashboard.putNumber("Dead Time", 0);
     SmartDashboard.putNumber("Setpoint", 0);
     SmartDashboard.putNumber("PVal", 0);
@@ -106,7 +107,7 @@ public class Robot extends TimedRobot {
 
     SmartDashboard.putNumber("Gyro Override", 0);
 
-    SmartDashboard.putNumber("boardButton", 10);
+    SmartDashboard.putNumber("boardButton", 0);
 
     m_LeftBack.restoreFactoryDefaults();
     m_LeftFront.restoreFactoryDefaults();
@@ -220,6 +221,7 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putNumber("skew", 0);
     // }
     SmartDashboard.putNumber("right motor speed:", m_RightFront.get());
+    SmartDashboard.putNumber("leftStick", m_DriveController.getLeftX());
 
     CommandScheduler.getInstance().run();
     // System.out.println(targets.size() + "targets found: ");
@@ -383,7 +385,7 @@ public class Robot extends TimedRobot {
   }
 
   private void scorePiece(DriveToScore.Level level, DriveToScore.Offset offset){
-    Place highPlace = new Place(m_arm, level, true, true); //is a cube and facing forwards //p = 1 and d = 0.5 works well
+    Place highPlace = new Place(m_arm, level, true, true, SmartDashboard.getNumber("Distance", 10)); //is a cube and facing forwards //p = 1 and d = 0.5 works well
     CommandScheduler.getInstance().schedule(highPlace);
   }
 

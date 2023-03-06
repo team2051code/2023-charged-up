@@ -24,9 +24,9 @@ import frc.robot.subsystems.simulated.ArmSimulation;
 import frc.robot.subsystems.simulated.CANSparkMaxSimulated;
 
 public class ArmSubsystem extends SubsystemBase {
-    public final static double kArmP = 1; public final static double kArmI = 0; public final static double kArmD = .1;
+    public final static double kArmP = 0.5; public final static double kArmI = 0; public final static double kArmD = 0.05;
     public final static double kextenderP = .1; public final static double kextenderI = 0; public final static double kextenderD = 0;
-    public final static double kgripperP = .1; public final static double kgripperI = 0; public final static double kgripperD = 0;
+    public final static double kgripperP = .01; public final static double kgripperI = 0; public final static double kgripperD = 0;
     public final static double kgripperRotatorP = 0; public final static double kgripperRotatorI = 0; public final static double kgripperRotatorD = 0;
     public final static double ksolidArmDistance = 28;
     public final static double MAX_ARM_EXTENSION_LENGTH_INCHES = 40;
@@ -161,7 +161,7 @@ public class ArmSubsystem extends SubsystemBase {
         SmartDashboard.putBoolean("Brake", getBreakSol());
         if(m_absArmPivotEncoder.get()<90)
         {
-            relativeAngle = 90 - m_absArmPivotEncoder.get();
+            relativeAngle = m_absArmPivotEncoder.get();
             quadrant = Quadrant.Q1;
         }
         else if(m_absArmPivotEncoder.get()<180)

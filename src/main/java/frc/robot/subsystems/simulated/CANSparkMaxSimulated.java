@@ -2,6 +2,8 @@ package frc.robot.subsystems.simulated;
 
 import com.revrobotics.CANSparkMax;
 
+import edu.wpi.first.math.MathUtil;
+
 /**
  * CANSparkMax that plumbs setVoltage through the `set` method so that
  * the `get` method works properly.
@@ -13,7 +15,7 @@ public class CANSparkMaxSimulated extends CANSparkMax {
 
     @Override
     public void setVoltage(double voltage) {
-        set(voltage / 12.0);
+        set(MathUtil.clamp(voltage / 12.0, -1.0, 1.0));
     }
     
 }
