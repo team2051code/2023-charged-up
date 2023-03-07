@@ -27,10 +27,16 @@
       "/SmartDashboard/Field: ": "Field2d",
       "/SmartDashboard/Gripper PID": "PIDController",
       "/SmartDashboard/MotorControllerGroup[1]": "Motor Controller",
+      "/SmartDashboard/Simulation Field:": "Field2d",
       "/SmartDashboard/motorPutTst": "Motor Controller"
     },
     "windows": {
       "/SmartDashboard/Arm Sim": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Simulation Field:": {
         "window": {
           "visible": true
         }

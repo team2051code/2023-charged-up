@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
@@ -26,6 +27,12 @@ import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.simulated.CANSparkMaxSimulated;
+import frc.robot.subsystems.simulated.PoseEstimator;
+import frc.robot.subsystems.simulated.SimpleSimulatedChassis;
+import frc.robot.subsystems.simulated.SimulatedEncoder;
+import frc.robot.subsystems.simulated.SimulatedGyro;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
@@ -43,6 +50,11 @@ public class DriveSubsystem extends SubsystemBase {
   private final RelativeEncoder m_rightEncoder;
   private final Field2d m_field = new Field2d();
   private final Solenoid m_gearSolenoid;
+  private SimpleSimulatedChassis simulatedChassis;
+  private CANSparkMaxSimulated leftSimulated;
+  private CANSparkMaxSimulated rightSimulated;
+  private PoseEstimator poseEstimator;
+  private Field2d simPose;
   // The robot's drive
 
   // The left-side drive encoder
@@ -61,13 +73,21 @@ public class DriveSubsystem extends SubsystemBase {
 
   // The gyro sensor
   // private final Gyro m_gyro = new ADXRS450_Gyro();
-  private ADIS16470_IMU m_gyro= new ADIS16470_IMU();
+  private ADIS16470_IMU m_gyro = new ADIS16470_IMU();
 
   // Odometry class for tracking robot pose
   private final DifferentialDriveOdometry m_odometry;
 
   /** Creates a new DriveSubsystem. */
-  public DriveSubsystem(MotorControllerGroup left, MotorControllerGroup right, RelativeEncoder leftEncode, RelativeEncoder rightEncode) {
+  public DriveSubsystem(MotorControllerGroup left, MotorControllerGroup right, RelativeEncoder leftEncode, RelativeEncoder rightEncode, CANSparkMaxSimulated leftSimulatedMotor, CANSparkMaxSimulated rightSimulatedMotor) {
+    if (RobotBase.isSimulation())
+    {
+      m_gyro = new SimulatedGyro();
+      simulatedChassis = new SimpleSimulatedChassis((SimulatedGyro) m_gyro, (SimulatedEncoder) leftEncode, (SimulatedEncoder) rightEncode);
+      poseEstimator = new PoseEstimator(this);
+    }
+    leftSimulated = leftSimulatedMotor;
+    rightSimulated = rightSimulatedMotor;
     m_leftEncoder = leftEncode;
     m_rightEncoder = rightEncode;
     m_leftEncoder.setPositionConversionFactor(CompetitionDriveConstants.kLinearDistanceConversionFactor);
@@ -79,6 +99,8 @@ public class DriveSubsystem extends SubsystemBase {
     m_gearSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 0);
     m_drive = new DifferentialDrive(m_leftMotors, m_rightMotors);
     SmartDashboard.putData("Field: ", m_field);
+    simPose = new Field2d();
+
 
     // Sets the distance per pulse for the encoders
     // m_leftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
@@ -88,6 +110,12 @@ public class DriveSubsystem extends SubsystemBase {
     m_odometry =
         new DifferentialDriveOdometry(
             new Rotation2d(degToRad(m_gyro.getAngle())), m_leftEncoder.getPosition(), m_rightEncoder.getPosition());
+    if (RobotBase.isSimulation())
+    {
+      poseEstimator.initPose();
+      simPose.setRobotPose(poseEstimator.getPose());
+      SmartDashboard.putData("Simulation Field:", simPose);
+    }
   }
 
   @Override
@@ -103,7 +131,13 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("y accel", m_gyro.getAccelY());
     SmartDashboard.putNumber("z accel", m_gyro.getAccelZ());
   }
-
+  @Override
+  public void simulationPeriodic()
+  {
+    simulatedChassis.updateSimulation(leftSimulated, rightSimulated);
+    poseEstimator.updatePose();
+    simPose.setRobotPose(poseEstimator.getPose());
+  }
   /**
    * Returns the currently-estimated pose of the robot.
    *

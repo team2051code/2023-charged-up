@@ -161,7 +161,7 @@ public class ArmSubsystem extends SubsystemBase {
         SmartDashboard.putBoolean("Brake", getBreakSol());
         if(m_absArmPivotEncoder.get()<90)
         {
-            relativeAngle = m_absArmPivotEncoder.get();
+            relativeAngle = 90 - m_absArmPivotEncoder.get();
             quadrant = Quadrant.Q1;
         }
         else if(m_absArmPivotEncoder.get()<180)
