@@ -11,13 +11,13 @@ import frc.robot.subsystems.DriveSubsystem;
 public class PoseEstimator {
     private double m_lastLeftEncoderValue;
     private double m_lastRightEncoderValue;
-    private Pose2d m_pose = new Pose2d();
+    private Pose2d m_pose = new Pose2d(4, 3, new Rotation2d());
     private DriveSubsystem m_drive;
  
     /**
      * Number of encoder counts per full wheel revolution
      */
-    private static final double ENCODER_TICKS_PER_REVOLUTION = 1440.0;
+    private static final double ENCODER_TICKS_PER_REVOLUTION = SimpleSimulatedChassis.ENCODER_TICKS_PER_REVOLUTION;
 
     /**
      * Circumference of wheel in meters
@@ -75,7 +75,7 @@ public class PoseEstimator {
          */
         m_pose = new Pose2d(
             new Translation2d(newX, newY), 
-            Rotation2d.fromDegrees(-m_drive.getAngle()));
+            Rotation2d.fromRadians(-m_drive.getAngle()));
     }
 
     /**

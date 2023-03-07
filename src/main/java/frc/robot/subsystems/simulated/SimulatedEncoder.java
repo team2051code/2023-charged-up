@@ -12,8 +12,8 @@ import edu.wpi.first.wpilibj.CounterBase;
  * (such as SimpleSimulatedChassis)
  */
 public class SimulatedEncoder implements RelativeEncoder {
-    private int m_encoderZeroPoint = 0;
-    private int m_encoderValue = 0;
+    private double m_encoderZeroPoint = 0;
+    private double m_encoderValue = 0;
 
     @Override
     public double getPosition() {
@@ -22,7 +22,8 @@ public class SimulatedEncoder implements RelativeEncoder {
 
     @Override
     public REVLibError setPosition(double start) {
-        m_encoderZeroPoint = m_encoderValue;
+        m_encoderValue = start;
+
         return REVLibError.kOk;
     }
 
@@ -30,7 +31,7 @@ public class SimulatedEncoder implements RelativeEncoder {
      * Set the encoder
      * @param value New encoder value
      */
-    public void set(int value) {
+    public void set(double value) {
         m_encoderValue = value;
     }
 

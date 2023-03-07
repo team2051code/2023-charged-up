@@ -25,7 +25,7 @@ public class SimpleSimulatedChassis {
     /**
      * Number of encoder counts per full wheel revolution
      */
-    private static final double ENCODER_TICKS_PER_REVOLUTION = 1440.0;
+    public static final double ENCODER_TICKS_PER_REVOLUTION = 1000.0;
 
     /**
      * Circumference of wheel in meters
@@ -66,7 +66,7 @@ public class SimpleSimulatedChassis {
          * robot backward), so invert that input.
          */
         double leftPower = leftMotor.get();
-        double rightPower = -rightMotor.get();
+        double rightPower = rightMotor.get();
 
 
         /* Compute a delta and update m_lastUpdateTime. The delta makes the simulation
@@ -106,13 +106,13 @@ public class SimpleSimulatedChassis {
         m_rotation += ROTATIONS_PER_SECOND * turn * delta;
 
         /* Override encoders wtih simulated value */
-        m_leftEncoder.set((int)m_leftEncoderValue);
-        m_rightEncoder.set((int)m_rightEncoderValue);
+        m_leftEncoder.set(m_leftEncoderValue);
+        m_rightEncoder.set(m_rightEncoderValue);
 
         /* Override read gyro value with simulated value
          * Note: angle on gyro is flipped from right-hand rule; counterclockwise
          * chassis rotation makes angle more negative 
          */
-       m_gyro.setAngle(m_rotation * -360.0);
+       m_gyro.setAngle(m_rotation);
     }
 }
