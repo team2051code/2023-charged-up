@@ -42,10 +42,15 @@ function cameraInit(){
         setCameraPort(piProtocols[0], cameraPorts[0]);
 }
 
+//temporary to make drawing faster
+function locateCursor(event){
+    console.log("x = ", event.clientX);
+    console.log("y = ", event.clientY);
+}
 
 function ntLoaded() {
 
-    //filp camera output when the arm swiches sides AND arm camera is selected
+    //filp camera output when the arm swiches sides && arm camera is selected
     NetworkTables.addKeyListener("/SmartDashboard/arm potentiometer", (key, value, isNew) => {
         if(value > 180 && document.getElementById("cameraOut").src == "http://10.20.51.16:1183/stream.mjpg?1674930762001") {
             document.getElementById("cameraOut").style.transform = "rotate(180deg)"
