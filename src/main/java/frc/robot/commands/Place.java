@@ -48,7 +48,7 @@ public class Place extends CommandBase {
   public void execute() {
     double theta = 0;
     if(frontSide)
-      if(isCube)
+      if(isCube)//when holding cube on front
       {
         if(level == DriveToScore.Level.BOTTOM)
         {
@@ -68,65 +68,96 @@ public class Place extends CommandBase {
         }
         else if(level == DriveToScore.Level.TOP)
         {
-          m_subsystem.setArmPivotSetpoint(135);
-          m_subsystem.setExtenderSetpoint(40);
-          m_subsystem.toggleGripper();
-        }
-        else
-        {
-          m_subsystem.setArmPivotSetpoint(315);
-          m_subsystem.setExtenderSetpoint(40);
-          m_subsystem.toggleGripper();
           theta = Units.radiansToDegrees(Math.atan(18/(16+distance)));
           m_subsystem.setArmPivotSetpoint(theta+90);
           m_subsystem.setExtenderSetpoint(Math.sqrt((Math.pow(18,2)+Math.pow((16+distance), 2))-28));
           m_subsystem.setGripperPivotSetpoint(180+theta);
         }
-      }else
+      }else//when holding cone on front
       {
         if(level == DriveToScore.Level.BOTTOM)
         {
-          
+          theta = Units.radiansToDegrees(Math.atan((16+distance)/24.0));
+          m_subsystem.setArmPivotSetpoint(theta);
+          m_subsystem.setExtenderSetpoint(Math.sqrt((Math.pow((distance+16), 2)+Math.pow(24, 2)))-28);
+          m_subsystem.setGripperPivotSetpoint(theta-90);
+          m_subsystem.toggleGripper();
         }
         else if(level == DriveToScore.Level.MIDDLE)
         {
-
+          theta = Units.radiansToDegrees(Math.atan(16/(16+distance)));
+          m_subsystem.setArmPivotSetpoint(theta+90);
+          m_subsystem.setExtenderSetpoint(Math.sqrt((Math.pow(16,2)+Math.pow((16+distance), 2))-28));
+          m_subsystem.setGripperPivotSetpoint(180+theta);
+          m_subsystem.toggleGripper();
         }
         else if(level == DriveToScore.Level.TOP)
         {
-
+          theta = Units.radiansToDegrees(Math.atan(28/(16+distance)));
+          m_subsystem.setArmPivotSetpoint(theta+90);
+          m_subsystem.setExtenderSetpoint(Math.sqrt((Math.pow(28,2)+Math.pow((16+distance), 2))-28));
+          m_subsystem.setGripperPivotSetpoint(180+theta);
+          m_subsystem.toggleGripper();
         }
       }
-    else 
-      if(isCube)
+    else //when faceing back
+    if(isCube)//when holding cube on back
+    {
+      if(level == DriveToScore.Level.BOTTOM)
       {
-        if(level == DriveToScore.Level.BOTTOM)
-        {
-          
-        }
-        else if(level == DriveToScore.Level.MIDDLE)
-        {
-
-        }
-        else if(level == DriveToScore.Level.TOP)
-        {
-
-        }
-      }else
-      {
-        if(level == DriveToScore.Level.BOTTOM)
-        {
-
-        }
-        else if(level == DriveToScore.Level.MIDDLE)
-        {
-
-        }
-        else if(level == DriveToScore.Level.TOP)
-        {
-
-        }
+        theta = Units.radiansToDegrees(Math.atan((16+distance)/24.0))+180;
+        m_subsystem.setArmPivotSetpoint(theta);
+        m_subsystem.setExtenderSetpoint(Math.sqrt((Math.pow((distance+16), 2)+Math.pow(24, 2)))-28);
+        m_subsystem.setGripperPivotSetpoint(theta-90);
+        m_subsystem.toggleGripper();
+        finished = true;
       }
+      else if(level == DriveToScore.Level.MIDDLE)
+      {
+        theta = Units.radiansToDegrees(Math.atan(6/(16+distance)))+180;
+        m_subsystem.setArmPivotSetpoint(theta+90);
+        m_subsystem.setExtenderSetpoint(Math.sqrt((Math.pow(6,2)+Math.pow((16+distance), 2))-28));
+        m_subsystem.setGripperPivotSetpoint(180+theta);
+        m_subsystem.toggleGripper();
+        finished = true;
+      }
+      else if(level == DriveToScore.Level.TOP)
+      {
+        theta = Units.radiansToDegrees(Math.atan(18/(16+distance)))+180;
+        m_subsystem.setArmPivotSetpoint(theta+90);
+        m_subsystem.setExtenderSetpoint(Math.sqrt((Math.pow(18,2)+Math.pow((16+distance), 2))-28));
+        m_subsystem.setGripperPivotSetpoint(180+theta);
+        finished = true;
+      }
+    }else//when holding cone on back
+    {
+      if(level == DriveToScore.Level.BOTTOM)
+      {
+        theta = Units.radiansToDegrees(Math.atan((16+distance)/24.0))+180;
+        m_subsystem.setArmPivotSetpoint(theta);
+        m_subsystem.setExtenderSetpoint(Math.sqrt((Math.pow((distance+16), 2)+Math.pow(24, 2)))-28);
+        m_subsystem.setGripperPivotSetpoint(theta-90);
+        m_subsystem.toggleGripper();
+        finished = true;
+      }
+      else if(level == DriveToScore.Level.MIDDLE)
+      {
+        theta = Units.radiansToDegrees(Math.atan(16/(16+distance)))+180;
+        m_subsystem.setArmPivotSetpoint(theta+90);
+        m_subsystem.setExtenderSetpoint(Math.sqrt((Math.pow(16,2)+Math.pow((16+distance), 2))-28));
+        m_subsystem.setGripperPivotSetpoint(180+theta);
+        m_subsystem.toggleGripper();
+        finished = true;
+      }
+      else if(level == DriveToScore.Level.TOP)
+      {
+        theta = Units.radiansToDegrees(Math.atan(28/(16+distance)))+180;
+        m_subsystem.setArmPivotSetpoint(theta+90);
+        m_subsystem.setExtenderSetpoint(Math.sqrt((Math.pow(28,2)+Math.pow((16+distance), 2))-28));
+        m_subsystem.setGripperPivotSetpoint(180+theta);
+        m_subsystem.toggleGripper();
+      }
+    }
     finished = true;
   }
   

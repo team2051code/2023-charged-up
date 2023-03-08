@@ -25,6 +25,9 @@ public class CompetitionDriveConstants {
     public static final int kExtenderMotorPort = 5;
     public static final int kIntakeLeft = 9;
     public static final int kIntakeRight = 11;
+    public static final int kGearShiftSolenoid = 0;
+    public static final int kBrakeSolenoid = 1;
+    public static final int kGripperSolenoid = 2;
     public static final boolean kLeftEncoderReversed = false;
     public static final boolean kRightEncoderReversed = false;
     public static final boolean kLeftMotorsReversed = false;

@@ -96,7 +96,7 @@ public class DriveSubsystem extends SubsystemBase {
     m_rightEncoder.setVelocityConversionFactor(CompetitionDriveConstants.kLinearDistanceConversionFactor / 60);
     m_leftMotors = left;
     m_rightMotors = right;
-    m_gearSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 0);
+    m_gearSolenoid = new Solenoid(PneumaticsModuleType.REVPH, CompetitionDriveConstants.kGearShiftSolenoid);
     m_drive = new DifferentialDrive(m_leftMotors, m_rightMotors);
     SmartDashboard.putData("Field: ", m_field);
     simPose = new Field2d();
