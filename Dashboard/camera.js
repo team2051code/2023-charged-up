@@ -1,6 +1,5 @@
 console.log("javaScrript has loaded");
 
-var isSaved = false;
 toggleCam = () => console.log("toggleCam");
 togglePi = () => console.log("togglePi");
 
@@ -49,7 +48,6 @@ function locateCursor(event){
 }
 
 function ntLoaded() {
-
     //filp camera output when the arm swiches sides && arm camera is selected
     NetworkTables.addKeyListener("/SmartDashboard/arm potentiometer", (key, value, isNew) => {
         if(value > 180 && document.getElementById("cameraOut").src == "http://10.20.51.16:1183/stream.mjpg?1674930762001") {
