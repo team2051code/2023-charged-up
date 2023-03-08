@@ -30,6 +30,11 @@
       "/SmartDashboard/motorPutTst": "Motor Controller"
     },
     "windows": {
+      "/SmartDashboard/Arm PID": {
+        "window": {
+          "visible": true
+        }
+      },
       "/SmartDashboard/Arm Sim": {
         "window": {
           "visible": true
