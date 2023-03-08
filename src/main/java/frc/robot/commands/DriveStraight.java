@@ -44,6 +44,7 @@ public class DriveStraight extends CommandBase {
   private enum Autostate{
       OFFRAMP,ONRAMP,PIVOT
   }
+
   /**
    * Creates a new ExampleCommand.
    *
@@ -78,7 +79,7 @@ public class DriveStraight extends CommandBase {
   public void execute() {
     //Sets initial values
     SmartDashboard.putNumber("Setpoint: ", m_left.getSetpoint());
-    SmartDashboard.putString("State:", m_autostate.toString());
+    //SmartDashboard.putString("State:", m_autostate.toString());
     var wheelSpeeds = m_drive.getWheelSpeeds();
     SmartDashboard.putNumber("Wheelspeeds: ", wheelSpeeds.leftMetersPerSecond);
     var leftVelocity = m_left.calculate(wheelSpeeds.leftMetersPerSecond);
@@ -178,6 +179,6 @@ public class DriveStraight extends CommandBase {
     //     return true;
     // }
     // return false;
-     return m_autostate.equals(Autostate.PIVOT);
+    return m_autostate.equals(Autostate.PIVOT);
   }
 }
