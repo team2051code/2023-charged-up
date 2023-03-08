@@ -47,7 +47,6 @@ public class FollowRamsete {
       }
       System.out.println(trajectory);
       System.out.println("Robot will finish in" + trajectory.getTotalTimeSeconds());
-        
       RamseteCommand ramseteCommand =
       new RamseteCommand(
           trajectory,

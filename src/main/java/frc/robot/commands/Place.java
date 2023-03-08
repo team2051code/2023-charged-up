@@ -68,6 +68,15 @@ public class Place extends CommandBase {
         }
         else if(level == DriveToScore.Level.TOP)
         {
+          m_subsystem.setArmPivotSetpoint(135);
+          m_subsystem.setExtenderSetpoint(40);
+          m_subsystem.toggleGripper();
+        }
+        else
+        {
+          m_subsystem.setArmPivotSetpoint(315);
+          m_subsystem.setExtenderSetpoint(40);
+          m_subsystem.toggleGripper();
           theta = Units.radiansToDegrees(Math.atan(18/(16+distance)));
           m_subsystem.setArmPivotSetpoint(theta+90);
           m_subsystem.setExtenderSetpoint(Math.sqrt((Math.pow(18,2)+Math.pow((16+distance), 2))-28));
@@ -77,7 +86,7 @@ public class Place extends CommandBase {
       {
         if(level == DriveToScore.Level.BOTTOM)
         {
-
+          
         }
         else if(level == DriveToScore.Level.MIDDLE)
         {
