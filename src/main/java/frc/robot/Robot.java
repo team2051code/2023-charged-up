@@ -68,7 +68,14 @@ public class Robot extends TimedRobot {
   private final RelativeEncoder m_rightEncoder = m_RightFront.getEncoder();
   private final XboxController m_ArmController = new XboxController(CompetitionDriveConstants.XboxArmPort);
   private final XboxController m_DriveController = new XboxController(CompetitionDriveConstants.XboxDrivePort);
-  private final Joystick m_joystickController = new Joystick(CompetitionDriveConstants.joyStickPort);
+  private final Joystick m_buttonPanel = new Joystick(CompetitionDriveConstants.joyStickPort);
+
+  private static final int[] BUTTON_PANEL_MAP = {
+    -1,-1,-1,-1,
+   7, 4, 1,
+   8, 5, 2,
+   9, 3, 6
+  };
   // private final CANSparkMax m_intakeRight = new CANSparkMax(5,
   // MotorType.kBrushed);
   // private final CANSparkMax m_intakeLeft = new CANSparkMax(6,
@@ -348,7 +355,11 @@ public class Robot extends TimedRobot {
 
   }
   private void handleButtonBoard(){
+
+    int physicalBoardButton = getPressedBoardButton();
+
     int boardButton = (int) SmartDashboard.getNumber("boardButton", 0);
+    boardButton = boardButton > 0 ? boardButton:physicalBoardButton; 
     if (boardButton == m_lastBoardButtonValue){
       return;
     }
@@ -382,6 +393,16 @@ public class Robot extends TimedRobot {
       scorePiece(Level.BOTTOM, Offset.RIGHT);
     }
         
+  }
+
+  private int getPressedBoardButton() {
+    int buttonPressed = 0;
+    for(int i = 0; i<13; i++){
+      if(m_buttonPanel.getRawButton(i)){
+        buttonPressed = BUTTON_PANEL_MAP[i];
+      } 
+    }
+    return buttonPressed;
   }
 
   private void scorePiece(DriveToScore.Level level, DriveToScore.Offset offset){

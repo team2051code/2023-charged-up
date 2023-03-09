@@ -92,11 +92,9 @@
     {
       "guid": "Keyboard0"
     },
+    {},
     {
-      "useGamepad": true
-    },
-    {
-      "useGamepad": true
+      "guid": "03000000790000000600000000000000"
     }
   ]
 }
