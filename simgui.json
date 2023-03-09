@@ -31,11 +31,6 @@
       "/SmartDashboard/motorPutTst": "Motor Controller"
     },
     "windows": {
-      "/SmartDashboard/Arm PID": {
-        "window": {
-          "visible": true
-        }
-      },
       "/SmartDashboard/Arm Sim": {
         "window": {
           "visible": true
@@ -66,18 +61,6 @@
       },
       "SmartDashboard": {
         "Arm PID": {
-          "open": true
-        },
-        "Arm Sim": {
-          "ArmRoot": {
-            "Arm": {
-              "Arm Extension": {
-                "open": true
-              },
-              "open": true
-            },
-            "open": true
-          },
           "open": true
         },
         "Extender PID": {
