@@ -28,7 +28,8 @@
       "/SmartDashboard/Gripper PID": "PIDController",
       "/SmartDashboard/MotorControllerGroup[1]": "Motor Controller",
       "/SmartDashboard/Simulation Field:": "Field2d",
-      "/SmartDashboard/motorPutTst": "Motor Controller"
+      "/SmartDashboard/motorPutTst": "Motor Controller",
+      "/SmartDashboard/photonvision Sim Field": "Field2d"
     },
     "windows": {
       "/SmartDashboard/Arm Sim": {
@@ -37,6 +38,11 @@
         }
       },
       "/SmartDashboard/Simulation Field:": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/photonvision Sim Field": {
         "window": {
           "visible": true
         }
@@ -72,11 +78,28 @@
         "PIDS": {
           "open": true
         },
+        "Simulation Field:": {
+          "open": true
+        },
         "motorPutTst": {
           "open": true
         },
         "open": true
       }
+    }
+  },
+  "NetworkTables Info": {
+    "Clients": {
+      "open": true
+    },
+    "Connections": {
+      "open": true
+    },
+    "Server": {
+      "Subscribers": {
+        "open": true
+      },
+      "open": true
     }
   }
 }

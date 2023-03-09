@@ -1,7 +1,19 @@
 package frc.robot.subsystems.simulated;
 
+import javax.naming.spi.DirStateFactory.Result;
+
+import org.photonvision.PhotonCamera;
+import org.photonvision.SimVisionSystem;
+import org.photonvision.SimVisionTarget;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.SimVisionTarget;
+
 import com.revrobotics.CANSparkMax;
 
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -16,6 +28,33 @@ public class SimpleSimulatedChassis {
     private double m_leftEncoderValue = 0;
     private double m_rightEncoderValue = 0;
     private double m_rotation = 0;
+    private double camDiagFOV = 170.0; // degrees - assume wide-angle camera
+    private double camPitch = 0; // degrees
+    private double camHeightOffGround = .25; // meters
+    private double maxLEDRange = 20; // meters
+    private int camResolutionWidth = 640; // pixels
+    private int camResolutionHeight = 480; // pixels
+    private double minTargetArea = 10; // square pixels
+    SimVisionSystem simVision =
+            new SimVisionSystem(
+                    "photonvision",
+                    camDiagFOV,
+                    new Transform3d(
+                            new Translation3d(0, 0, camHeightOffGround), new Rotation3d(0, camPitch, 0)),
+                    maxLEDRange,
+                    camResolutionWidth,
+                    camResolutionHeight,
+                    minTargetArea);
+    private double targetWidth = .1524;
+    private double targetHeight = .1524;
+    private double targetXPos = 6;
+    private double targetYPos = 6;
+    Pose3d farTargetPose =
+    new Pose3d(
+            new Translation3d(targetXPos, targetYPos, 61.913),
+            new Rotation3d(0.0, 0.0, 0.0));
+    private SimVisionTarget target = new SimVisionTarget(farTargetPose, targetWidth, targetHeight, camResolutionHeight);
+
 
     /**
      * Speed at which robot drives forward in meters per second at max velocity
@@ -114,5 +153,13 @@ public class SimpleSimulatedChassis {
          * chassis rotation makes angle more negative 
          */
        m_gyro.setAngle(m_rotation);
+    }
+    public SimVisionSystem getVision()
+    {
+        return simVision;
+    }
+    public SimVisionTarget getTarget()
+    {
+        return target;
     }
 }

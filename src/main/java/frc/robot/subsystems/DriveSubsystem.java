@@ -4,6 +4,11 @@ import java.security.Key;
 
 import javax.crypto.spec.PBEParameterSpec;
 
+import org.photonvision.PhotonCamera;
+import org.photonvision.SimVisionSystem;
+import org.photonvision.SimVisionTarget;
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 
@@ -11,6 +16,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.networktables.NetworkTableListener;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.Compressor;
@@ -55,6 +61,7 @@ public class DriveSubsystem extends SubsystemBase {
   private CANSparkMaxSimulated rightSimulated;
   private PoseEstimator poseEstimator;
   private Field2d simPose;
+  private SimVisionTarget target1;
   // The robot's drive
 
   // The left-side drive encoder
@@ -74,7 +81,8 @@ public class DriveSubsystem extends SubsystemBase {
   // The gyro sensor
   // private final Gyro m_gyro = new ADXRS450_Gyro();
   private ADIS16470_IMU m_gyro = new ADIS16470_IMU();
-
+  private PhotonCamera camera = new PhotonCamera("Camera_A");
+  private SimVisionSystem simulatedVision;
   // Odometry class for tracking robot pose
   private final DifferentialDriveOdometry m_odometry;
 
@@ -84,6 +92,9 @@ public class DriveSubsystem extends SubsystemBase {
     {
       m_gyro = new SimulatedGyro();
       simulatedChassis = new SimpleSimulatedChassis((SimulatedGyro) m_gyro, (SimulatedEncoder) leftEncode, (SimulatedEncoder) rightEncode);
+      simulatedVision = simulatedChassis.getVision();
+      target1 = simulatedChassis.getTarget();
+      simulatedVision.addSimVisionTarget(target1);
       poseEstimator = new PoseEstimator(this);
     }
     leftSimulated = leftSimulatedMotor;
@@ -136,8 +147,16 @@ public class DriveSubsystem extends SubsystemBase {
   {
     simulatedChassis.updateSimulation(leftSimulated, rightSimulated);
     poseEstimator.updatePose();
+    simulatedVision.processFrame(poseEstimator.getPose());
     simPose.setRobotPose(poseEstimator.getPose());
+    var result = camera.getLatestResult();
+    var targets = result.getTargets();
+    for (PhotonTrackedTarget target: targets)
+    {
+      double skew = target.getSkew();
+    }
   }
+  
   /**
    * Returns the currently-estimated pose of the robot.
    *
