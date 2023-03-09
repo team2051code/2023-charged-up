@@ -184,7 +184,7 @@ public class ArmSubsystem extends SubsystemBase {
             }
             SmartDashboard.putNumber("RelativeAngle", relativeAngle);
             SmartDashboard.putNumber("Height", (extenderPosition+ksolidArmDistance)*Math.sin(Units.degreesToRadians(relativeAngle)));
-            SmartDashboard.putNumber("Distance", (extenderPosition+ksolidArmDistance)*Math.cos(Units.degreesToRadians(relativeAngle)));
+            SmartDashboard.putNumber("X", (extenderPosition+ksolidArmDistance)*Math.cos(Units.degreesToRadians(relativeAngle)));
             if(quadrant.equals(Quadrant.Q2)||quadrant.equals(Quadrant.Q3))
             {
                 if((extenderPosition+ksolidArmDistance)*Math.sin(Units.degreesToRadians(relativeAngle))>52) {
@@ -202,10 +202,10 @@ public class ArmSubsystem extends SubsystemBase {
                     break;
                 }
             }else
-                if((extenderPosition+ksolidArmDistance)*Math.sin(Units.degreesToRadians(relativeAngle))>20){
+                if((extenderPosition+ksolidArmDistance)*Math.sin(Units.degreesToRadians(relativeAngle))>24){
                     lastArmSetPoint = m_armPIDController.getSetpoint();
                     setArmPivotSetpoint(armPivotPosition);
-                    setExtenderSetpoint((20/Math.sin(Units.degreesToRadians(relativeAngle))-ksolidArmDistance)-2);
+                    setExtenderSetpoint((24/Math.sin(Units.degreesToRadians(relativeAngle))-ksolidArmDistance)-2);
                     m_armPivot.setVoltage(0);
                     m_Extender.setVoltage(m_extenderPIDController.calculate(m_absExtenderEncoder.get()));
                     SmartDashboard.putBoolean("Debug", true);
@@ -225,7 +225,7 @@ public class ArmSubsystem extends SubsystemBase {
             else
                 m_Extender.setVoltage(0);
             
-            if(gripperPivotPosition>35 && gripperPivotPosition<145) //imagining 0 means vertically down
+            //if(gripperPivotPosition>(180+55) || gripperPivotPosition<(180-55)) //imagining 0 means vertically down
                 m_GripperPivot.setVoltage(gripperPivotVoltage);
             //else
             //    m_GripperPivot.setVoltage(0);

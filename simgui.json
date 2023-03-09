@@ -32,11 +32,6 @@
       "/SmartDashboard/photonvision Sim Field": "Field2d"
     },
     "windows": {
-      "/SmartDashboard/Arm PID": {
-        "window": {
-          "visible": true
-        }
-      },
       "/SmartDashboard/Arm Sim": {
         "window": {
           "visible": true
@@ -55,6 +50,9 @@
     }
   },
   "NetworkTables": {
+    "Retained Values": {
+      "open": false
+    },
     "transitory": {
       "LiveWindow": {
         ".status": {
@@ -83,8 +81,7 @@
               "open": true
             },
             "open": true
-          },
-          "open": true
+          }
         },
         "Extender PID": {
           "open": true
