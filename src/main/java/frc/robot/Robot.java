@@ -156,6 +156,9 @@ public class Robot extends TimedRobot {
     // cameraList.add(m_camera);
     // cameraList.add(m_cameraB);
 
+    m_arm.resetEncoders();
+    m_arm.setArmPivotSetpoint(270);
+    m_arm.setExtenderSetpoint(20);
   }
 
   /**
@@ -246,7 +249,7 @@ public class Robot extends TimedRobot {
     // }
     SmartDashboard.putNumber("right motor speed:", m_RightFront.get());
     SmartDashboard.putNumber("leftStick", m_DriveController.getLeftX());
-
+    
     CommandScheduler.getInstance().run();
     // System.out.println(targets.size() + "targets found: ");
     // if (targets.size() > 0)
@@ -311,6 +314,8 @@ public class Robot extends TimedRobot {
     }
     m_robotContainer.resetOdometry();
 
+    m_arm.setArmPivotSetpoint(270);
+    m_arm.setExtenderSetpoint(20);
   }
 
   /** This function is called periodically during operator control. */
@@ -367,8 +372,8 @@ public class Robot extends TimedRobot {
       m_arm.setIntakeMode(IntakeMode.OFF);
     }
 
-    m_arm.incrementArmPivotSetpoint(-m_ArmController.getLeftY() * 60);
-    m_arm.incrementExtenderSetpoint(-m_ArmController.getRawAxis(3) * 10);
+    m_arm.incrementArmPivotSetpoint(-m_ArmController.getLeftY() * 10);
+    m_arm.incrementExtenderSetpoint(-m_ArmController.getRightY());
 
   }
   private void handleButtonBoard(){
