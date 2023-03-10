@@ -81,7 +81,7 @@ public class DriveSubsystem extends SubsystemBase {
   // The gyro sensor
   // private final Gyro m_gyro = new ADXRS450_Gyro();
   private ADIS16470_IMU m_gyro = new ADIS16470_IMU();
-  private PhotonCamera camera = new PhotonCamera("Camera_A");
+  private PhotonCamera camera = new PhotonCamera("photonvision");
   private SimVisionSystem simulatedVision;
   // Odometry class for tracking robot pose
   private final DifferentialDriveOdometry m_odometry;
@@ -154,6 +154,8 @@ public class DriveSubsystem extends SubsystemBase {
     for (PhotonTrackedTarget target: targets)
     {
       double skew = target.getSkew();
+      SmartDashboard.putNumber("SKEW", skew);
+      var thing = target.getBestCameraToTarget();
     }
   }
   

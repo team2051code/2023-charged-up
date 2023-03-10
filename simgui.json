@@ -98,7 +98,16 @@
         "motorPutTst": {
           "open": true
         },
-        "open": true
+        "open": true,
+        "photonvision Sim Field": {
+          "open": true
+        }
+      },
+      "photonvision": {
+        "open": true,
+        "photonvision": {
+          "open": true
+        }
       }
     }
   },

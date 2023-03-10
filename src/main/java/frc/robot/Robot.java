@@ -375,6 +375,44 @@ public class Robot extends TimedRobot {
     m_arm.incrementArmPivotSetpoint(-m_ArmController.getLeftY() * 10);
     m_arm.incrementExtenderSetpoint(-m_ArmController.getRightY());
 
+    //from bottom left: down-up left-right
+    if (m_joystickController.getRawButtonPressed(3))
+    {
+
+    }
+    if (m_joystickController.getRawButtonPressed(4))
+    {
+      
+    }
+    if (m_joystickController.getRawButtonPressed(5))
+    {
+      
+    }
+    if (m_joystickController.getRawButtonPressed(6))
+    {
+      
+    }
+    if (m_joystickController.getRawButtonPressed(7))
+    {
+      
+    }
+    if (m_joystickController.getRawButtonPressed(8))
+    {
+      
+    }
+    if (m_joystickController.getRawButtonPressed(9))
+    {
+      
+    }
+    if (m_joystickController.getRawButtonPressed(10))
+    {
+      
+    }
+    if (m_joystickController.getRawButtonPressed(11))
+    {
+      
+    }
+
   }
   private void handleButtonBoard(){
     int boardButton = (int) SmartDashboard.getNumber("boardButton", 0);
