@@ -194,6 +194,8 @@ public class DriveSubsystem extends SubsystemBase {
    * @return The curjrent wheel speeds.
    */
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+    SmartDashboard.putNumber("wheelspeeds/left encoder velocity", m_leftEncoder.getVelocity());
+    SmartDashboard.putNumber("wheelspeeds/right encoder velocity", m_rightEncoder.getVelocity());
     return new DifferentialDriveWheelSpeeds(m_leftEncoder.getVelocity(), m_rightEncoder.getVelocity());
   }
 
@@ -229,8 +231,9 @@ public class DriveSubsystem extends SubsystemBase {
    * @param rightVolts the commanded right output
    */
   public void tankDriveVolts(double leftVolts, double rightVolts) {
+    SmartDashboard.putNumber("simulated left voltage", leftVolts);
     m_leftMotors.setVoltage(leftVolts);
-     m_rightMotors.setVoltage(rightVolts);
+    m_rightMotors.setVoltage(rightVolts);
     m_drive.feed();
   }
 

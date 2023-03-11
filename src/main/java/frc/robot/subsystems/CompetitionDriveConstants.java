@@ -34,7 +34,7 @@ public class CompetitionDriveConstants {
     public static final boolean kRightMotorsReversed = true;
     public static final double kGearRatio = 20.95;
     public static final double kWheelRadiusInches = 3;
-    public static final double kLinearDistanceConversionFactor = 1 / kGearRatio *  2 * Math.PI * Units.inchesToMeters(kWheelRadiusInches);
+    public static final double kLinearDistanceConversionFactor = 1 / kGearRatio * 2 * Math.PI * Units.inchesToMeters(kWheelRadiusInches);
     public static final int XboxArmPort = 0;
     public static final int XboxDrivePort = 1;
     public static final int joyStickPort = 2;

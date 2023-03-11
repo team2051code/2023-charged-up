@@ -295,7 +295,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-   
+   SmartDashboard.putData("command", CommandScheduler.getInstance());
   }
   @Override
   public void teleopInit() {

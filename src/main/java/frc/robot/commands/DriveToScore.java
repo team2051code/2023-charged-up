@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.DriveSubsystem;
 public class DriveToScore extends CommandBase{
     DriveSubsystem m_drive;
@@ -83,6 +84,7 @@ public class DriveToScore extends CommandBase{
                 double yValue = transform.getY();
                 Command command = ramsete.ramsetePose(new Pose2d(0, 0, new Rotation2d(0)), List.of(), new Pose2d(xValue + xOffset, yValue + yOffset, new Rotation2d(-target.getSkew())));
                 command = command.andThen(()-> finished = true);
+                CommandScheduler.getInstance().schedule(command);
                 scheduled = true;
             }
         }
@@ -107,6 +109,7 @@ public class DriveToScore extends CommandBase{
                 double angleDeg = Math.atan(yValue / xValue) * 180 / Math.PI;;
                 Command command = ramsete.ramsetePose(new Pose2d(0, 0, new Rotation2d(0)), List.of(), new Pose2d(xValue + xOffset, yValue + yOffset, new Rotation2d(-angleDeg)));
                 command = command.andThen(()-> finished = true);
+                CommandScheduler.getInstance().schedule(command);
                 scheduled = true;
             }
         }
