@@ -26,6 +26,10 @@ function ntLoaded() {
         }
     }, true)
 
+    NetworkTables.addKeyListener("/SmartDashboard/drop off mode", (key, value, isNew) => {
+        if(value) document.getElementById("mode").innerText = "Drop Off";
+        else document.getElementById("mode").innerText = "Pick Up"
+    }, true);
 
     //adapt the webpage to account for width reletive to the number of elements in a row
     //IDs need to stay generic because file is shared

@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DriveToScore;
 import frc.robot.commands.Place;
 import frc.robot.commands.DriveToScore.Level;
@@ -68,7 +70,7 @@ public class Robot extends TimedRobot {
   
   private RelativeEncoder m_leftEncoder;
   private RelativeEncoder m_rightEncoder;
-  private final XboxController m_ArmController = new XboxController(CompetitionDriveConstants.XboxArmPort);
+  private final Joystick m_ArmController = new Joystick(CompetitionDriveConstants.XboxArmPort);
   private final XboxController m_DriveController = new XboxController(CompetitionDriveConstants.XboxDrivePort);
   private final Joystick m_buttonPanel = new Joystick(CompetitionDriveConstants.joyStickPort);
 
@@ -96,6 +98,8 @@ public class Robot extends TimedRobot {
   public boolean useButtonBoard = true;
   public ArmSubsystem m_arm;
   private int m_lastBoardButtonValue;
+
+  public boolean dropOffMode = true;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -166,6 +170,15 @@ public class Robot extends TimedRobot {
     m_arm.resetEncoders();
     m_arm.setArmPivotSetpoint(270);
     m_arm.setExtenderSetpoint(20);
+
+    var modebutton = new JoystickButton(m_ArmController, 11);
+    modebutton.onTrue(Commands.runOnce(() -> {
+      dropOffMode = !dropOffMode;
+    }));
+    
+    
+
+
   }
 
   /**
@@ -256,6 +269,7 @@ public class Robot extends TimedRobot {
     // }
     SmartDashboard.putNumber("right motor speed:", m_RightFront.get());
     SmartDashboard.putNumber("leftStick", m_DriveController.getLeftX());
+    SmartDashboard.putBoolean("drop off mode", dropOffMode);
     
     CommandScheduler.getInstance().run();
     // System.out.println(targets.size() + "targets found: ");
@@ -329,58 +343,61 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    //handleButtonBoard();
+  
+
+    handleButtonBoard();
 
     // m_robotContainer.arcadeDrive(m_driverController.getLeftX()/1.5,
     // m_driverController.getLeftY()/1.5);
     // m_myRobot.arcadeDrive(-m_driverController.getLeftY()/1.5,
     // -m_driverController.getLeftX()/1.5);
+
     if (m_DriveController.getLeftY() > 0) {
       m_robotContainer.arcadeDrive(-m_DriveController.getLeftY(), m_DriveController.getRightX());
     } else {
       m_robotContainer.arcadeDrive(-m_DriveController.getLeftY(), -m_DriveController.getRightX());
     }
     //gripper pivot controller
-    if (m_ArmController.getXButton()) {
-      m_arm.incrementGripperPivotSetpoint(-20);
-    }
-    if (m_ArmController.getYButton()) {
-      m_arm.incrementGripperPivotSetpoint(20);
-    }
-    //gripper rotate controller
-    if (m_ArmController.getAButton()) {
-      m_arm.incrementGripperRotatorSetpoint(180);
-    }
-    if (m_ArmController.getBButton()) {
-      m_arm.incrementGripperRotatorSetpoint(-180);
-    }
-    if (m_ArmController.getRightStickButton()) {
+    // if (m_ArmController.getXButton()) {
+    //   m_arm.incrementGripperPivotSetpoint(-20);
+    // }
+    // if (m_ArmController.getYButton()) {
+    //   m_arm.incrementGripperPivotSetpoint(20);
+    // }
+    // //gripper rotate controller
+    // if (m_ArmController.getAButton()) {
+    //   m_arm.incrementGripperRotatorSetpoint(180);
+    // }
+    // if (m_ArmController.getBButton()) {
+    //   m_arm.incrementGripperRotatorSetpoint(-180);
+    // }
+    // if (m_ArmController.getRightStickButton()) {
 
-    }
-    if (m_ArmController.getLeftStickButton()) {
+    // }
+    // if (m_ArmController.getLeftStickButton()) {
 
-    }
-    if (m_ArmController.getBackButton()) {
+    // }
+    // if (m_ArmController.getBackButton()) {
 
-    }
-    if (m_ArmController.getStartButton()) {
+    // }
+    // if (m_ArmController.getStartButton()) {
 
-    }
+    // }
 
-    //intake controller
-    if (m_ArmController.getRightBumper()) {
-      m_arm.setIntakeMode(IntakeMode.BACKWARD);
-    }
-    else if (m_ArmController.getLeftBumper()) {
-      m_arm.setIntakeMode(IntakeMode.FORWARD);
-    }
-    else
-    {
-      m_arm.setIntakeMode(IntakeMode.OFF);
-    }
+    // //intake controller
+    // if (m_ArmController.getRightBumper()) {
+    //   m_arm.setIntakeMode(IntakeMode.BACKWARD);
+    // }
+    // else if (m_ArmController.getLeftBumper()) {
+    //   m_arm.setIntakeMode(IntakeMode.FORWARD);
+    // }
+    // else
+    // {
+    //   m_arm.setIntakeMode(IntakeMode.OFF);
+    // }
 
-    m_arm.incrementArmPivotSetpoint(-m_ArmController.getLeftY() * 10);
-    m_arm.incrementExtenderSetpoint(-m_ArmController.getRightY());
+    // m_arm.incrementArmPivotSetpoint(-m_ArmController.getLeftY() * 10);
+    // m_arm.incrementExtenderSetpoint(-m_ArmController.getRightY());
 
     //from bottom left: down-up left-right
   }

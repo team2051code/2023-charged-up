@@ -4,7 +4,8 @@
 	<head>
 		<title>Driver</title>
 		<link rel="stylesheet" href="dashboard.css">	
-		<!--Botstrap Local install-->
+		<link href="bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+		<script src="bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
 		<script language="javascript" src="dashboard.js"></script>	
 	</head>
 
@@ -14,22 +15,24 @@
 		
 		<frc-dashboard onload="ntLoaded()">
 
-			<div>
-				<h3 id="title0" class="tRow0">boolean0</h3>
-				<h3 id="title1" class="tRow0">boolean1</h3>
-				<h3 id="title2" class="tRow0">boolean2</h3>
+			<h1 id="mode">None</h1>
+
+			<div class="row">
+				<h3 id="title0" class="col">boolean0</h3>
+				<h3 id="title1" class="col">boolean1</h3>
+				<h3 id="title2" class="col">boolean2</h3>
 				
-				<h3 id="title3" class="tRow0">number0</h3>
-				<h3 id="title4" class="tRow0">number1</h3>
+				<h3 id="title3" class="col">number0</h3>
+				<h3 id="title4" class="col">number1</h3>
 			</div>
 
-			<div>
-				<frc-boolean-box id="component0" class="boolean0" source-key="/SmartDashboard/compressor/Enabled">enabled</frc-boolean-box>
-				<frc-boolean-box id="component1" class="boolean0" source-key="/SmartDashboard/compressor/Pressure switch">pressure</frc-boolean-box>
-				<frc-boolean-box id="component2" class="boolean0" source-key="/SmartDashboard/Brake">brake</frc-boolean-box>
+			<div class="row">
+				<frc-boolean-box id="component0" class="col" source-key="/SmartDashboard/compressor/Enabled">enabled</frc-boolean-box>
+				<frc-boolean-box id="component1" class="col" source-key="/SmartDashboard/compressor/Pressure switch">pressure</frc-boolean-box>
+				<frc-boolean-box id="component2" class="col" source-key="/SmartDashboard/Brake">brake</frc-boolean-box>
 				
-				<frc-number-bar id="component3" class="number0" source-key="/SmartDashboard/armPivotSetpoint">armPivotSetpoint</frc-number-bar>
-				<frc-number-bar id="component4" class="number0" source-key="/SmartDashboard/armPivotVoltage">armPivotVoltage</frc-number-bar>
+				<frc-number-bar id="component3" class="col" source-key="/SmartDashboard/armPivotSetpoint">armPivotSetpoint</frc-number-bar>
+				<frc-number-bar id="component4" class="col" source-key="/SmartDashboard/armPivotVoltage">armPivotVoltage</frc-number-bar>
 			</div>
 
 

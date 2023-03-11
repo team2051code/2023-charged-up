@@ -7,7 +7,6 @@ a {
     font-size: 30;
     color: #FFF;
     right: 0px;
-    position: absolute;
 }
 /*Camera styles/////Camera styles/////Camera styles/////Camera styles/////*/
 #cameraOut {
@@ -15,7 +14,6 @@ a {
     font-size: 10rem; 
     height: 370px;
     width: 587px;
-	position: absolute;
     top: 0px;
     left: 0px;
 
@@ -26,7 +24,6 @@ a {
     border: 1px solid #FF0;
     height: 370px;
     width: 587px;
-    position: absolute;
     top: 0px;
     left: 0px;
 }
@@ -34,44 +31,37 @@ a {
 /*FRC webcomponents styles/////FRC webcomponents styles/////FRC webcomponents styles/////*/
 
 h3 {
-    position: absolute;
     top: 0px;
 }
 
 .tRow0 {
-    position: absolute;
     top: 0px;
 }
 
 .number0 {
     color: #000;
     fill: white;
-    position: absolute;
     top: 45px;
 }
 
 .boolean0 {
-    position: absolute;
     top: 45px;
 }
 
 /*Button styles/////Button styles/////Button styles/////Button styles/////*/
 #front {
-    position:absolute;
     top:80px;
     right: 20px;
     width: 100px;
 }
 
 #arm {
-    position:absolute;
     top:160px;
     right: 20px;
     width: 100px;
 }
 
 #back {
-    position: absolute;
     top: 240px;
     right: 20px;
     width: 100px;
