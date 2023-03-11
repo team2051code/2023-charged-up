@@ -44,6 +44,7 @@ public class DriveStraight extends CommandBase {
   private enum Autostate{
       OFFRAMP,ONRAMP,PIVOT
   }
+
   /**
    * Creates a new ExampleCommand.
    *
@@ -78,7 +79,7 @@ public class DriveStraight extends CommandBase {
   public void execute() {
     //Sets initial values
     SmartDashboard.putNumber("Setpoint: ", m_left.getSetpoint());
-    SmartDashboard.putString("State:", m_autostate.toString());
+    //SmartDashboard.putString("State:", m_autostate.toString());
     var wheelSpeeds = m_drive.getWheelSpeeds();
     SmartDashboard.putNumber("Wheelspeeds: ", wheelSpeeds.leftMetersPerSecond);
     var leftVelocity = m_left.calculate(wheelSpeeds.leftMetersPerSecond);
@@ -109,25 +110,30 @@ public class DriveStraight extends CommandBase {
         if (yAngle > 15)
         {
           //changes the state of the robot to on ramp
+          //starts a timer to stop balance from going early
           m_timer = new Timer();
           m_timer.start();
           m_timer.reset();
           m_autostate = Autostate.ONRAMP;
         }
       }
-      // when the robot is on
+      //puts timer on Network Table
       if(m_timer != null)
         SmartDashboard.putNumber("Timer", m_timer.get());
+      //triggers after the robot is on the ramp and the timer is over deadtime
       if (m_autostate.equals(Autostate.ONRAMP) && m_timer.get() > SmartDashboard.getNumber("Dead Time", 0.4))
       {
+        //checks for whether ramp is level once it is it will trigger balance command
         if (yAngle > 2.5)
         {
+          //scales speed to an inverse function of angle drives forward
           m_left.setSetpoint(SmartDashboard.getNumber("Setpoint ",SPEED_M_S)/((Math.abs(yAngle)/30)*9+1));
           m_right.setSetpoint(SmartDashboard.getNumber("Setpoint ",SPEED_M_S)/((Math.abs(yAngle)/30)*9+1));
           m_drive.tankDrive(leftVelocity, rightVelocity);
         }
         else if (yAngle < -2.5)
         {
+          //scales speed to an inverse function of angle drives backward
           System.out.println("BACKWARDS");
           m_left.setSetpoint(-(SmartDashboard.getNumber("Setpoint ", SPEED_M_S)/((Math.abs(yAngle)/30)*9+1)));
           m_right.setSetpoint(-(SmartDashboard.getNumber("Setpoint ", SPEED_M_S)/((Math.abs(yAngle)/30)*9+1)));
@@ -136,6 +142,7 @@ public class DriveStraight extends CommandBase {
         }
         else 
         {
+          //ends command and triggers balance command
           System.out.println("pro");
           m_autostate = Autostate.PIVOT;
         }
@@ -143,6 +150,7 @@ public class DriveStraight extends CommandBase {
     }
     else
     {
+      //drives the robot forward for 20u
       m_drive.tankDrive(leftVelocity, rightVelocity);
     }
     
@@ -157,6 +165,7 @@ public class DriveStraight extends CommandBase {
   public void end(boolean interrupted) {
     if(m_timer != null)
       m_timer.stop();
+    //starts balance command
     SmartDashboard.putString("State:", m_autostate.toString());
     Balance balance = new Balance(m_drive);
     balance.andThen(() -> m_drive.tankDriveVolts(0, 0)).schedule();
@@ -178,6 +187,8 @@ public class DriveStraight extends CommandBase {
     //     return true;
     // }
     // return false;
-     return m_autostate.equals(Autostate.PIVOT);
+
+    //ends command
+    return m_autostate.equals(Autostate.PIVOT);
   }
 }

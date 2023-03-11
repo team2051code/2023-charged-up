@@ -62,8 +62,8 @@ public class ArmSimulation {
             ARM_GEAR_REDUCTION, 
             SingleJointedArmSim.estimateMOI(ARM_BASE_LENGTH_M, ARM_MASS_KG), 
             ARM_BASE_LENGTH_M, 
-            Units.degreesToRadians(0),
-            Units.degreesToRadians(360 - 0),
+            Units.degreesToRadians(45),
+            Units.degreesToRadians(360 - 45),
             true);
 
         m_armWindowDisplay = new Mechanism2d(140, 140);
@@ -85,7 +85,7 @@ public class ArmSimulation {
             new Color8Bit(Color.kAqua)));
         m_gripperDisplay = m_armExtensionDisplay.append(new MechanismLigament2d(
             "Gripper", 
-            10, 0, 6, new Color8Bit(Color.kGreen)));
+            8, 0, 6, new Color8Bit(Color.kGreen)));
 
              m_extensionPotentiometer.set(0);
              m_gripperPotentiometer.set(180);

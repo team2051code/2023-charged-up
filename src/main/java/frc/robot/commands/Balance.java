@@ -69,6 +69,7 @@ public class Balance extends CommandBase {
     double overrideYAngle = SmartDashboard.getNumber("Gyro Override", 0);
     rawYAngle = overrideYAngle != 0? overrideYAngle : rawYAngle;
     
+    //converts angle to a range of -180 to 180
     if (rawYAngle > 180)
     {
       rawYAngle -= 360;
@@ -76,20 +77,24 @@ public class Balance extends CommandBase {
     double yAngle = m_gyroFilter.calculate(rawYAngle);
     SmartDashboard.putNumber("raw y angle", rawYAngle);
     SmartDashboard.putNumber("y angle", yAngle);
+    //checks for whether ramp is level
     if (rawYAngle > 2.5)
     {
+      //scales speed to an inverse function of angle drives forward
       SmartDashboard.putBoolean("Finished", false);
       m_left.setSetpoint(SmartDashboard.getNumber("BSetpoint",SPEED_M_S)/(((30-Math.abs(yAngle))/30)*4+1));
       m_right.setSetpoint(SmartDashboard.getNumber("BSetpoint",SPEED_M_S)/(((30-Math.abs(yAngle))/30)*4+1));
       m_drive.tankDrive(leftVelocity, rightVelocity);
     }else if (rawYAngle < -2.5)
     {
+      //scales speed to an inverse function of angle drives backward
       SmartDashboard.putBoolean("Finished", false);
       m_left.setSetpoint(-(SmartDashboard.getNumber("BSetpoint",SPEED_M_S)/(((30-Math.abs(yAngle))/30)*4+1)));
       m_right.setSetpoint(-(SmartDashboard.getNumber("BSetpoint",SPEED_M_S)/(((30-Math.abs(yAngle))/30)*4+1)));
       m_drive.tankDrive(leftVelocity, rightVelocity);
     }else
     {
+      //stops robot
       SmartDashboard.putBoolean("Finished", true);
       // m_left.setSetpoint(0);
       // m_right.setSetpoint(0);

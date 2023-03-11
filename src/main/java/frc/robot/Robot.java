@@ -16,12 +16,15 @@ import frc.robot.components.LimitedMotor;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CompetitionDriveConstants;
 import frc.robot.subsystems.ArmSubsystem.IntakeMode;
+import frc.robot.subsystems.simulated.CANSparkMaxSimulated;
+import frc.robot.subsystems.simulated.SimulatedEncoder;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -56,16 +59,15 @@ public class Robot extends TimedRobot {
   private PhotonCamera m_camera;
   private PhotonCamera m_cameraB;
   private ArrayList<PhotonCamera> cameraList;
-  private final CANSparkMax m_RightFront = new LimitedMotor(CompetitionDriveConstants.kRightMotor1Port,
-      MotorType.kBrushless, POWER_LIMIT);
-  private final CANSparkMax m_LeftFront = new LimitedMotor(CompetitionDriveConstants.kLeftMotor1Port,
-      MotorType.kBrushless, POWER_LIMIT);
+  private CANSparkMax m_RightFront;
+  private CANSparkMax m_LeftFront;
   private final CANSparkMax m_RightBack = new LimitedMotor(CompetitionDriveConstants.kRightMotor2Port,
       MotorType.kBrushless, POWER_LIMIT);
   private final CANSparkMax m_LeftBack = new LimitedMotor(CompetitionDriveConstants.kLeftMotor2Port,
       MotorType.kBrushless, POWER_LIMIT);
-  private final RelativeEncoder m_leftEncoder = m_LeftFront.getEncoder();
-  private final RelativeEncoder m_rightEncoder = m_RightFront.getEncoder();
+  
+  private RelativeEncoder m_leftEncoder;
+  private RelativeEncoder m_rightEncoder;
   private final XboxController m_ArmController = new XboxController(CompetitionDriveConstants.XboxArmPort);
   private final XboxController m_DriveController = new XboxController(CompetitionDriveConstants.XboxDrivePort);
   private final Joystick m_buttonPanel = new Joystick(CompetitionDriveConstants.joyStickPort);
@@ -80,8 +82,8 @@ public class Robot extends TimedRobot {
   // MotorType.kBrushed);
   // private final CANSparkMax m_intakeLeft = new CANSparkMax(6,
   // MotorType.kBrushed);
-  private final MotorControllerGroup m_left = new MotorControllerGroup(m_LeftFront, m_LeftBack);
-  private final MotorControllerGroup m_right = new MotorControllerGroup(m_RightFront, m_RightBack);
+  private MotorControllerGroup m_left;
+  private MotorControllerGroup m_right;
   public final double ksVolts = 0.16985;
   public final double kvVoltSecondsPerMeter = 0.12945;
   public final double kaVoltSecondsSquaredPerMeter = 0.025994;
@@ -105,6 +107,28 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our
     // autonomous chooser on the dashboard.
+    CANSparkMaxSimulated simulatedLeft = null;
+    CANSparkMaxSimulated simulatedRight = null;
+    if (RobotBase.isSimulation())
+    {
+      m_leftEncoder = new SimulatedEncoder();
+      m_rightEncoder = new SimulatedEncoder();
+      simulatedLeft = new CANSparkMaxSimulated(CompetitionDriveConstants.kLeftMotor1Port, MotorType.kBrushless);
+      simulatedRight = new CANSparkMaxSimulated(CompetitionDriveConstants.kRightMotor1Port, MotorType.kBrushless);
+      m_RightFront = simulatedRight;
+      m_LeftFront = simulatedLeft;
+    }
+    else
+    {
+      m_RightFront = new LimitedMotor(CompetitionDriveConstants.kRightMotor1Port,
+      MotorType.kBrushless, POWER_LIMIT);
+      m_LeftFront = new LimitedMotor(CompetitionDriveConstants.kLeftMotor1Port,
+      MotorType.kBrushless, POWER_LIMIT);
+      m_leftEncoder = m_LeftFront.getEncoder();
+      m_rightEncoder = m_RightFront.getEncoder();
+    }
+    m_left = new MotorControllerGroup(m_LeftFront, m_LeftBack);
+    m_right = new MotorControllerGroup(m_RightFront, m_RightBack);
     SmartDashboard.putNumber("Distance", 0);
     SmartDashboard.putNumber("Dead Time", 0);
     SmartDashboard.putNumber("Setpoint", 0);
@@ -131,7 +155,7 @@ public class Robot extends TimedRobot {
     m_RightBack.setIdleMode(IdleMode.kBrake);
     m_RightFront.setIdleMode(IdleMode.kBrake);
 
-    m_robotContainer = new RobotContainer(m_left, m_right, m_leftEncoder, m_rightEncoder);
+    m_robotContainer = new RobotContainer(m_left, m_right, m_leftEncoder, m_rightEncoder, simulatedLeft, simulatedRight);
     m_arm = m_robotContainer.getArmSubsystem();
     // m_camera = new PhotonCamera("Camera_A");
     // m_cameraB = new PhotonCamera("Camera_B");
@@ -139,6 +163,9 @@ public class Robot extends TimedRobot {
     // cameraList.add(m_camera);
     // cameraList.add(m_cameraB);
 
+    m_arm.resetEncoders();
+    m_arm.setArmPivotSetpoint(270);
+    m_arm.setExtenderSetpoint(20);
   }
 
   /**
@@ -229,7 +256,7 @@ public class Robot extends TimedRobot {
     // }
     SmartDashboard.putNumber("right motor speed:", m_RightFront.get());
     SmartDashboard.putNumber("leftStick", m_DriveController.getLeftX());
-
+    
     CommandScheduler.getInstance().run();
     // System.out.println(targets.size() + "targets found: ");
     // if (targets.size() > 0)
@@ -294,6 +321,8 @@ public class Robot extends TimedRobot {
     }
     m_robotContainer.resetOdometry();
 
+    m_arm.setArmPivotSetpoint(270);
+    m_arm.setExtenderSetpoint(20);
   }
 
   /** This function is called periodically during operator control. */
@@ -350,8 +379,46 @@ public class Robot extends TimedRobot {
       m_arm.setIntakeMode(IntakeMode.OFF);
     }
 
-    m_arm.incrementArmPivotSetpoint(-m_ArmController.getLeftY() * 60);
-    m_arm.incrementExtenderSetpoint(-m_ArmController.getRawAxis(3) * 10);
+    m_arm.incrementArmPivotSetpoint(-m_ArmController.getLeftY() * 10);
+    m_arm.incrementExtenderSetpoint(-m_ArmController.getRightY());
+
+    //from bottom left: down-up left-right
+    if (m_joystickController.getRawButtonPressed(3))
+    {
+
+    }
+    if (m_joystickController.getRawButtonPressed(4))
+    {
+      
+    }
+    if (m_joystickController.getRawButtonPressed(5))
+    {
+      
+    }
+    if (m_joystickController.getRawButtonPressed(6))
+    {
+      
+    }
+    if (m_joystickController.getRawButtonPressed(7))
+    {
+      
+    }
+    if (m_joystickController.getRawButtonPressed(8))
+    {
+      
+    }
+    if (m_joystickController.getRawButtonPressed(9))
+    {
+      
+    }
+    if (m_joystickController.getRawButtonPressed(10))
+    {
+      
+    }
+    if (m_joystickController.getRawButtonPressed(11))
+    {
+      
+    }
 
   }
   private void handleButtonBoard(){
@@ -406,7 +473,7 @@ public class Robot extends TimedRobot {
   }
 
   private void scorePiece(DriveToScore.Level level, DriveToScore.Offset offset){
-    Place highPlace = new Place(m_arm, level, true, true, SmartDashboard.getNumber("Distance", 10)); //is a cube and facing forwards //p = 1 and d = 0.5 works well
+    Place highPlace = new Place(m_arm, level, true, false, SmartDashboard.getNumber("Distance", 10)); //is a cube and facing forwards //p = 1 and d = 0.5 works well
     CommandScheduler.getInstance().schedule(highPlace);
   }
 

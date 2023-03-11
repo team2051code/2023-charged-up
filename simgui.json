@@ -27,10 +27,22 @@
       "/SmartDashboard/Field: ": "Field2d",
       "/SmartDashboard/Gripper PID": "PIDController",
       "/SmartDashboard/MotorControllerGroup[1]": "Motor Controller",
-      "/SmartDashboard/motorPutTst": "Motor Controller"
+      "/SmartDashboard/Simulation Field:": "Field2d",
+      "/SmartDashboard/motorPutTst": "Motor Controller",
+      "/SmartDashboard/photonvision Sim Field": "Field2d"
     },
     "windows": {
       "/SmartDashboard/Arm Sim": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Simulation Field:": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/photonvision Sim Field": {
         "window": {
           "visible": true
         }
@@ -38,6 +50,9 @@
     }
   },
   "NetworkTables": {
+    "Retained Values": {
+      "open": false
+    },
     "transitory": {
       "LiveWindow": {
         ".status": {
@@ -57,6 +72,17 @@
         "Arm PID": {
           "open": true
         },
+        "Arm Sim": {
+          "ArmRoot": {
+            "Arm": {
+              "Arm Extension": {
+                "open": true
+              },
+              "open": true
+            },
+            "open": true
+          }
+        },
         "Extender PID": {
           "open": true
         },
@@ -66,11 +92,37 @@
         "PIDS": {
           "open": true
         },
+        "Simulation Field:": {
+          "open": true
+        },
         "motorPutTst": {
           "open": true
         },
-        "open": true
+        "open": true,
+        "photonvision Sim Field": {
+          "open": true
+        }
+      },
+      "photonvision": {
+        "open": true,
+        "photonvision": {
+          "open": true
+        }
       }
+    }
+  },
+  "NetworkTables Info": {
+    "Clients": {
+      "open": true
+    },
+    "Connections": {
+      "open": true
+    },
+    "Server": {
+      "Subscribers": {
+        "open": true
+      },
+      "open": true
     }
   }
 }
