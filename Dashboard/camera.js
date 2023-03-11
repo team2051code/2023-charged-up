@@ -11,6 +11,7 @@ function cameraInit(){
 
         //22 is Shaolin Hand (testing)
         //16 is Drill Handlespo Traffic Light and 20 is Dumb
+        //Trauma is unknown find unkown 
         const piProtocols = [22, 20, 16];
         let currentPi = 0;
 

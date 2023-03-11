@@ -57,6 +57,9 @@
     }
   },
   "NetworkTables": {
+    "Retained Values": {
+      "open": false
+    },
     "transitory": {
       "LiveWindow": {
         ".status": {
@@ -75,6 +78,17 @@
       "SmartDashboard": {
         "Arm PID": {
           "open": true
+        },
+        "Arm Sim": {
+          "ArmRoot": {
+            "Arm": {
+              "Arm Extension": {
+                "open": true
+              },
+              "open": true
+            },
+            "open": true
+          }
         },
         "Extender PID": {
           "open": true

@@ -62,19 +62,19 @@ public class Place extends CommandBase {
         }
         else if(level == DriveToScore.Level.MIDDLE) //scores on the middle level
         {
-          theta = Units.radiansToDegrees(Math.atan(6/(16+distance)));//finds angle need to score imagining 0 is
+          theta = Units.radiansToDegrees(Math.atan(6/(16+distance+14.25)));//finds angle need to score imagining 0 is
           //horizontally front
           m_subsystem.setArmPivotSetpoint(theta+90);//sets arm to go to calced angle
-          m_subsystem.setExtenderSetpoint(Math.sqrt((Math.pow(6,2)+Math.pow((16+distance), 2))-28));//calculates
+          m_subsystem.setExtenderSetpoint(Math.abs(Math.sqrt((Math.pow(6,2)+Math.pow((16+distance+14.25), 2)))-28));//calculates
           //and sets the arm to the right length to score
           m_subsystem.setGripperPivotSetpoint(180+theta);//sets the gripper parallel to the arm
           m_subsystem.toggleGripper();//opens gripper to let out
         }
         else if(level == DriveToScore.Level.TOP) //scores on the top level
         {
-          theta = Units.radiansToDegrees(Math.atan(18/(16+distance)));
+          theta = Units.radiansToDegrees(Math.atan(18/(16+distance+24+7.75)));
           m_subsystem.setArmPivotSetpoint(theta+90);
-          m_subsystem.setExtenderSetpoint(Math.sqrt((Math.pow(18,2)+Math.pow((16+distance), 2))-28));
+          m_subsystem.setExtenderSetpoint(Math.abs(Math.sqrt((Math.pow(18,2)+Math.pow((16+distance+24+7.75), 2)))-28));
           m_subsystem.setGripperPivotSetpoint(180+theta);
         }
       }else//when holding cone on front
@@ -109,7 +109,7 @@ public class Place extends CommandBase {
     {
       if(level == DriveToScore.Level.BOTTOM)
       {
-        theta = Units.radiansToDegrees(Math.atan((16+distance)/24.0))+180;
+        theta = 360-Units.radiansToDegrees(Math.atan((16+distance)/24.0));
         m_subsystem.setArmPivotSetpoint(theta);
         m_subsystem.setExtenderSetpoint(Math.sqrt((Math.pow((distance+16), 2)+Math.pow(24, 2)))-28);
         m_subsystem.setGripperPivotSetpoint(theta-90);
@@ -118,19 +118,19 @@ public class Place extends CommandBase {
       }
       else if(level == DriveToScore.Level.MIDDLE)
       {
-        theta = Units.radiansToDegrees(Math.atan(6/(16+distance)))+180;
-        m_subsystem.setArmPivotSetpoint(theta+90);
-        m_subsystem.setExtenderSetpoint(Math.sqrt((Math.pow(6,2)+Math.pow((16+distance), 2))-28));
-        m_subsystem.setGripperPivotSetpoint(180+theta);
+        theta = 360-Units.radiansToDegrees(Math.atan(6/(16+distance+14.25)));
+        m_subsystem.setArmPivotSetpoint(theta-90);
+        m_subsystem.setExtenderSetpoint(Math.sqrt((Math.pow(6,2)+Math.pow((16+distance+14.25), 2))-28));
+        m_subsystem.setGripperPivotSetpoint(theta-180);
         m_subsystem.toggleGripper();
         finished = true;
       }
       else if(level == DriveToScore.Level.TOP)
       {
-        theta = Units.radiansToDegrees(Math.atan(18/(16+distance)))+180;
-        m_subsystem.setArmPivotSetpoint(theta+90);
-        m_subsystem.setExtenderSetpoint(Math.sqrt((Math.pow(18,2)+Math.pow((16+distance), 2))-28));
-        m_subsystem.setGripperPivotSetpoint(180+theta);
+        theta = 360-Units.radiansToDegrees(Math.atan(18/(16+distance+24+7.75)));
+        m_subsystem.setArmPivotSetpoint(theta-90);
+        m_subsystem.setExtenderSetpoint(Math.sqrt((Math.pow(18,2)+Math.pow((16+distance+24+7.75), 2))-28));
+        m_subsystem.setGripperPivotSetpoint(theta-180);
         finished = true;
       }
     }else//when holding cone on back
