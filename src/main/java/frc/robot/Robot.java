@@ -329,7 +329,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    handleButtonBoard();
+    //handleButtonBoard();
 
     // m_robotContainer.arcadeDrive(m_driverController.getLeftX()/1.5,
     // m_driverController.getLeftY()/1.5);
@@ -383,43 +383,6 @@ public class Robot extends TimedRobot {
     m_arm.incrementExtenderSetpoint(-m_ArmController.getRightY());
 
     //from bottom left: down-up left-right
-    if (m_joystickController.getRawButtonPressed(3))
-    {
-
-    }
-    if (m_joystickController.getRawButtonPressed(4))
-    {
-      
-    }
-    if (m_joystickController.getRawButtonPressed(5))
-    {
-      
-    }
-    if (m_joystickController.getRawButtonPressed(6))
-    {
-      
-    }
-    if (m_joystickController.getRawButtonPressed(7))
-    {
-      
-    }
-    if (m_joystickController.getRawButtonPressed(8))
-    {
-      
-    }
-    if (m_joystickController.getRawButtonPressed(9))
-    {
-      
-    }
-    if (m_joystickController.getRawButtonPressed(10))
-    {
-      
-    }
-    if (m_joystickController.getRawButtonPressed(11))
-    {
-      
-    }
-
   }
   private void handleButtonBoard(){
 
