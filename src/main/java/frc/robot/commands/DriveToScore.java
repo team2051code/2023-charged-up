@@ -9,6 +9,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
@@ -21,7 +22,12 @@ public class DriveToScore extends CommandBase{
     boolean scheduled = false;
     Pod pod;
     int id = 0;
-    public DriveToScore(DriveSubsystem subsystem, PhotonCamera camera, Pod podNum, Offset offset, Level level, String team)
+    public DriveToScore(DriveSubsystem subsystem, PhotonCamera camera)
+    {
+        m_drive = subsystem;
+        camera1 = camera;
+    }
+    public DriveToScore(DriveSubsystem subsystem, PhotonCamera camera,  Pod podNum, Offset offset, Level level, String team)
     {
         m_drive = subsystem;
         camera1 = camera;
@@ -62,22 +68,24 @@ public class DriveToScore extends CommandBase{
     public enum Level{TOP, MIDDLE, BOTTOM}
     @Override
     public void initialize() {
+        if (!scheduled)
+        {
         FollowRamsete ramsete = new FollowRamsete(m_drive);
         PhotonPipelineResult result = camera1.getLatestResult();
         List<PhotonTrackedTarget> targets = result.getTargets();
         for (PhotonTrackedTarget target: targets)
         {
             int targetId = target.getFiducialId();
-            if (targetId == id)
+            if (targetId == 0)
             {
                 Transform3d transform = target.getBestCameraToTarget();
                 double xValue = transform.getX();
                 double yValue = transform.getY();
                 Command command = ramsete.ramsetePose(new Pose2d(0, 0, new Rotation2d(0)), List.of(), new Pose2d(xValue + xOffset, yValue + yOffset, new Rotation2d(-target.getSkew())));
-                command.andThen(()-> finished = true);
+                command = command.andThen(()-> finished = true);
                 scheduled = true;
-                command.schedule();
             }
+        }
         }
     }
     @Override
@@ -91,15 +99,15 @@ public class DriveToScore extends CommandBase{
         for (PhotonTrackedTarget target: targets)
         {
             int targetId = target.getFiducialId();
-            if (targetId == id)
+            if (targetId == 0)
             {
                 Transform3d transform = target.getBestCameraToTarget();
                 double xValue = transform.getX();
                 double yValue = transform.getY();
-                Command command = ramsete.ramsetePose(new Pose2d(0, 0, new Rotation2d(0)), List.of(), new Pose2d(xValue + xOffset, yValue + yOffset, new Rotation2d(-target.getSkew())));
-                command.andThen(()-> finished = true);
+                double angleDeg = Math.atan(yValue / xValue) * 180 / Math.PI;;
+                Command command = ramsete.ramsetePose(new Pose2d(0, 0, new Rotation2d(0)), List.of(), new Pose2d(xValue + xOffset, yValue + yOffset, new Rotation2d(-angleDeg)));
+                command = command.andThen(()-> finished = true);
                 scheduled = true;
-                command.schedule();
             }
         }
         }

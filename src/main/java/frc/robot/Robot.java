@@ -282,21 +282,21 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     // m_trajectory = m_robotContainer.getTrajectories();
     m_balanceCommand = m_robotContainer.getBalanceCommand();
+    var m_ramseteCommand = m_robotContainer.getRamseteCommand();
     // Command drive = m_robotContainer.getTrajectories();
     // schedule the autonomous command (example)
     // if(m_trajectory != null)
     // m_trajectory.schedule();
-    if (m_balanceCommand != null) {
-      m_balanceCommand.schedule();
+    if (m_ramseteCommand != null) {
+      m_ramseteCommand.schedule();
     }
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-
+   
   }
-
   @Override
   public void teleopInit() {
     // This makes sure that the autonomous stops running when

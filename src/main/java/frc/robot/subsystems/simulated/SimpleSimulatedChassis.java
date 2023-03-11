@@ -53,7 +53,7 @@ public class SimpleSimulatedChassis {
     new Pose3d(
             new Translation3d(targetXPos, targetYPos, 0.25),
             new Rotation3d(0.0, 0.0, 0.0));
-    private SimVisionTarget target = new SimVisionTarget(farTargetPose, targetWidth, targetHeight, camResolutionHeight);
+    private SimVisionTarget target = new SimVisionTarget(farTargetPose, targetWidth, targetHeight, 0);
 
 
     /**

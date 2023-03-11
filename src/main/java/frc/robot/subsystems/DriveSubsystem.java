@@ -14,6 +14,7 @@ import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.networktables.NetworkTableListener;
@@ -155,6 +156,13 @@ public class DriveSubsystem extends SubsystemBase {
     {
       double skew = target.getSkew();
       SmartDashboard.putNumber("SKEW", skew);
+      Transform3d transform = target.getBestCameraToTarget();
+      double xValue = transform.getX();
+      double yValue = transform.getY();
+      double angleRad = Math.atan(yValue/ xValue);
+      double angleDeg = Math.atan(yValue / xValue) * 180 / Math.PI;
+      SmartDashboard.putNumber("angle", angleRad);
+      SmartDashboard.putNumber("angleDeg", angleDeg);
       var thing = target.getBestCameraToTarget();
     }
   }
@@ -319,6 +327,10 @@ public class DriveSubsystem extends SubsystemBase {
 
   public boolean getGear(){
     return m_gearSolenoid.get();
+  }
+  public PhotonCamera getCamera()
+  {
+    return camera;
   }
 }
   
