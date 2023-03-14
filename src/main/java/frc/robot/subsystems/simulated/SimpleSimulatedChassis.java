@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * A simulation of the robot's chassis, converting input drive voltages to
@@ -53,7 +54,7 @@ public class SimpleSimulatedChassis {
     new Pose3d(
             new Translation3d(targetXPos, targetYPos, 0.25),
             new Rotation3d(0.0, 0.0, 0.0));
-    private SimVisionTarget target = new SimVisionTarget(farTargetPose, targetWidth, targetHeight, camResolutionHeight);
+    private SimVisionTarget target = new SimVisionTarget(farTargetPose, targetWidth, targetHeight, 0);
 
 
     /**
@@ -106,6 +107,8 @@ public class SimpleSimulatedChassis {
          */
         double leftPower = leftMotor.get();
         double rightPower = rightMotor.get();
+        SmartDashboard.putNumber("left motor velocity", m_leftEncoder.getVelocity());
+        SmartDashboard.putNumber("right motor velocity", m_rightEncoder.getVelocity());
 
 
         /* Compute a delta and update m_lastUpdateTime. The delta makes the simulation

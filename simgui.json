@@ -1,23 +1,4 @@
 {
-  "HALProvider": {
-    "Other Devices": {
-      "ADIS16470[0]": {
-        "header": {
-          "open": true
-        }
-      },
-      "SPARK MAX [11]": {
-        "header": {
-          "open": true
-        }
-      },
-      "SPARK MAX [9]": {
-        "header": {
-          "open": true
-        }
-      }
-    }
-  },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
@@ -26,9 +7,8 @@
       "/SmartDashboard/Extender PID": "PIDController",
       "/SmartDashboard/Field: ": "Field2d",
       "/SmartDashboard/Gripper PID": "PIDController",
-      "/SmartDashboard/MotorControllerGroup[1]": "Motor Controller",
       "/SmartDashboard/Simulation Field:": "Field2d",
-      "/SmartDashboard/motorPutTst": "Motor Controller",
+      "/SmartDashboard/command": "Scheduler",
       "/SmartDashboard/photonvision Sim Field": "Field2d"
     },
     "windows": {
@@ -45,99 +25,16 @@
     }
   },
   "NetworkTables": {
-    "Retained Values": {
-      "open": false
-    },
     "transitory": {
-      "LiveWindow": {
-        ".status": {
-          "open": true
-        }
-      },
-      "Shuffleboard": {
-        ".metadata": {
-          "open": true
-        },
-        ".recording": {
-          "open": true
-        },
-        "open": true
-      },
       "SmartDashboard": {
         "Arm PID": {
           "open": true
         },
-        "Arm Sim": {
-          "ArmRoot": {
-            "Arm": {
-              "Arm Extension": {
-                "open": true
-              },
-              "open": true
-            },
-            "open": true
-          }
-        },
         "Extender PID": {
           "open": true
         },
-        "Gripper PID": {
-          "open": true
-        },
-        "PIDS": {
-          "open": true
-        },
-        "Simulation Field:": {
-          "open": true
-        },
-        "motorPutTst": {
-          "open": true
-        },
-        "open": true,
-        "photonvision Sim Field": {
-          "open": true
-        }
-      },
-      "photonvision": {
-        "open": true,
-        "photonvision": {
-          "open": true
-        }
-      }
-    }
-  },
-  "NetworkTables Info": {
-    "Clients": {
-      "open": true
-    },
-    "Connections": {
-      "open": true
-    },
-    "Server": {
-      "Subscribers": {
         "open": true
-      },
-      "open": true
-    }
-  },
-  "Plot": {
-    "Plot <0>": {
-      "plots": [
-        {
-          "height": 332,
-          "series": [
-            {
-              "color": [
-                0.2980392277240753,
-                0.44705885648727417,
-                0.6901960968971252,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/armPivotSetpoint"
-            }
-          ]
-        }
-      ]
+      }
     }
   }
 }

@@ -72,7 +72,14 @@ public class Robot extends TimedRobot {
   private RelativeEncoder m_rightEncoder;
   private final XboxController m_ArmController = new XboxController(CompetitionDriveConstants.XboxArmPort);
   private final XboxController m_DriveController = new XboxController(CompetitionDriveConstants.XboxDrivePort);
-  private final Joystick m_joystickController = new Joystick(CompetitionDriveConstants.joyStickPort);
+  private final Joystick m_buttonPanel = new Joystick(CompetitionDriveConstants.joyStickPort);
+
+  private static final int[] BUTTON_PANEL_MAP = {
+    -1,-1,-1,-1,
+   7, 4, 1,
+   8, 5, 2,
+   9, 3, 6
+  };
   // private final CANSparkMax m_intakeRight = new CANSparkMax(5,
   // MotorType.kBrushed);
   // private final CANSparkMax m_intakeLeft = new CANSparkMax(6,
@@ -287,21 +294,21 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     // m_trajectory = m_robotContainer.getTrajectories();
     m_balanceCommand = m_robotContainer.getBalanceCommand();
+    var m_ramseteCommand = m_robotContainer.getRamseteCommand();
     // Command drive = m_robotContainer.getTrajectories();
     // schedule the autonomous command (example)
     // if(m_trajectory != null)
     // m_trajectory.schedule();
-    if (m_balanceCommand != null) {
-      m_balanceCommand.schedule();
+    if (m_ramseteCommand != null) {
+      m_ramseteCommand.schedule();
     }
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-
+   SmartDashboard.putData("command", CommandScheduler.getInstance());
   }
-
   @Override
   public void teleopInit() {
     // This makes sure that the autonomous stops running when
@@ -324,7 +331,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    handleButtonBoard();
+    //handleButtonBoard();
 
     // m_robotContainer.arcadeDrive(m_driverController.getLeftX()/1.5,
     // m_driverController.getLeftY()/1.5);
@@ -343,24 +350,22 @@ public class Robot extends TimedRobot {
       m_arm.incrementGripperPivotSetpoint(20);
     }
     //gripper rotate controller
-    if (m_ArmController.getAButton()) {
-      m_arm.incrementGripperRotatorSetpoint(180);
-    }
-    if (m_ArmController.getBButton()) {
-      m_arm.incrementGripperRotatorSetpoint(-180);
-    }
-    if (m_ArmController.getRightStickButton()) {
+    m_arm.toggleGripper(!m_ArmController.getAButton());
+    // if (m_ArmController.getBButton()) {
+    //   m_arm.toggleGripper();
+    // }
+    // if (m_ArmController.getRightStickButton()) {
 
-    }
-    if (m_ArmController.getLeftStickButton()) {
+    // }
+    // if (m_ArmController.getLeftStickButton()) {
 
-    }
-    if (m_ArmController.getBackButton()) {
+    // }
+    // if (m_ArmController.getBackButton()) {
 
-    }
-    if (m_ArmController.getStartButton()) {
+    // }
+    // if (m_ArmController.getStartButton()) {
 
-    }
+    // }
 
     //intake controller
     if (m_ArmController.getRightBumper()) {
@@ -383,50 +388,17 @@ public class Robot extends TimedRobot {
         m_arm.incrementArmPivotSetpoint(-m_ArmController.getLeftY() * 50);
       }
       if(!(-m_ArmController.getRightY()<0.25 && -m_ArmController.getRightY()>-0.25))
-        m_arm.incrementExtenderSetpoint(-m_ArmController.getRightY()/5);
+        m_arm.incrementExtenderSetpoint(-m_ArmController.getRightY()*5);
     }
 
     //from bottom left: down-up left-right
-    if (m_joystickController.getRawButtonPressed(3))
-    {
-
-    }
-    if (m_joystickController.getRawButtonPressed(4))
-    {
-      
-    }
-    if (m_joystickController.getRawButtonPressed(5))
-    {
-      
-    }
-    if (m_joystickController.getRawButtonPressed(6))
-    {
-      
-    }
-    if (m_joystickController.getRawButtonPressed(7))
-    {
-      
-    }
-    if (m_joystickController.getRawButtonPressed(8))
-    {
-      
-    }
-    if (m_joystickController.getRawButtonPressed(9))
-    {
-      
-    }
-    if (m_joystickController.getRawButtonPressed(10))
-    {
-      
-    }
-    if (m_joystickController.getRawButtonPressed(11))
-    {
-      
-    }
-
   }
   private void handleButtonBoard(){
+
+    int physicalBoardButton = getPressedBoardButton();
+
     int boardButton = (int) SmartDashboard.getNumber("boardButton", 0);
+    boardButton = boardButton > 0 ? boardButton:physicalBoardButton; 
     if (boardButton == m_lastBoardButtonValue){
       return;
     }
@@ -467,6 +439,17 @@ public class Robot extends TimedRobot {
     Grab grab = new Grab(m_arm, frontSide, SmartDashboard.getNumber("Distance", 10));
     CommandScheduler.getInstance().schedule(grab);
   }
+
+  private int getPressedBoardButton() {
+    int buttonPressed = 0;
+    for(int i = 0; i<13; i++){
+      if(m_buttonPanel.getRawButton(i)){
+        buttonPressed = BUTTON_PANEL_MAP[i];
+      } 
+    }
+    return buttonPressed;
+  }
+
   private void scorePiece(DriveToScore.Level level, DriveToScore.Offset offset,boolean frontSide){
     Place highPlace = new Place(m_arm, level, true, frontSide, SmartDashboard.getNumber("Distance", 10)); //is a cube and facing forwards //p = 1 and d = 0.5 works well
     CommandScheduler.getInstance().schedule(highPlace);
