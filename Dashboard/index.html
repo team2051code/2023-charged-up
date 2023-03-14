@@ -15,17 +15,19 @@
 		
 		<frc-dashboard onload="ntLoaded()">
 
-			<h1 id="mode">None</h1>
+			<h1 id="mode" class="text-light">None</h1>
 
-			<div class="row">
-				<h3 id="title0" class="col">boolean0</h3>
-				<h3 id="title1" class="col">boolean1</h3>
-				<h3 id="title2" class="col">boolean2</h3>
-				
-				<h3 id="title3" class="col">number0</h3>
-				<h3 id="title4" class="col">number1</h3>
+			<div class="row text-light">
+				<h3 id="title0" class="col"></h3>
+				<h3 id="title1" class="col"></h3>
+				<h3 id="title2" class="col"></h3>
+				<h3 id="title3" class="col"></h3>
+				<h3 id="title4" class="col"></h3>
 			</div>
-
+			<!--
+				gripper pivot, gripper rotation, extender (extender potentiometer), arm angle, gripped (GripperSol), 
+				robot balance
+			-->
 			<div class="row">
 				<frc-boolean-box id="component0" class="col" source-key="/SmartDashboard/compressor/Enabled">enabled</frc-boolean-box>
 				<frc-boolean-box id="component1" class="col" source-key="/SmartDashboard/compressor/Pressure switch">pressure</frc-boolean-box>

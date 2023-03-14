@@ -1,5 +1,6 @@
 console.log("javaScrript has loaded");
 
+
 function ntLoaded() {
 
     console.log("Network tables has loaded");
@@ -17,6 +18,7 @@ function ntLoaded() {
         JSSoundTest.play()
     }, true);
 
+    //background color of alliance
     NetworkTables.addKeyListener('/FMSInfo/IsRedAlliance', (key, value, isNew) => {
         if (key){
             document.getElementById("teamColor").style.backgroundColor = "#300";
@@ -26,26 +28,10 @@ function ntLoaded() {
         }
     }, true)
 
+    //display mode at top of dashboard
     NetworkTables.addKeyListener("/SmartDashboard/drop off mode", (key, value, isNew) => {
         if(value) document.getElementById("mode").innerText = "Drop Off";
         else document.getElementById("mode").innerText = "Pick Up"
     }, true);
-
-    //adapt the webpage to account for width reletive to the number of elements in a row
-    //IDs need to stay generic because file is shared
-    var title1 = ["title0", "title1", "title2", "title3", "title4"];
-    var display1 = ["component0", "component1", "component2", "component3", "component4"];
-
-    function WidthAdjust(value, index, array){
-        document.getElementById(value).style.left = (window.innerWidth/array.length)*index + "px";
-    }
-
-    function adapt(){
-        title1.forEach(WidthAdjust);
-        display1.forEach(WidthAdjust);
-    }     
-
-    //developer console shrinks the window so adapt has to repeat
-    setInterval(adapt, 2500);
 
 }
