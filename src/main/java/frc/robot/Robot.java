@@ -9,7 +9,9 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.DriveToScore;
+import frc.robot.commands.Grab;
 import frc.robot.commands.Place;
+import frc.robot.commands.Retract;
 import frc.robot.commands.DriveToScore.Level;
 import frc.robot.commands.DriveToScore.Offset;
 import frc.robot.components.LimitedMotor;
@@ -157,8 +159,8 @@ public class Robot extends TimedRobot {
     // cameraList.add(m_cameraB);
 
     m_arm.resetEncoders();
-    m_arm.setArmPivotSetpoint(270);
-    m_arm.setExtenderSetpoint(20);
+    m_arm.setArmPivotSetpoint(90);
+    m_arm.setExtenderSetpoint(3);
   }
 
   /**
@@ -314,8 +316,8 @@ public class Robot extends TimedRobot {
     }
     m_robotContainer.resetOdometry();
 
-    m_arm.setArmPivotSetpoint(270);
-    m_arm.setExtenderSetpoint(20);
+    //m_arm.setArmPivotSetpoint(180);
+    m_arm.setExtenderSetpoint(3);
   }
 
   /** This function is called periodically during operator control. */
@@ -372,8 +374,17 @@ public class Robot extends TimedRobot {
       m_arm.setIntakeMode(IntakeMode.OFF);
     }
 
-    m_arm.incrementArmPivotSetpoint(-m_ArmController.getLeftY() * 10);
-    m_arm.incrementExtenderSetpoint(-m_ArmController.getRightY());
+
+    if(!m_arm.getOveride()){
+      if(-m_ArmController.getLeftY()<0.25 && -m_ArmController.getLeftY()>-0.25)
+        m_arm.setBreak(false);
+      else{
+        m_arm.setBreak(true);
+        m_arm.incrementArmPivotSetpoint(-m_ArmController.getLeftY() * 50);
+      }
+      if(!(-m_ArmController.getRightY()<0.25 && -m_ArmController.getRightY()>-0.25))
+        m_arm.incrementExtenderSetpoint(-m_ArmController.getRightY()/5);
+    }
 
     //from bottom left: down-up left-right
     if (m_joystickController.getRawButtonPressed(3))
@@ -422,37 +433,42 @@ public class Robot extends TimedRobot {
     m_lastBoardButtonValue = boardButton;
 
     if (boardButton == 1){
-      scorePiece(Level.TOP, Offset.LEFT);
+      scorePiece(Level.BOTTOM, Offset.LEFT,true);
     }
     if (boardButton == 2){
-      scorePiece(Level.TOP, Offset.CENTER);
+      scorePiece(Level.MIDDLE, Offset.CENTER,true);
     }
     if (boardButton == 3){
-      scorePiece(Level.TOP, Offset.RIGHT);
+      scorePiece(Level.TOP, Offset.RIGHT,true);
     }
     if (boardButton == 4){
-      scorePiece(Level.MIDDLE, Offset.LEFT);
+      grabPiece(true);
     }
     if (boardButton == 5){
-      scorePiece(Level.MIDDLE, Offset.CENTER);
+      grabPiece(false);
     }
     if (boardButton == 6){
-      scorePiece(Level.MIDDLE, Offset.RIGHT);
+      Retract retract = new Retract(m_arm);
+      CommandScheduler.getInstance().schedule(retract);
     }
     if (boardButton == 7){
-      scorePiece(Level.BOTTOM, Offset.LEFT);
+      scorePiece(Level.BOTTOM, Offset.LEFT,false);
     }
     if (boardButton == 8){
-      scorePiece(Level.BOTTOM, Offset.CENTER);
+      scorePiece(Level.MIDDLE, Offset.CENTER,false);
     }
     if (boardButton == 9){
-      scorePiece(Level.BOTTOM, Offset.RIGHT);
+      scorePiece(Level.TOP, Offset.RIGHT,false);
     }
         
   }
-
-  private void scorePiece(DriveToScore.Level level, DriveToScore.Offset offset){
-    Place highPlace = new Place(m_arm, level, true, false, SmartDashboard.getNumber("Distance", 10)); //is a cube and facing forwards //p = 1 and d = 0.5 works well
+  
+  private void grabPiece(boolean frontSide){
+    Grab grab = new Grab(m_arm, frontSide, SmartDashboard.getNumber("Distance", 10));
+    CommandScheduler.getInstance().schedule(grab);
+  }
+  private void scorePiece(DriveToScore.Level level, DriveToScore.Offset offset,boolean frontSide){
+    Place highPlace = new Place(m_arm, level, true, frontSide, SmartDashboard.getNumber("Distance", 10)); //is a cube and facing forwards //p = 1 and d = 0.5 works well
     CommandScheduler.getInstance().schedule(highPlace);
   }
 
