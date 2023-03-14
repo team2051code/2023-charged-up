@@ -73,6 +73,7 @@ public class FollowRamsete {
   
       // An ExampleCommand will run in autonomous
       m_robotDrive.resetEncoders();
+      m_robotDrive.resetOdometry(new Pose2d(0, 0, new Rotation2d(0)));
       var autoVoltageConstraint = new DifferentialDriveVoltageConstraint(new SimpleMotorFeedforward(
       CompetitionDriveConstants.ksVolts, CompetitionDriveConstants.kvVoltSecondsPerMeter), CompetitionDriveConstants.kDriveKinematics, 10);
       var TrajectoryConfig = new TrajectoryConfig(CompetitionDriveConstants.kMaxSpeedMetersPerSecond,

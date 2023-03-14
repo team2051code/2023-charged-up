@@ -165,7 +165,7 @@ public class DriveStraight extends CommandBase {
   public void end(boolean interrupted) {
     if(m_timer != null)
       m_timer.stop();
-    //starts balance command
+    //starts balance com
     SmartDashboard.putString("State:", m_autostate.toString());
     Balance balance = new Balance(m_drive);
     balance.andThen(() -> m_drive.tankDriveVolts(0, 0)).schedule();

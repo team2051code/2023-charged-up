@@ -26,6 +26,12 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/LiveWindow/Ungrouped/DifferentialDrive[1]": "DifferentialDrive",
+      "/LiveWindow/Ungrouped/DigitalInput[27]": "Digital Input",
+      "/LiveWindow/Ungrouped/MotorControllerGroup[3]": "Motor Controller",
+      "/LiveWindow/Ungrouped/MotorControllerGroup[4]": "Motor Controller",
+      "/LiveWindow/Ungrouped/PIDController[4]": "PIDController",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/SmartDashboard/Arm PID": "PIDController",
       "/SmartDashboard/Arm Sim": "Mechanism2d",
       "/SmartDashboard/Extender PID": "PIDController",
@@ -33,6 +39,7 @@
       "/SmartDashboard/Gripper PID": "PIDController",
       "/SmartDashboard/MotorControllerGroup[1]": "Motor Controller",
       "/SmartDashboard/Simulation Field:": "Field2d",
+      "/SmartDashboard/command": "Scheduler",
       "/SmartDashboard/motorPutTst": "Motor Controller",
       "/SmartDashboard/photonvision Sim Field": "Field2d"
     },
@@ -128,6 +135,26 @@
         "open": true
       },
       "open": true
+    }
+  },
+  "Plot": {
+    "Plot <0>": {
+      "plots": [
+        {
+          "height": 338,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/simulated left voltage"
+            }
+          ]
+        }
+      ]
     }
   }
 }

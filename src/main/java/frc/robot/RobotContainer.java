@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import org.photonvision.PhotonCamera;
+
 import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -14,6 +16,7 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.Balance;
 import frc.robot.commands.DriveStraight;
+import frc.robot.commands.DriveToScore;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.PneumaticSubsystem;
@@ -34,6 +37,7 @@ public class RobotContainer {
   private PneumaticSubsystem m_pneumaticSubsystem = new PneumaticSubsystem();
   private DriveSubsystem m_robotDrive;
   private ArmSubsystem m_robotArm;
+  private PhotonCamera m_camera;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
@@ -44,6 +48,7 @@ public class RobotContainer {
     configureButtonBindings();
     m_robotDrive = new DriveSubsystem(m_leftMotors, m_rightMotors, m_leftEncoder, m_RightEncoder, leftSimulatedMotor, rightSimulatedMotor);
     m_robotArm = new ArmSubsystem();
+    m_camera = m_robotDrive.getCamera();
   }
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
@@ -70,6 +75,11 @@ public class RobotContainer {
     Balance balancer = new Balance(m_robotDrive);
     //DriveLinear test = new DriveLinear(1, m_robotDrive);
     return item.andThen(() -> m_robotDrive.tankDriveVolts(0, 0));
+  }
+  public Command getRamseteCommand()
+  {
+    DriveToScore ramseteCommand = new DriveToScore(m_robotDrive, m_camera);
+    return ramseteCommand.andThen(()-> m_robotDrive.tankDriveVolts(0, 0));
   }
   public void arcadeDrive(double speed, double rotation)
   {

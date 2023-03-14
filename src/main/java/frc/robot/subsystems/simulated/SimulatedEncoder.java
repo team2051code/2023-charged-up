@@ -2,9 +2,12 @@ package frc.robot.subsystems.simulated;
 
 import java.nio.channels.UnsupportedAddressTypeException;
 
+import javax.lang.model.util.ElementScanner14;
+
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.CounterBase;
 
 /**
@@ -14,6 +17,8 @@ import edu.wpi.first.wpilibj.CounterBase;
 public class SimulatedEncoder implements RelativeEncoder {
     private double m_encoderZeroPoint = 0;
     private double m_encoderValue = 0;
+    private double prevFilter = 0;
+    private LinearFilter filter = LinearFilter.movingAverage(5);
 
     @Override
     public double getPosition() {
@@ -23,7 +28,6 @@ public class SimulatedEncoder implements RelativeEncoder {
     @Override
     public REVLibError setPosition(double start) {
         m_encoderValue = start;
-
         return REVLibError.kOk;
     }
 
@@ -32,13 +36,14 @@ public class SimulatedEncoder implements RelativeEncoder {
      * @param value New encoder value
      */
     public void set(double value) {
+        var delta = m_encoderValue - value;
+        prevFilter = filter.calculate(delta);
         m_encoderValue = value;
     }
 
     @Override
     public double getVelocity() {
-        // TODO Auto-generated method stub
-        return 0;
+        return prevFilter;
     }
 
     @Override
