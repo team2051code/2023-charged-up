@@ -26,7 +26,8 @@ import frc.robot.subsystems.simulated.ArmSimulation;
 import frc.robot.subsystems.simulated.CANSparkMaxSimulated;
 
 public class ArmSubsystem extends SubsystemBase {
-    public final static double kArmP = 0.4/3; public final static double kArmI = 0; public final static double kArmD = 0;
+    public final static double kArmP = 0;//0.4/4; 
+    public final static double kArmI = 0; public final static double kArmD = 0;
     public final static double kextenderP = 1.4/1.5; public final static double kextenderI = 0; public final static double kextenderD = 0;
     public final static double kgripperP = 0; public final static double kgripperI = 0; public final static double kgripperD = 0;
     public final static double kgripperRotatorP = 0; public final static double kgripperRotatorI = 0; public final static double kgripperRotatorD = 0;
@@ -64,7 +65,7 @@ public class ArmSubsystem extends SubsystemBase {
         Q1,Q2,Q3,Q4
     }
     public enum IntakeMode {
-        FORWARD, OFF, BACKWARD,
+        OFF, FORWARD, BACKWARD,
     }
     private IntakeMode m_intakeMode = IntakeMode.OFF;
 
@@ -135,7 +136,7 @@ public class ArmSubsystem extends SubsystemBase {
 
 
 
-        m_gripperPivotPIDController.setSetpoint(180);
+        m_gripperPivotPIDController.setSetpoint(0);
 
         SmartDashboard.putData("Arm PID", m_armPIDController);
         SmartDashboard.putData("Extender PID",m_extenderPIDController);
@@ -163,17 +164,18 @@ public class ArmSubsystem extends SubsystemBase {
             var gripperRotationVoltage = m_gripperRotatorPIDController.calculate(m_gripperRotatorEncoder.getPosition());
             var armPivotPosition = m_armAngle;
             var extenderPosition = m_absExtenderEncoder.get();
+            var extenderSetpoint = m_extenderPIDController.getSetpoint();
             var gripperPivotPosition = m_absGripperPivotEncoder.get();
             double lastArmSetPoint = Integer.MIN_VALUE;
             SmartDashboard.putNumber("PIDarmPivotVoltage", armPivotVoltage);
-            
+            SmartDashboard.putNumber("extenderBusVoltage", m_Extender.get());
             SmartDashboard.putNumber("extenderVoltage", extenderVoltage);
             SmartDashboard.putNumber("armPivotSetpoint", m_armPIDController.getSetpoint());
             SmartDashboard.putNumber("extenderSetpoint", m_extenderPIDController.getSetpoint());
             SmartDashboard.putNumber("extender potentiometer", extenderPosition);
             SmartDashboard.putNumber("arm potentiometer", armPivotPosition);
             SmartDashboard.putBoolean("Brake", getBreakSol());
-            SmartDashboard.putNumber("ExtenderOutputCurrent", m_Extender.getOutputCurrent());
+            SmartDashboard.putNumber("extenderOutputCurrent", m_Extender.getOutputCurrent());
             //SmartDashboard.putBoolean("GripperSol", m_gripperSolenoid.get());
             if(m_armAngle<90)
             {
@@ -198,32 +200,32 @@ public class ArmSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("RelativeAngle", relativeAngle);
             SmartDashboard.putNumber("Height", (extenderPosition+ksolidArmDistance)*Math.sin(Units.degreesToRadians(relativeAngle)));
             SmartDashboard.putNumber("X", (extenderPosition+ksolidArmDistance)*Math.cos(Units.degreesToRadians(relativeAngle)));
-            if(quadrant.equals(Quadrant.Q2)||quadrant.equals(Quadrant.Q3))
-            {
-                if((extenderPosition+ksolidArmDistance)*Math.sin(Units.degreesToRadians(relativeAngle))>52) {
-                    setExtenderSetpoint((52/Math.sin(Units.degreesToRadians(relativeAngle))-ksolidArmDistance)-2);
-                    m_Extender.setVoltage(m_extenderPIDController.calculate(m_absExtenderEncoder.get()));
-                    //m_armPivot.setVoltage(0);
-                    SmartDashboard.putBoolean("Debug", true);
-                    break;
-                }
-                if((extenderPosition+ksolidArmDistance)*Math.cos(Units.degreesToRadians(relativeAngle))>62){
-                    setExtenderSetpoint((62/Math.cos(Units.degreesToRadians(relativeAngle))-ksolidArmDistance)-2);
-                    m_Extender.setVoltage(m_extenderPIDController.calculate(m_absExtenderEncoder.get()));
-                    SmartDashboard.putBoolean("Debug", true);
-                    //m_armPivot.setVoltage(0);
-                    break;
-                }
-            }else
-                if((extenderPosition+ksolidArmDistance)*Math.sin(Units.degreesToRadians(relativeAngle))>24){
-                    lastArmSetPoint = m_armPIDController.getSetpoint();
-                    setArmPivotSetpoint(armPivotPosition);
-                    setExtenderSetpoint((24/Math.sin(Units.degreesToRadians(relativeAngle))-ksolidArmDistance)-2);
-                    m_armPivot.setVoltage(0);
-                    m_Extender.setVoltage(m_extenderPIDController.calculate(m_absExtenderEncoder.get()));
-                    SmartDashboard.putBoolean("Debug", true);
-                    break;
-                }
+            // if(quadrant.equals(Quadrant.Q2)||quadrant.equals(Quadrant.Q3))
+            // {
+            //     if((extenderSetpoint+ksolidArmDistance)*Math.sin(Units.degreesToRadians(relativeAngle))>52) {
+            //         setExtenderSetpoint((52/Math.sin(Units.degreesToRadians(relativeAngle))-ksolidArmDistance)-2);
+            //         m_Extender.setVoltage(m_extenderPIDController.calculate(m_absExtenderEncoder.get()));
+            //         //m_armPivot.setVoltage(0);
+            //         SmartDashboard.putBoolean("Debug", true);
+            //         break;
+            //     }
+            //     if((extenderSetpoint+ksolidArmDistance)*Math.cos(Units.degreesToRadians(relativeAngle))>62){
+            //         setExtenderSetpoint((62/Math.cos(Units.degreesToRadians(relativeAngle))-ksolidArmDistance)-2);
+            //         m_Extender.setVoltage(m_extenderPIDController.calculate(m_absExtenderEncoder.get()));
+            //         SmartDashboard.putBoolean("Debug", true);
+            //         //m_armPivot.setVoltage(0);
+            //         break;
+            //     }
+            // }else
+            //     if((extenderSetpoint+ksolidArmDistance)*Math.sin(Units.degreesToRadians(relativeAngle))>24){
+            //         lastArmSetPoint = m_armPIDController.getSetpoint();
+            //         setArmPivotSetpoint(armPivotPosition);
+            //         setExtenderSetpoint((24/Math.sin(Units.degreesToRadians(relativeAngle))-ksolidArmDistance)-2);
+            //         m_armPivot.setVoltage(0);
+            //         m_Extender.setVoltage(m_extenderPIDController.calculate(m_absExtenderEncoder.get()));
+            //         SmartDashboard.putBoolean("Debug", true);
+            //         break;
+            //     }
             if(lastArmSetPoint != Integer.MIN_VALUE)
                 setArmPivotSetpoint(lastArmSetPoint);
 
@@ -241,11 +243,22 @@ public class ArmSubsystem extends SubsystemBase {
             SmartDashboard.putString("Pivot1kError", m_ArmPivot1.getLastError().toString());
             SmartDashboard.putString("Pivot2Error", m_ArmPivot2.getLastError().toString());
 
-            if(!(extenderPosition >= 39 && extenderVoltage < 0) || !(extenderPosition<=3&&extenderVoltage>0))
-                m_Extender.setVoltage(extenderVoltage);
-            else
+            if(extenderPosition >= 39 && extenderVoltage > 0)
                 m_Extender.setVoltage(0);
+            else if(extenderPosition <= 3 && extenderVoltage < 0)
+                m_Extender.setVoltage(0);
+            else
+                m_Extender.setVoltage(extenderVoltage);
+
+            // m_Extender.setVoltage(extenderVoltage);
             
+            if (gripperPivotPosition<55&&gripperPivotPosition>-55){
+                m_GripperPivot.setVoltage(gripperPivotVoltage*10/10);
+            }
+            else{
+                m_GripperPivot.setVoltage(0);
+            }
+
             // if(!(gripperPivotPosition > (180+55) && gripperPivotVoltage > 0)  || !(gripperPivotPosition<(180-55) && gripperPivotVoltage < 0))) //imagining 0 means vertically down
             //     m_GripperPivot.setVoltage(gripperPivotVoltage);
             // else
@@ -254,6 +267,8 @@ public class ArmSubsystem extends SubsystemBase {
 
             if(!m_breakSolenoid.get())
               m_armPivot.setVoltage(0);
+
+            updateIntake();
 
             // if(Math.abs(armPivotPosition - m_armPIDController.getSetpoint())<1){
             //     m_breakSolenoid.set(false);
@@ -276,16 +291,15 @@ public class ArmSubsystem extends SubsystemBase {
 
     // Subroutine: update the intake based on current mode
     private void updateIntake() {
-        m_intakeMode = IntakeMode.FORWARD;
         switch(m_intakeMode) {
             case OFF:
                 m_intake.set(0);
                 break;
             case FORWARD:
-                m_intake.set(.5);
+                m_intake.set(1);
                 break;
             case BACKWARD:
-                m_intake.set(-0.5);
+                m_intake.set(-1);
                 break;
         }
     }
@@ -411,6 +425,10 @@ public class ArmSubsystem extends SubsystemBase {
     
     public void toggleGripper(){
         m_gripperSolenoid.toggle();
+    }
+
+    public void toggleGripper(boolean openGripper){
+        m_gripperSolenoid.set(openGripper);
     }
 
     public boolean getGripperSol(){

@@ -98,6 +98,7 @@ public class Robot extends TimedRobot {
   public boolean useButtonBoard = true;
   public ArmSubsystem m_arm;
   private int m_lastBoardButtonValue;
+  private boolean pressed;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -111,6 +112,7 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     CANSparkMaxSimulated simulatedLeft = null;
     CANSparkMaxSimulated simulatedRight = null;
+    pressed = false;
     if (RobotBase.isSimulation())
     {
       m_leftEncoder = new SimulatedEncoder();
@@ -343,14 +345,33 @@ public class Robot extends TimedRobot {
       m_robotContainer.arcadeDrive(-m_DriveController.getLeftY(), -m_DriveController.getRightX());
     }
     //gripper pivot controller
-    if (m_ArmController.getXButton()) {
-      m_arm.incrementGripperPivotSetpoint(-20);
-    }
-    if (m_ArmController.getYButton()) {
-      m_arm.incrementGripperPivotSetpoint(20);
-    }
+    // if (m_ArmController.getXButton()) {
+    //   m_arm.incrementGripperPivotSetpoint(-20);
+    // }
+    // if (m_ArmController.getYButton()) {
+    //   m_arm.incrementGripperPivotSetpoint(20);
+    // }
     //gripper rotate controller
-    m_arm.toggleGripper(!m_ArmController.getAButton());
+    
+    if (m_ArmController.getAButton()&&!pressed){
+      m_arm.toggleGripper();
+    } 
+    pressed = m_ArmController.getAButton();
+
+    if (m_ArmController.getXButton()){
+      m_arm.setIntakeMode(IntakeMode.FORWARD);
+    }
+    else if (m_ArmController.getYButton()){
+      m_arm.setIntakeMode(IntakeMode.BACKWARD);
+    }
+    else{
+      m_arm.setIntakeMode(IntakeMode.OFF);
+    }
+
+    if (m_ArmController.getLeftBumper()){
+      m_arm.incrementGripperPivotSetpoint(10);
+    }
+
     // if (m_ArmController.getBButton()) {
     //   m_arm.toggleGripper();
     // }
@@ -367,17 +388,7 @@ public class Robot extends TimedRobot {
 
     // }
 
-    //intake controller
-    if (m_ArmController.getRightBumper()) {
-      m_arm.setIntakeMode(IntakeMode.BACKWARD);
-    }
-    else if (m_ArmController.getLeftBumper()) {
-      m_arm.setIntakeMode(IntakeMode.FORWARD);
-    }
-    else
-    {
-      m_arm.setIntakeMode(IntakeMode.OFF);
-    }
+    //intake controlle
 
 
     if(!m_arm.getOveride()){
