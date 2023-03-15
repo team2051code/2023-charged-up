@@ -250,6 +250,8 @@ public class ArmSubsystem extends SubsystemBase {
             SmartDashboard.putBoolean("Debug", false);
             break;
         }
+
+        updateDashboard();
     }
 
     @Override
@@ -387,6 +389,14 @@ public class ArmSubsystem extends SubsystemBase {
         m_extenderEncoder.setPosition(0);
         m_gripperRotatorEncoder.setPosition(0);
         m_gripperPivotEncoder.setPosition(0);
+    }
+
+    private void updateDashboard(){
+        SmartDashboard.putNumber("gripper/pivot angle", m_absGripperPivotEncoder.get());
+        SmartDashboard.putNumber("gripper/rotation", m_gripperRotatorEncoder.getPosition());
+
+        SmartDashboard.putNumber("arm/extender", m_extenderEncoder.getPosition());
+        SmartDashboard.putNumber("arm/angle", m_absArmPivotEncoder.get());
     }
 
 }
