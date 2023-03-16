@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DriveToScore;
 import frc.robot.commands.Grab;
 import frc.robot.commands.Place;
@@ -71,7 +73,10 @@ public class Robot extends TimedRobot {
   
   private RelativeEncoder m_leftEncoder;
   private RelativeEncoder m_rightEncoder;
+<<<<<<< HEAD
   //private final XboxController m_ArmController = new XboxController(CompetitionDriveConstants.XboxArmPort);
+=======
+>>>>>>> 50bc7a3a560ecb0e836a41e9509ce74980291d4b
   private final Joystick m_ArmController = new Joystick(CompetitionDriveConstants.XboxArmPort);
   private final XboxController m_DriveController = new XboxController(CompetitionDriveConstants.XboxDrivePort);
   private final Joystick m_buttonPanel = new Joystick(CompetitionDriveConstants.joyStickPort);
@@ -102,6 +107,8 @@ public class Robot extends TimedRobot {
   private int m_lastBoardButtonValue;
   private boolean pressed;
   private DriveSubsystem m_drive;
+
+  public boolean dropOffMode = true;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -174,7 +181,19 @@ public class Robot extends TimedRobot {
     m_arm.resetEncoders();
     m_arm.setArmPivotSetpoint(90);
     m_arm.setExtenderSetpoint(20);
+<<<<<<< HEAD
     m_arm.setGripperPivotSetpoint(180);
+=======
+
+    var modebutton = new JoystickButton(m_ArmController, 11);
+    modebutton.onTrue(Commands.runOnce(() -> {
+      dropOffMode = !dropOffMode;
+    }));
+    
+    
+
+
+>>>>>>> 50bc7a3a560ecb0e836a41e9509ce74980291d4b
   }
 
   /**
@@ -265,6 +284,7 @@ public class Robot extends TimedRobot {
     // }
     SmartDashboard.putNumber("right motor speed:", m_RightFront.get());
     SmartDashboard.putNumber("leftStick", m_DriveController.getLeftX());
+    SmartDashboard.putBoolean("drop off mode", dropOffMode);
     
     CommandScheduler.getInstance().run();
     // System.out.println(targets.size() + "targets found: ");
@@ -338,21 +358,22 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    //handleButtonBoard();
+  
+
+    handleButtonBoard();
 
     // m_robotContainer.arcadeDrive(m_driverController.getLeftX()/1.5,
     // m_driverController.getLeftY()/1.5);
     // m_myRobot.arcadeDrive(-m_driverController.getLeftY()/1.5,
     // -m_driverController.getLeftX()/1.5);
+
     if (m_DriveController.getLeftY() > 0) {
       m_robotContainer.arcadeDrive(-m_DriveController.getLeftY(), m_DriveController.getRightX());
     } else {
       m_robotContainer.arcadeDrive(-m_DriveController.getLeftY(), -m_DriveController.getRightX());
     }
-    SmartDashboard.putBoolean("Gear", m_drive.getGear());
-    if(m_DriveController.getXButton())
-      m_drive.toggleGear();
-    // gripper pivot controller
+    
+    //gripper pivot controller
     // if (m_ArmController.getXButton()) {
     //   m_arm.incrementGripperPivotSetpoint(-20);
     // }
