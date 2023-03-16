@@ -128,14 +128,45 @@ public class ArmSubsystem extends SubsystemBase {
         m_gripperPivotPIDController = new PIDController(kgripperP, kgripperI, kgripperD);
         m_gripperRotatorPIDController = new PIDController(kgripperRotatorP, kgripperRotatorI, kgripperRotatorD);
 
+        m_ArmPivot1.restoreFactoryDefaults();
+        m_ArmPivot2.restoreFactoryDefaults();
+        m_GripperPivot.restoreFactoryDefaults();
+        m_GripperRotator.restoreFactoryDefaults();
+        m_IntakeLeft.restoreFactoryDefaults();
+        m_IntakeRight.restoreFactoryDefaults();
+
         m_ArmPivot1.setSmartCurrentLimit(40);
         m_ArmPivot2.setSmartCurrentLimit(40);
         m_Extender.setSmartCurrentLimit(40);
+        m_GripperPivot.setSmartCurrentLimit(40);
+        m_GripperRotator.setSmartCurrentLimit(40);
+        m_IntakeLeft.setSmartCurrentLimit(40);
+        m_IntakeRight.setSmartCurrentLimit(40);
+
+        m_ArmPivot1.setIdleMode(IdleMode.kBrake);
+        m_ArmPivot2.setIdleMode(IdleMode.kBrake);
         m_Extender.setIdleMode(IdleMode.kBrake);
-        m_IntakeRight.setInverted(true);
+        m_GripperPivot.setIdleMode(IdleMode.kBrake);
+        m_GripperRotator.setIdleMode(IdleMode.kBrake);
+        m_IntakeLeft.setIdleMode(IdleMode.kBrake);
+        m_IntakeRight.setIdleMode(IdleMode.kBrake);
+
         m_ArmPivot1.setInverted(false);
         m_ArmPivot2.setInverted(false);
+        m_Extender.setInverted(false);
         m_GripperPivot.setInverted(true);
+        m_GripperRotator.setInverted(false);
+        m_IntakeLeft.setInverted(false);
+        m_IntakeRight.setInverted(true);
+
+        m_ArmPivot1.burnFlash();
+        m_ArmPivot2.burnFlash();
+        m_Extender.burnFlash();
+        m_GripperPivot.burnFlash();
+        m_GripperRotator.burnFlash();
+        m_IntakeLeft.burnFlash();
+        m_IntakeRight.burnFlash();
+
         m_intake = new MotorControllerGroup(m_IntakeLeft, m_IntakeRight);
         m_armPivot = new MotorControllerGroup(m_ArmPivot1, m_ArmPivot2);
 
@@ -247,7 +278,7 @@ public class ArmSubsystem extends SubsystemBase {
                 setArmPivotSetpoint(lastArmSetPoint);
 
             //Limiters
-            var LIMITER_MODE = 1;
+            var LIMITER_MODE = 1;//use 1
             switch (LIMITER_MODE) {
                 case 1:
                     if (armPivotSetpoint < 60)// imagining 0 means vertically down

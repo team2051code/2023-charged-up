@@ -21,6 +21,7 @@ import frc.robot.commands.Retract;
 import frc.robot.commands.DriveToScore.Level;
 import frc.robot.commands.DriveToScore.Offset;
 import frc.robot.components.LimitedMotor;
+import frc.robot.controls.TeleopDrive;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CompetitionDriveConstants;
 import frc.robot.subsystems.DriveSubsystem;
@@ -111,7 +112,7 @@ public class Robot extends TimedRobot {
   private boolean m_autoBalanceButtonPressed;
   private DriveSubsystem m_drive;
   private Command m_teleopAutoBalance = null;
-
+  private TeleopDrive m_filteredDriveController;
   public boolean dropOffMode = true;
 
   /**
@@ -168,10 +169,20 @@ public class Robot extends TimedRobot {
     m_RightBack.setInverted(CompetitionDriveConstants.kRightMotorsReversed);
     m_RightFront.setInverted(CompetitionDriveConstants.kRightMotorsReversed);
 
+    m_LeftBack.setSmartCurrentLimit(40);
+    m_LeftFront.setSmartCurrentLimit(40);
+    m_RightBack.setSmartCurrentLimit(40);
+    m_RightFront.setSmartCurrentLimit(40);
+
     m_LeftBack.setIdleMode(IdleMode.kBrake);
     m_LeftFront.setIdleMode(IdleMode.kBrake);
     m_RightBack.setIdleMode(IdleMode.kBrake);
     m_RightFront.setIdleMode(IdleMode.kBrake);
+
+    m_LeftBack.burnFlash();
+    m_LeftFront.burnFlash();
+    m_RightBack.burnFlash();
+    m_RightFront.burnFlash();
 
     m_robotContainer = new RobotContainer(m_left, m_right, m_leftEncoder, m_rightEncoder, simulatedLeft, simulatedRight);
     m_arm = m_robotContainer.getArmSubsystem();
@@ -183,7 +194,7 @@ public class Robot extends TimedRobot {
     // cameraList.add(m_cameraB);
 
     m_arm.resetEncoders();
-    m_arm.setArmPivotSetpoint(90);
+    m_arm.setArmPivotSetpoint(180);
     m_arm.setExtenderSetpoint(3);
     m_arm.setGripperPivotSetpoint(180);
 
@@ -194,6 +205,7 @@ public class Robot extends TimedRobot {
     
     SmartDashboard.putNumber("autoname", 2);
 
+    m_filteredDriveController = new TeleopDrive(m_drive, m_DriveController);
 
   }
 
@@ -291,20 +303,9 @@ public class Robot extends TimedRobot {
   }
   @Override
   public void teleopInit() {
-    // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
-    if (m_balanceCommand != null) {
-      m_balanceCommand.cancel();
-    }
-    if (m_trajectory != null) {
-      m_trajectory.cancel();
-    }
+    CommandScheduler.getInstance().cancelAll();
+    
     m_robotContainer.resetOdometry();
-
-    //m_arm.setArmPivotSetpoint(180);
-    //m_arm.setExtenderSetpoint(3);
   }
 
   /** This function is called periodically during operator control. */
@@ -320,15 +321,12 @@ public class Robot extends TimedRobot {
     // m_myRobot.arcadeDrive(-m_driverController.getLeftY()/1.5,
     // -m_driverController.getLeftX()/1.5);
 
-    if (m_DriveController.getLeftY() > 0) {
-      m_robotContainer.arcadeDrive(-m_DriveController.getLeftY(), m_DriveController.getRightX());
-    } else {
-      m_robotContainer.arcadeDrive(-m_DriveController.getLeftY(), -m_DriveController.getRightX());
-    }
+    m_filteredDriveController.update();
+
     SmartDashboard.putBoolean("Gear", m_drive.getGear());
-    if(m_DriveController.getXButton()){
-      m_drive.toggleGear();
-    }
+      if(m_DriveController.getXButton()){
+        m_drive.toggleGear();
+      }
     
     //gripper pivot controller
     // if (m_ArmController.getXButton()) {

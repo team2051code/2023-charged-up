@@ -50,7 +50,7 @@ function locateCursor(event){
 function ntLoaded() {
     //filp camera output when the arm swiches sides && arm camera is selected
     NetworkTables.addKeyListener("/SmartDashboard/arm potentiometer", (key, value, isNew) => {
-        if(value > 180 && document.getElementById("cameraOut").src == "http://10.20.51.18:1181/stream.mjpg?1674930762001") {
+        if(value < 180 && document.getElementById("cameraOut").src == "http://10.20.51.18:1181/stream.mjpg?1674930762001") {
             document.getElementById("cameraOut").style.transform = "rotate(180deg)"
         }
         else {

@@ -17,6 +17,11 @@
         "window": {
           "visible": true
         }
+      },
+      "/SmartDashboard/Simulation Field:": {
+        "window": {
+          "visible": true
+        }
       }
     }
   },
