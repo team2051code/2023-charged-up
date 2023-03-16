@@ -11,12 +11,15 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DriveToScore;
+import frc.robot.commands.Grab;
 import frc.robot.commands.Place;
+import frc.robot.commands.Retract;
 import frc.robot.commands.DriveToScore.Level;
 import frc.robot.commands.DriveToScore.Offset;
 import frc.robot.components.LimitedMotor;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CompetitionDriveConstants;
+import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ArmSubsystem.IntakeMode;
 import frc.robot.subsystems.simulated.CANSparkMaxSimulated;
 import frc.robot.subsystems.simulated.SimulatedEncoder;
@@ -70,6 +73,10 @@ public class Robot extends TimedRobot {
   
   private RelativeEncoder m_leftEncoder;
   private RelativeEncoder m_rightEncoder;
+<<<<<<< HEAD
+  //private final XboxController m_ArmController = new XboxController(CompetitionDriveConstants.XboxArmPort);
+=======
+>>>>>>> 50bc7a3a560ecb0e836a41e9509ce74980291d4b
   private final Joystick m_ArmController = new Joystick(CompetitionDriveConstants.XboxArmPort);
   private final XboxController m_DriveController = new XboxController(CompetitionDriveConstants.XboxDrivePort);
   private final Joystick m_buttonPanel = new Joystick(CompetitionDriveConstants.joyStickPort);
@@ -98,6 +105,8 @@ public class Robot extends TimedRobot {
   public boolean useButtonBoard = true;
   public ArmSubsystem m_arm;
   private int m_lastBoardButtonValue;
+  private boolean pressed;
+  private DriveSubsystem m_drive;
 
   public boolean dropOffMode = true;
 
@@ -113,6 +122,7 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     CANSparkMaxSimulated simulatedLeft = null;
     CANSparkMaxSimulated simulatedRight = null;
+    pressed = false;
     if (RobotBase.isSimulation())
     {
       m_leftEncoder = new SimulatedEncoder();
@@ -161,6 +171,7 @@ public class Robot extends TimedRobot {
 
     m_robotContainer = new RobotContainer(m_left, m_right, m_leftEncoder, m_rightEncoder, simulatedLeft, simulatedRight);
     m_arm = m_robotContainer.getArmSubsystem();
+    m_drive = m_robotContainer.getDriveSubsystem();
     // m_camera = new PhotonCamera("Camera_A");
     // m_cameraB = new PhotonCamera("Camera_B");
     // cameraList = new ArrayList<PhotonCamera>();
@@ -168,8 +179,11 @@ public class Robot extends TimedRobot {
     // cameraList.add(m_cameraB);
 
     m_arm.resetEncoders();
-    m_arm.setArmPivotSetpoint(270);
+    m_arm.setArmPivotSetpoint(90);
     m_arm.setExtenderSetpoint(20);
+<<<<<<< HEAD
+    m_arm.setGripperPivotSetpoint(180);
+=======
 
     var modebutton = new JoystickButton(m_ArmController, 11);
     modebutton.onTrue(Commands.runOnce(() -> {
@@ -179,6 +193,7 @@ public class Robot extends TimedRobot {
     
 
 
+>>>>>>> 50bc7a3a560ecb0e836a41e9509ce74980291d4b
   }
 
   /**
@@ -335,8 +350,8 @@ public class Robot extends TimedRobot {
     }
     m_robotContainer.resetOdometry();
 
-    m_arm.setArmPivotSetpoint(270);
-    m_arm.setExtenderSetpoint(20);
+    //m_arm.setArmPivotSetpoint(180);
+    //m_arm.setExtenderSetpoint(3);
   }
 
   /** This function is called periodically during operator control. */
@@ -357,6 +372,7 @@ public class Robot extends TimedRobot {
     } else {
       m_robotContainer.arcadeDrive(-m_DriveController.getLeftY(), -m_DriveController.getRightX());
     }
+    
     //gripper pivot controller
     // if (m_ArmController.getXButton()) {
     //   m_arm.incrementGripperPivotSetpoint(-20);
@@ -364,12 +380,48 @@ public class Robot extends TimedRobot {
     // if (m_ArmController.getYButton()) {
     //   m_arm.incrementGripperPivotSetpoint(20);
     // }
-    // //gripper rotate controller
-    // if (m_ArmController.getAButton()) {
-    //   m_arm.incrementGripperRotatorSetpoint(180);
+    // gripper rotate controller
+    
+    // if (m_ArmController.getAButton()&&!pressed){
+    //   m_arm.toggleGripper();
+    // } 
+    //  pressed = m_ArmController.getAButton();
+
+    // if (m_ArmController.getXButton()){
+    //   m_arm.setIntakeMode(IntakeMode.FORWARD);
     // }
+    // else if (m_ArmController.getYButton()){
+    //   m_arm.setIntakeMode(IntakeMode.BACKWARD);
+    // }
+    // else{
+    //   m_arm.setIntakeMode(IntakeMode.OFF);
+    // }
+
+    // if (m_ArmController.getLeftBumper()){
+    //   m_arm.incrementGripperPivotSetpoint(10);
+    // }
+
+    if (m_ArmController.getRawButton(2)&&!pressed){
+      m_arm.toggleGripper();
+    } 
+    pressed = m_ArmController.getRawButton(2);
+
+    if (m_ArmController.getRawButton(4)){
+      m_arm.setIntakeMode(IntakeMode.FORWARD);
+    }
+    else if (m_ArmController.getRawButton(5)){
+      m_arm.setIntakeMode(IntakeMode.BACKWARD);
+    }
+    else{
+      m_arm.setIntakeMode(IntakeMode.OFF);
+    }
+
+    m_arm.setGripperPivotSetpoint(-m_ArmController.getRawAxis(2)*45 + 180);
+
+    // if(m_ArmController.getRawButton(6))
+    //   m_arm.toggleGripperRotator();
     // if (m_ArmController.getBButton()) {
-    //   m_arm.incrementGripperRotatorSetpoint(-180);
+    //   m_arm.toggleGripper();
     // }
     // if (m_ArmController.getRightStickButton()) {
 
@@ -384,20 +436,32 @@ public class Robot extends TimedRobot {
 
     // }
 
-    // //intake controller
-    // if (m_ArmController.getRightBumper()) {
-    //   m_arm.setIntakeMode(IntakeMode.BACKWARD);
-    // }
-    // else if (m_ArmController.getLeftBumper()) {
-    //   m_arm.setIntakeMode(IntakeMode.FORWARD);
-    // }
-    // else
-    // {
-    //   m_arm.setIntakeMode(IntakeMode.OFF);
+    //intake controlle
+
+
+    // if(!m_arm.getOveride()){
+    //   if(-m_ArmController.getLeftY()<0.25 && -m_ArmController.getLeftY()>-0.25)
+    //     m_arm.setBreak(false);
+    //   else{
+    //     m_arm.setBreak(true);
+    //     m_arm.incrementArmPivotSetpoint(-m_ArmController.getLeftY() * 50);
+    //   }
+    //   if(!(-m_ArmController.getRightY()<0.25 && -m_ArmController.getRightY()>-0.25))
+    //     m_arm.incrementExtenderSetpoint(-m_ArmController.getRightY()*5);
     // }
 
-    // m_arm.incrementArmPivotSetpoint(-m_ArmController.getLeftY() * 10);
-    // m_arm.incrementExtenderSetpoint(-m_ArmController.getRightY());
+    if(!m_arm.getOveride()){
+      if(-m_ArmController.getRawAxis(1)<0.25 && -m_ArmController.getRawAxis(1)>-0.25)
+        m_arm.setBreak(false);
+      else{
+        m_arm.setBreak(true);
+        m_arm.incrementArmPivotSetpoint(-m_ArmController.getRawAxis(1) * 50);
+      }
+      if(m_ArmController.getRawButton(1)){
+        m_arm.incrementExtenderSetpoint(10);
+      }else if(m_ArmController.getRawButton(3))
+        m_arm.incrementExtenderSetpoint(-10);
+    }
 
     //from bottom left: down-up left-right
   }
@@ -413,33 +477,39 @@ public class Robot extends TimedRobot {
     m_lastBoardButtonValue = boardButton;
 
     if (boardButton == 1){
-      scorePiece(Level.TOP, Offset.LEFT);
+      scorePiece(Level.TOP, Offset.RIGHT,true);
     }
     if (boardButton == 2){
-      scorePiece(Level.TOP, Offset.CENTER);
+      Retract retract = new Retract(m_arm);
+      CommandScheduler.getInstance().schedule(retract);
     }
     if (boardButton == 3){
-      scorePiece(Level.TOP, Offset.RIGHT);
+      scorePiece(Level.TOP, Offset.RIGHT,false);
     }
     if (boardButton == 4){
-      scorePiece(Level.MIDDLE, Offset.LEFT);
+      scorePiece(Level.MIDDLE, Offset.CENTER,true);
     }
     if (boardButton == 5){
-      scorePiece(Level.MIDDLE, Offset.CENTER);
+      grabPiece(false);
     }
     if (boardButton == 6){
-      scorePiece(Level.MIDDLE, Offset.RIGHT);
+      scorePiece(Level.MIDDLE, Offset.CENTER,false);
     }
     if (boardButton == 7){
-      scorePiece(Level.BOTTOM, Offset.LEFT);
+      scorePiece(Level.BOTTOM, Offset.LEFT,true);
     }
     if (boardButton == 8){
-      scorePiece(Level.BOTTOM, Offset.CENTER);
+      grabPiece(true);
     }
     if (boardButton == 9){
-      scorePiece(Level.BOTTOM, Offset.RIGHT);
+      scorePiece(Level.BOTTOM, Offset.LEFT,false);
     }
         
+  }
+  
+  private void grabPiece(boolean frontSide){
+    Grab grab = new Grab(m_arm, frontSide, SmartDashboard.getNumber("Distance", 10));
+    CommandScheduler.getInstance().schedule(grab);
   }
 
   private int getPressedBoardButton() {
@@ -452,8 +522,8 @@ public class Robot extends TimedRobot {
     return buttonPressed;
   }
 
-  private void scorePiece(DriveToScore.Level level, DriveToScore.Offset offset){
-    Place highPlace = new Place(m_arm, level, true, false, SmartDashboard.getNumber("Distance", 10)); //is a cube and facing forwards //p = 1 and d = 0.5 works well
+  private void scorePiece(DriveToScore.Level level, DriveToScore.Offset offset,boolean frontSide){
+    Place highPlace = new Place(m_arm, level, true, frontSide, SmartDashboard.getNumber("Distance", 10)); //is a cube and facing forwards //p = 1 and d = 0.5 works well
     CommandScheduler.getInstance().schedule(highPlace);
   }
 

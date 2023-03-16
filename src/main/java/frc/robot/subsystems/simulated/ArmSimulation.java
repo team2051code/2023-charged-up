@@ -62,8 +62,8 @@ public class ArmSimulation {
             ARM_GEAR_REDUCTION, 
             SingleJointedArmSim.estimateMOI(ARM_BASE_LENGTH_M, ARM_MASS_KG), 
             ARM_BASE_LENGTH_M, 
-            Units.degreesToRadians(45),
-            Units.degreesToRadians(360 - 45),
+            Units.degreesToRadians(61),
+            Units.degreesToRadians(360 - 61),
             true);
 
         m_armWindowDisplay = new Mechanism2d(140, 140);

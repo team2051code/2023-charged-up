@@ -9,18 +9,17 @@ import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
-public class ToggleSide extends CommandBase {
+public class Retract extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final ArmSubsystem robot_Arm;
+  private final ArmSubsystem m_arm;
   private boolean finished;
-  private double initialArmPos = 0;
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ToggleSide(ArmSubsystem subsystem) {
-    robot_Arm = subsystem;
+  public Retract(ArmSubsystem subsystem) {
+    m_arm = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     // addRequirements(subsystem);
   }
@@ -28,20 +27,25 @@ public class ToggleSide extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    initialArmPos = robot_Arm.getArmPivotAbs();
+    m_arm.setOveride(true);
+    finished = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    robot_Arm.setArmPivotSetpoint((180-initialArmPos)+180);
-    if(Math.abs(robot_Arm.getArmPivotAbs() - ((180-initialArmPos)+180))<0.4999)
-      finished = true;
+    m_arm.setArmPivotSetpoint(180);
+    m_arm.setExtenderSetpoint(2.2);
+    m_arm.setGripperPivotSetpoint(180);
+    finished = true;
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    m_arm.setBreak(false);
+    m_arm.setOveride(false);
+  }
 
   // Returns true when the command should end.
   @Override
