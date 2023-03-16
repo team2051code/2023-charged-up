@@ -28,7 +28,7 @@ function ntLoaded() {
         }
     }, true)
 
-    //display mode at top of dashboard
+    //mode at top of dashboard
     NetworkTables.addKeyListener("/SmartDashboard/drop off mode", (key, value, isNew) => {
         if(value) document.getElementById("mode").innerText = "Drop Off";
         else document.getElementById("mode").innerText = "Pick Up"

@@ -9,28 +9,27 @@ function cameraInit(){
         const cameraPorts = [1183, 1181];
         let currentCamera = 0;
 
-        //22 is Shaolin Hand (testing)
-        //16 is Drill Handlespo Traffic Light and 20 is Dumb
-        //Trauma is unknown find unkown 
-        const piProtocols = [22, 20, 16];
+        //22 is Shaolin Hand and 16 is Drill Handlespo Traffic Light (testing)
+        // 18 is trauma and 20 is Dumb
+        const piProtocols = [22, 20, 16, 18];
         let currentPi = 0;
 
         frontCam = () => {
-            const piIp = piProtocols[1];
+            const piIp = piProtocols[3];
             const port = cameraPorts[0];
             setCameraPort(piIp, port);
         }
 
         //if protocol/port need changed tweak url in ntLoaded
         armCam = () => {
-            const piIp = piProtocols[2];
-            const port = cameraPorts[0];
+            const piIp = piProtocols[3];
+            const port = cameraPorts[1];
             setCameraPort(piIp, port);
         }
 
         backCam = () => {
             const piIp = piProtocols[1];
-            const port = cameraPorts[1];
+            const port = cameraPorts[0];
             setCameraPort(piIp, port);
         }
 
@@ -39,7 +38,7 @@ function cameraInit(){
             document.getElementById("cameraOut").src = url;
         }
 
-        setCameraPort(piProtocols[0], cameraPorts[0]);
+        setCameraPort(piProtocols[3], cameraPorts[1]);
 }
 
 //temporary to make drawing faster
@@ -51,7 +50,7 @@ function locateCursor(event){
 function ntLoaded() {
     //filp camera output when the arm swiches sides && arm camera is selected
     NetworkTables.addKeyListener("/SmartDashboard/arm potentiometer", (key, value, isNew) => {
-        if(value > 180 && document.getElementById("cameraOut").src == "http://10.20.51.16:1183/stream.mjpg?1674930762001") {
+        if(value > 180 && document.getElementById("cameraOut").src == "http://10.20.51.18:1181/stream.mjpg?1674930762001") {
             document.getElementById("cameraOut").style.transform = "rotate(180deg)"
         }
         else {

@@ -27,7 +27,7 @@ a {
     width: 587px;
     top: 0px;
     left: 0px;
-    position: absolute
+    position: absolute;
 }
 
 /*FRC webcomponents styles/////FRC webcomponents styles/////FRC webcomponents styles/////*/
@@ -36,18 +36,8 @@ h3 {
     top: 0px;
 }
 
-.tRow0 {
-    top: 0px;
-}
-
-.number0 {
-    color: #000;
-    fill: white;
-    top: 45px;
-}
-
-.boolean0 {
-    top: 45px;
+frc-number-bar {
+    fill: #FFF
 }
 
 /*Button styles/////Button styles/////Button styles/////Button styles/////*/
@@ -55,17 +45,20 @@ h3 {
     top:80px;
     right: 20px;
     width: 100px;
+    position: absolute;
 }
 
 #arm {
     top:160px;
     right: 20px;
     width: 100px;
+    position: absolute;
 }
 
 #back {
     top: 240px;
     right: 20px;
     width: 100px;
+    position: absolute;
 }
 
