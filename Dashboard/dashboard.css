@@ -36,12 +36,8 @@ h3 {
     top: 0px;
 }
 
-.beattie-gauge  {
-    fill: #FFF !important;
-}
-
-.gauge-container > .gauge .value-text {
-    fill: white;
+frc-number-bar {
+    fill: #FFF
 }
 
 /*Button styles/////Button styles/////Button styles/////Button styles/////*/
