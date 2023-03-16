@@ -207,6 +207,7 @@ public class ArmSubsystem extends SubsystemBase {
                     (extenderPosition + ksolidArmDistance) * Math.sin(Units.degreesToRadians(relativeAngle)));
             SmartDashboard.putNumber("X",
                     (extenderPosition + ksolidArmDistance) * Math.cos(Units.degreesToRadians(relativeAngle)));
+            var distanceFromPivotPointHorizontalInches = (extenderSetpoint + ksolidArmDistance) * Math.cos(Units.degreesToRadians(relativeAngle));
             if (quadrant.equals(Quadrant.Q2) || quadrant.equals(Quadrant.Q3)) {
                 if ((extenderSetpoint + ksolidArmDistance) * Math.sin(Units.degreesToRadians(relativeAngle)) > 52) {
                     setExtenderSetpoint((52 / Math.sin(Units.degreesToRadians(relativeAngle)) - ksolidArmDistance) - 2);
@@ -215,14 +216,16 @@ public class ArmSubsystem extends SubsystemBase {
                     SmartDashboard.putBoolean("Debug", true);
                     break;
                 }
-                if ((extenderSetpoint + ksolidArmDistance) * Math.cos(Units.degreesToRadians(relativeAngle)) > 62) {
+
+                if (distanceFromPivotPointHorizontalInches > 62) {
                     setExtenderSetpoint((62 / Math.cos(Units.degreesToRadians(relativeAngle)) - ksolidArmDistance) - 2);
                     m_Extender.setVoltage(m_extenderPIDController.calculate(m_absExtenderEncoder.get()));
                     SmartDashboard.putBoolean("Debug", true);
                     // m_armPivot.setVoltage(0);
                     break;
                 }
-            } else if ((extenderSetpoint + ksolidArmDistance) * Math.sin(Units.degreesToRadians(relativeAngle)) > 21) {
+            } else { // we are in the bottom quadrants Q1 || Q4
+             if ((extenderSetpoint + ksolidArmDistance) * Math.sin(Units.degreesToRadians(relativeAngle)) > 21) {
                 lastArmSetPoint = m_armPIDController.getSetpoint();
                 setArmPivotSetpoint(armPivotPosition);
                 setExtenderSetpoint((22 / Math.sin(Units.degreesToRadians(relativeAngle)) - ksolidArmDistance) - 11);
@@ -230,6 +233,15 @@ public class ArmSubsystem extends SubsystemBase {
                 m_Extender.setVoltage(m_extenderPIDController.calculate(m_absExtenderEncoder.get()));
                 SmartDashboard.putBoolean("Debug", true);
                 break;
+                }
+            
+                if (distanceFromPivotPointHorizontalInches > 62) {
+                    setExtenderSetpoint((62 / Math.cos(Units.degreesToRadians(relativeAngle)) - ksolidArmDistance) - 2);
+                    m_Extender.setVoltage(m_extenderPIDController.calculate(m_absExtenderEncoder.get()));
+                    SmartDashboard.putBoolean("Debug", true);
+                    // m_armPivot.setVoltage(0);
+                    break;
+                }
             }
             if (lastArmSetPoint != Integer.MIN_VALUE)
                 setArmPivotSetpoint(lastArmSetPoint);

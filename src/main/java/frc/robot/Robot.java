@@ -11,6 +11,9 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.Balance;
+import frc.robot.commands.DriveLinear;
+import frc.robot.commands.DriveStraight;
 import frc.robot.commands.DriveToScore;
 import frc.robot.commands.Grab;
 import frc.robot.commands.Place;
@@ -29,6 +32,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -58,7 +62,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
  * project.
  */
 public class Robot extends TimedRobot {
-  private static final double POWER_LIMIT = 0.2;
+  private static final double POWER_LIMIT = 1;
   private Command m_balanceCommand;
   private Command m_trajectory;
   private RobotContainer m_robotContainer;
@@ -103,8 +107,10 @@ public class Robot extends TimedRobot {
   public boolean useButtonBoard = true;
   public ArmSubsystem m_arm;
   private int m_lastBoardButtonValue;
-  private boolean pressed;
+  private boolean m_gripperButtonPressed;
+  private boolean m_autoBalanceButtonPressed;
   private DriveSubsystem m_drive;
+  private Command m_teleopAutoBalance = null;
 
   public boolean dropOffMode = true;
 
@@ -120,7 +126,7 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     CANSparkMaxSimulated simulatedLeft = null;
     CANSparkMaxSimulated simulatedRight = null;
-    pressed = false;
+    m_gripperButtonPressed = false;
     if (RobotBase.isSimulation())
     {
       m_leftEncoder = new SimulatedEncoder();
@@ -178,7 +184,7 @@ public class Robot extends TimedRobot {
 
     m_arm.resetEncoders();
     m_arm.setArmPivotSetpoint(90);
-    m_arm.setExtenderSetpoint(20);
+    m_arm.setExtenderSetpoint(3);
     m_arm.setGripperPivotSetpoint(180);
 
     var modebutton = new JoystickButton(m_ArmController, 11);
@@ -186,7 +192,7 @@ public class Robot extends TimedRobot {
       dropOffMode = !dropOffMode;
     }));
     
-    SmartDashboard.putString("autoname", "stop");
+    SmartDashboard.putNumber("autoname", 2);
 
 
   }
@@ -204,20 +210,21 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    if(m_buttonPanel.getRawButton(5)){
-      SmartDashboard.putString("autoname", "drivestraight");
+    if(m_buttonPanel.getRawButton(6)){
+      SmartDashboard.putNumber("autoname", 1);
     }
-    if(m_buttonPanel.getRawButton(8)){
-      SmartDashboard.putString("autoname", "stop");
+    if(m_buttonPanel.getRawButton(9)){
+      SmartDashboard.putNumber("autoname", 2);
     }
-    if(m_buttonPanel.getRawButton(10)){
-      SmartDashboard.putString("autoname", "autobalance");
+    if(m_buttonPanel.getRawButton(11)){
+      SmartDashboard.putNumber("autoname", 3);
     }
     SmartDashboard.putNumber("right motor speed:", m_RightFront.get());
     SmartDashboard.putNumber("leftStick", m_DriveController.getLeftX());
     SmartDashboard.putBoolean("drop off mode", dropOffMode);
+    SmartDashboard.putData("Commands", CommandScheduler.getInstance());
 
-    
+
     
     CommandScheduler.getInstance().run();
     // System.out.println(targets.size() + "targets found: ");
@@ -254,23 +261,26 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     Command autoprogram = null;
     // m_trajectory = m_robotContainer.getTrajectories();
-    m_balanceCommand = m_robotContainer.getBalanceCommand();
+    //m_balanceCommand = m_robotContainer.getBalanceCommand();
     autoprogram = m_robotContainer.getRamseteCommand();
     // Command drive = m_robotContainer.getTrajectories();
     // schedule the autonomous command (example)
     // if(m_trajectory != null)
     // m_trajectory.schedule();
-    var autoname = SmartDashboard.getString("autoname", "stop");
+    var autoname = SmartDashboard.getNumber("autoname", 2);
+
+    System.out.println("Auto to be scheduled is "  + autoname);
     
-    if (autoname.equals ("drivestaight")){
-
-    }
-    else if (autoname.equals ("autobalance")){
-
+    if (autoname == 1 /* driveforward */){
+      System.out.println("Drive forward scheduled");
+      autoprogram = new DriveLinear(Units.feetToMeters(15), m_drive);
+    }    else if (autoname == 3 /* autobalance */){
+      System.out.println("Autobalance scheduled");
+      autoprogram = m_robotContainer.getBalanceCommand();
     }
 
     if (autoprogram != null) {
-      autoprogram.schedule();
+      CommandScheduler.getInstance().schedule(autoprogram);
     }
   }
 
@@ -348,10 +358,10 @@ public class Robot extends TimedRobot {
     //   m_arm.incrementGripperPivotSetpoint(10);
     // }
 
-    if (m_ArmController.getRawButton(2)&&!pressed){
+    if (m_ArmController.getRawButton(2)&&!m_gripperButtonPressed){
       m_arm.toggleGripper();
     } 
-    pressed = m_ArmController.getRawButton(2);
+    m_gripperButtonPressed = m_ArmController.getRawButton(2);
 
     if (m_ArmController.getRawButton(4)){
       m_arm.setIntakeMode(IntakeMode.FORWARD);
@@ -366,8 +376,21 @@ public class Robot extends TimedRobot {
       m_arm.setIntakeMode(IntakeMode.SLOW);
     else if(m_ArmController.getRawButton(7))
       m_arm.setIntakeMode(IntakeMode.OFF);
+    if(!m_arm.getOveride())
+     m_arm.setGripperPivotSetpoint(-m_ArmController.getRawAxis(2)*45 + 180);
+    if(m_ArmController.getRawButton(8)&&!m_autoBalanceButtonPressed){
+      if(m_teleopAutoBalance == null){
+        m_teleopAutoBalance = new Balance(m_drive);
+        CommandScheduler.getInstance().schedule(m_teleopAutoBalance);
+      }else{
+        m_teleopAutoBalance.cancel();
+        m_teleopAutoBalance = null;
+      }
 
-    m_arm.setGripperPivotSetpoint(-m_ArmController.getRawAxis(2)*45 + 180);
+    }
+    m_autoBalanceButtonPressed = m_ArmController.getRawButton(8);
+    SmartDashboard.putBoolean("TeleopBalance", m_teleopAutoBalance == null);
+
 
     // if(m_ArmController.getRawButton(6))
     //   m_arm.toggleGripperRotator();
@@ -427,6 +450,7 @@ public class Robot extends TimedRobot {
     }
     m_lastBoardButtonValue = boardButton;
 
+    System.out.println(boardButton);
     if (boardButton == 1){
       scorePiece(Level.TOP, Offset.RIGHT,true);
     }
@@ -465,7 +489,7 @@ public class Robot extends TimedRobot {
 
   private int getPressedBoardButton() {
     int buttonPressed = 0;
-    for(int i = 0; i<13; i++){
+    for(int i = 1; i<13; i++){
       if(m_buttonPanel.getRawButton(i)){
         buttonPressed = BUTTON_PANEL_MAP[i];
       } 

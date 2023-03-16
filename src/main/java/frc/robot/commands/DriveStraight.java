@@ -78,16 +78,16 @@ public class DriveStraight extends CommandBase {
   @Override
   public void execute() {
     //Sets initial values
-    SmartDashboard.putNumber("Setpoint: ", m_left.getSetpoint());
+    SmartDashboard.putNumber("DriveStraight/Setpoint: ", m_left.getSetpoint());
     //SmartDashboard.putString("State:", m_autostate.toString());
     var wheelSpeeds = m_drive.getWheelSpeeds();
-    SmartDashboard.putNumber("Wheelspeeds: ", wheelSpeeds.leftMetersPerSecond);
+    SmartDashboard.putNumber("DriveStraight/Wheelspeeds: ", wheelSpeeds.leftMetersPerSecond);
     var leftVelocity = m_left.calculate(wheelSpeeds.leftMetersPerSecond);
     var rightVelocity = m_right.calculate(wheelSpeeds.rightMetersPerSecond);
-    SmartDashboard.putNumber("PIDPower", leftVelocity);
+    SmartDashboard.putNumber("DriveStraight/PIDPower", leftVelocity);
     double rawYAngle = m_drive.getYAngle();
     
-    double overrideYAngle = SmartDashboard.getNumber("Gyro Override", 0);
+    double overrideYAngle = SmartDashboard.getNumber("DriveStraight/Gyro Override", 0);
     rawYAngle = overrideYAngle != 0? overrideYAngle : rawYAngle;
     //Reduces Y angle to a range from -180-180
     if (rawYAngle > 180)

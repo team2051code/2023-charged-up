@@ -19,18 +19,14 @@ import frc.robot.subsystems.DriveSubsystem;
 public class DriveLinear extends CommandBase {
 
     private double distance;
-    private double targetSpeed;
+    private double targetPower;
     private Timer newTimer = new Timer();
-    private double duration;
-    //private final static double realSpeed = (((5676/60)*(1/8.71))*(Math.PI*6))/36;
-    //private double ratioSpeed;
    
-    private double startPosition;
     private DriveSubsystem m_drive;
 
     public DriveLinear(double distance, DriveSubsystem drive){
-        this.distance = -distance;
-        targetSpeed = CompetitionDriveConstants.kMaxSpeedMetersPerSecond;
+        this.distance = distance;
+        targetPower = 0.5;
         m_drive = drive;
     }
     
@@ -45,7 +41,7 @@ public class DriveLinear extends CommandBase {
         SmartDashboard.putNumber("Distance", m_drive.getRightEncoder());
 
         if (getDistance()>distance){
-            m_drive.tankDrive(targetSpeed/2, targetSpeed/2);
+            m_drive.tankDrive(targetPower, targetPower);
         }
     }
 
@@ -54,7 +50,7 @@ public class DriveLinear extends CommandBase {
     }
     @Override
     public boolean isFinished(){
-        return getDistance()<=distance;
+        return getDistance()>=distance;
     }
 
     @Override
