@@ -17,6 +17,7 @@ import frc.robot.commands.DriveToScore.Offset;
 import frc.robot.components.LimitedMotor;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CompetitionDriveConstants;
+import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ArmSubsystem.IntakeMode;
 import frc.robot.subsystems.simulated.CANSparkMaxSimulated;
 import frc.robot.subsystems.simulated.SimulatedEncoder;
@@ -70,7 +71,8 @@ public class Robot extends TimedRobot {
   
   private RelativeEncoder m_leftEncoder;
   private RelativeEncoder m_rightEncoder;
-  private final XboxController m_ArmController = new XboxController(CompetitionDriveConstants.XboxArmPort);
+  //private final XboxController m_ArmController = new XboxController(CompetitionDriveConstants.XboxArmPort);
+  private final Joystick m_ArmController = new Joystick(CompetitionDriveConstants.XboxArmPort);
   private final XboxController m_DriveController = new XboxController(CompetitionDriveConstants.XboxDrivePort);
   private final Joystick m_buttonPanel = new Joystick(CompetitionDriveConstants.joyStickPort);
 
@@ -99,6 +101,7 @@ public class Robot extends TimedRobot {
   public ArmSubsystem m_arm;
   private int m_lastBoardButtonValue;
   private boolean pressed;
+  private DriveSubsystem m_drive;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -161,6 +164,7 @@ public class Robot extends TimedRobot {
 
     m_robotContainer = new RobotContainer(m_left, m_right, m_leftEncoder, m_rightEncoder, simulatedLeft, simulatedRight);
     m_arm = m_robotContainer.getArmSubsystem();
+    m_drive = m_robotContainer.getDriveSubsystem();
     // m_camera = new PhotonCamera("Camera_A");
     // m_cameraB = new PhotonCamera("Camera_B");
     // cameraList = new ArrayList<PhotonCamera>();
@@ -169,7 +173,8 @@ public class Robot extends TimedRobot {
 
     m_arm.resetEncoders();
     m_arm.setArmPivotSetpoint(90);
-    m_arm.setExtenderSetpoint(3);
+    m_arm.setExtenderSetpoint(20);
+    m_arm.setGripperPivotSetpoint(180);
   }
 
   /**
@@ -326,7 +331,7 @@ public class Robot extends TimedRobot {
     m_robotContainer.resetOdometry();
 
     //m_arm.setArmPivotSetpoint(180);
-    m_arm.setExtenderSetpoint(3);
+    //m_arm.setExtenderSetpoint(3);
   }
 
   /** This function is called periodically during operator control. */
@@ -344,34 +349,56 @@ public class Robot extends TimedRobot {
     } else {
       m_robotContainer.arcadeDrive(-m_DriveController.getLeftY(), -m_DriveController.getRightX());
     }
-    //gripper pivot controller
+    SmartDashboard.putBoolean("Gear", m_drive.getGear());
+    if(m_DriveController.getXButton())
+      m_drive.toggleGear();
+    // gripper pivot controller
     // if (m_ArmController.getXButton()) {
     //   m_arm.incrementGripperPivotSetpoint(-20);
     // }
     // if (m_ArmController.getYButton()) {
     //   m_arm.incrementGripperPivotSetpoint(20);
     // }
-    //gripper rotate controller
+    // gripper rotate controller
     
-    if (m_ArmController.getAButton()&&!pressed){
+    // if (m_ArmController.getAButton()&&!pressed){
+    //   m_arm.toggleGripper();
+    // } 
+    //  pressed = m_ArmController.getAButton();
+
+    // if (m_ArmController.getXButton()){
+    //   m_arm.setIntakeMode(IntakeMode.FORWARD);
+    // }
+    // else if (m_ArmController.getYButton()){
+    //   m_arm.setIntakeMode(IntakeMode.BACKWARD);
+    // }
+    // else{
+    //   m_arm.setIntakeMode(IntakeMode.OFF);
+    // }
+
+    // if (m_ArmController.getLeftBumper()){
+    //   m_arm.incrementGripperPivotSetpoint(10);
+    // }
+
+    if (m_ArmController.getRawButton(2)&&!pressed){
       m_arm.toggleGripper();
     } 
-    pressed = m_ArmController.getAButton();
+    pressed = m_ArmController.getRawButton(2);
 
-    if (m_ArmController.getXButton()){
+    if (m_ArmController.getRawButton(4)){
       m_arm.setIntakeMode(IntakeMode.FORWARD);
     }
-    else if (m_ArmController.getYButton()){
+    else if (m_ArmController.getRawButton(5)){
       m_arm.setIntakeMode(IntakeMode.BACKWARD);
     }
     else{
       m_arm.setIntakeMode(IntakeMode.OFF);
     }
 
-    if (m_ArmController.getLeftBumper()){
-      m_arm.incrementGripperPivotSetpoint(10);
-    }
+    m_arm.setGripperPivotSetpoint(-m_ArmController.getRawAxis(2)*45 + 180);
 
+    // if(m_ArmController.getRawButton(6))
+    //   m_arm.toggleGripperRotator();
     // if (m_ArmController.getBButton()) {
     //   m_arm.toggleGripper();
     // }
@@ -391,15 +418,28 @@ public class Robot extends TimedRobot {
     //intake controlle
 
 
+    // if(!m_arm.getOveride()){
+    //   if(-m_ArmController.getLeftY()<0.25 && -m_ArmController.getLeftY()>-0.25)
+    //     m_arm.setBreak(false);
+    //   else{
+    //     m_arm.setBreak(true);
+    //     m_arm.incrementArmPivotSetpoint(-m_ArmController.getLeftY() * 50);
+    //   }
+    //   if(!(-m_ArmController.getRightY()<0.25 && -m_ArmController.getRightY()>-0.25))
+    //     m_arm.incrementExtenderSetpoint(-m_ArmController.getRightY()*5);
+    // }
+
     if(!m_arm.getOveride()){
-      if(-m_ArmController.getLeftY()<0.25 && -m_ArmController.getLeftY()>-0.25)
+      if(-m_ArmController.getRawAxis(1)<0.25 && -m_ArmController.getRawAxis(1)>-0.25)
         m_arm.setBreak(false);
       else{
         m_arm.setBreak(true);
-        m_arm.incrementArmPivotSetpoint(-m_ArmController.getLeftY() * 50);
+        m_arm.incrementArmPivotSetpoint(-m_ArmController.getRawAxis(1) * 50);
       }
-      if(!(-m_ArmController.getRightY()<0.25 && -m_ArmController.getRightY()>-0.25))
-        m_arm.incrementExtenderSetpoint(-m_ArmController.getRightY()*5);
+      if(m_ArmController.getRawButton(1)){
+        m_arm.incrementExtenderSetpoint(10);
+      }else if(m_ArmController.getRawButton(3))
+        m_arm.incrementExtenderSetpoint(-10);
     }
 
     //from bottom left: down-up left-right
@@ -416,32 +456,32 @@ public class Robot extends TimedRobot {
     m_lastBoardButtonValue = boardButton;
 
     if (boardButton == 1){
-      scorePiece(Level.BOTTOM, Offset.LEFT,true);
-    }
-    if (boardButton == 2){
-      scorePiece(Level.MIDDLE, Offset.CENTER,true);
-    }
-    if (boardButton == 3){
       scorePiece(Level.TOP, Offset.RIGHT,true);
     }
+    if (boardButton == 2){
+      Retract retract = new Retract(m_arm);
+      CommandScheduler.getInstance().schedule(retract);
+    }
+    if (boardButton == 3){
+      scorePiece(Level.TOP, Offset.RIGHT,false);
+    }
     if (boardButton == 4){
-      grabPiece(true);
+      scorePiece(Level.MIDDLE, Offset.CENTER,true);
     }
     if (boardButton == 5){
       grabPiece(false);
     }
     if (boardButton == 6){
-      Retract retract = new Retract(m_arm);
-      CommandScheduler.getInstance().schedule(retract);
-    }
-    if (boardButton == 7){
-      scorePiece(Level.BOTTOM, Offset.LEFT,false);
-    }
-    if (boardButton == 8){
       scorePiece(Level.MIDDLE, Offset.CENTER,false);
     }
+    if (boardButton == 7){
+      scorePiece(Level.BOTTOM, Offset.LEFT,true);
+    }
+    if (boardButton == 8){
+      grabPiece(true);
+    }
     if (boardButton == 9){
-      scorePiece(Level.TOP, Offset.RIGHT,false);
+      scorePiece(Level.BOTTOM, Offset.LEFT,false);
     }
         
   }

@@ -96,4 +96,8 @@ public ArmSubsystem getArmSubsystem(){
   return m_robotArm;
 }
 
+public DriveSubsystem getDriveSubsystem(){
+  return m_robotDrive;
+}
+
 }

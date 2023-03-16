@@ -7,6 +7,7 @@ package frc.robot.commands;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -43,6 +44,7 @@ public class Place extends CommandBase {
   @Override
   public void initialize() {
     m_arm.setOveride(true);
+    SmartDashboard.putBoolean("Place", true);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
