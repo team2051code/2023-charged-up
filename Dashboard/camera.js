@@ -38,7 +38,7 @@ function cameraInit(){
             document.getElementById("cameraOut").src = url;
         }
 
-        setCameraPort(piProtocols[0], cameraPorts[0]);
+        setCameraPort(piProtocols[3], cameraPorts[1]);
 }
 
 //temporary to make drawing faster
