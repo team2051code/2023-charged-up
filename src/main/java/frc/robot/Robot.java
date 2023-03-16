@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -57,7 +58,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
  * project.
  */
 public class Robot extends TimedRobot {
-  private static final double POWER_LIMIT = 1;
+  private static final double POWER_LIMIT = 0.2;
   private Command m_balanceCommand;
   private Command m_trajectory;
   private RobotContainer m_robotContainer;
@@ -73,10 +74,7 @@ public class Robot extends TimedRobot {
   
   private RelativeEncoder m_leftEncoder;
   private RelativeEncoder m_rightEncoder;
-<<<<<<< HEAD
   //private final XboxController m_ArmController = new XboxController(CompetitionDriveConstants.XboxArmPort);
-=======
->>>>>>> 50bc7a3a560ecb0e836a41e9509ce74980291d4b
   private final Joystick m_ArmController = new Joystick(CompetitionDriveConstants.XboxArmPort);
   private final XboxController m_DriveController = new XboxController(CompetitionDriveConstants.XboxDrivePort);
   private final Joystick m_buttonPanel = new Joystick(CompetitionDriveConstants.joyStickPort);
@@ -181,19 +179,16 @@ public class Robot extends TimedRobot {
     m_arm.resetEncoders();
     m_arm.setArmPivotSetpoint(90);
     m_arm.setExtenderSetpoint(20);
-<<<<<<< HEAD
     m_arm.setGripperPivotSetpoint(180);
-=======
 
     var modebutton = new JoystickButton(m_ArmController, 11);
     modebutton.onTrue(Commands.runOnce(() -> {
       dropOffMode = !dropOffMode;
     }));
     
-    
+    SmartDashboard.putString("autoname", "stop");
 
 
->>>>>>> 50bc7a3a560ecb0e836a41e9509ce74980291d4b
   }
 
   /**
@@ -285,6 +280,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("right motor speed:", m_RightFront.get());
     SmartDashboard.putNumber("leftStick", m_DriveController.getLeftX());
     SmartDashboard.putBoolean("drop off mode", dropOffMode);
+
+    
     
     CommandScheduler.getInstance().run();
     // System.out.println(targets.size() + "targets found: ");
@@ -319,15 +316,25 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    Command autoprogram = null;
     // m_trajectory = m_robotContainer.getTrajectories();
     m_balanceCommand = m_robotContainer.getBalanceCommand();
-    var m_ramseteCommand = m_robotContainer.getRamseteCommand();
+    autoprogram = m_robotContainer.getRamseteCommand();
     // Command drive = m_robotContainer.getTrajectories();
     // schedule the autonomous command (example)
     // if(m_trajectory != null)
     // m_trajectory.schedule();
-    if (m_ramseteCommand != null) {
-      m_ramseteCommand.schedule();
+    var autoname = SmartDashboard.getString("autoname", "stop");
+    
+    if (autoname.equals ("drivestaight")){
+
+    }
+    else if (autoname.equals ("autobalance")){
+
+    }
+
+    if (autoprogram != null) {
+      autoprogram.schedule();
     }
   }
 
@@ -372,6 +379,10 @@ public class Robot extends TimedRobot {
     } else {
       m_robotContainer.arcadeDrive(-m_DriveController.getLeftY(), -m_DriveController.getRightX());
     }
+    SmartDashboard.putBoolean("Gear", m_drive.getGear());
+    if(m_DriveController.getXButton()){
+      m_drive.toggleGear();
+    }
     
     //gripper pivot controller
     // if (m_ArmController.getXButton()) {
@@ -412,9 +423,13 @@ public class Robot extends TimedRobot {
     else if (m_ArmController.getRawButton(5)){
       m_arm.setIntakeMode(IntakeMode.BACKWARD);
     }
-    else{
+    else if(!m_arm.getIntakeMode().equals(IntakeMode.SLOW)){
       m_arm.setIntakeMode(IntakeMode.OFF);
     }
+    if(m_ArmController.getRawButton(7)&&!m_arm.getIntakeMode().equals(IntakeMode.SLOW))
+      m_arm.setIntakeMode(IntakeMode.SLOW);
+    else if(m_ArmController.getRawButton(7))
+      m_arm.setIntakeMode(IntakeMode.OFF);
 
     m_arm.setGripperPivotSetpoint(-m_ArmController.getRawAxis(2)*45 + 180);
 
@@ -455,7 +470,7 @@ public class Robot extends TimedRobot {
         m_arm.setBreak(false);
       else{
         m_arm.setBreak(true);
-        m_arm.incrementArmPivotSetpoint(-m_ArmController.getRawAxis(1) * 50);
+        m_arm.incrementArmPivotSetpoint(-m_ArmController.getRawAxis(1) * 25);
       }
       if(m_ArmController.getRawButton(1)){
         m_arm.incrementExtenderSetpoint(10);

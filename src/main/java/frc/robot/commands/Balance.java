@@ -41,13 +41,13 @@ public class Balance extends CommandBase {
   public void initialize() 
   {
     System.out.println("Balance reached");
-    m_left = new PIDController(SmartDashboard.getNumber("BPVal", kPDriveVal), kIDriveVal, kDDriveVal);
-    m_right = new PIDController(SmartDashboard.getNumber("BPVal", kPDriveVal), kIDriveVal, kDDriveVal);
+    m_left = new PIDController(SmartDashboard.getNumber("BPVal", 1.2), kIDriveVal, kDDriveVal);
+    m_right = new PIDController(SmartDashboard.getNumber("BPVal", 1.2), kIDriveVal, kDDriveVal);
     SPEED_M_S = 0.5;
     m_left.reset();
     m_right.reset();
-    m_left.setSetpoint(SmartDashboard.getNumber("BSetpoint",SPEED_M_S));
-    m_right.setSetpoint(SmartDashboard.getNumber("BSetpoint",SPEED_M_S));
+    m_left.setSetpoint(SmartDashboard.getNumber("BSetpoint",0.5));
+    m_right.setSetpoint(SmartDashboard.getNumber("BSetpoint",0.5));
     m_drive.resetEncoders();
     m_drive.zeroHeading();
     m_gyroFilter.reset();
