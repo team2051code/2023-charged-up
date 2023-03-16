@@ -204,79 +204,15 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    // Runs the Scheduler. This is responsible for polling buttons, adding
-    // newly-scheduled
-    // commands, running already-scheduled commands, removing finished or
-    // interrupted commands,
-    // and running subsystem periodic() methods. This must be called from the
-    // robot's periodic
-    // block in order for anything in the Command-based framework to work.
-    // var result = m_camera.getLatestResult();
-    // boolean hasTargets = result.hasTargets();
-    // List<PhotonTrackedTarget> targets = result.getTargets();
-    // PhotonTrackedTarget target = result.getBestTarget();
-    // for (PhotonCamera camera: cameraList)
-    // {
-    // SmartDashboard.putString("active", "yes");
-    // var result = camera.getLatestResult();
-    // double latency = result.getLatencyMillis();
-    // List<PhotonTrackedTarget> targets = result.getTargets();
-    // System.out.print(camera.getName() + "(" + latency + ")" + ": ");
-    // System.out.println(targets.size() + "targets found");
-    // for (PhotonTrackedTarget target: targets)
-    // {
-    // double yaw = target.getYaw();
-    // double pitch = target.getPitch();
-    // double area = target.getArea();
-    // double skew = target.getSkew();
-    // double ID = target.getFiducialId();
-    // SmartDashboard.putNumber("AprilTag ID: " , ID);
-    // SmartDashboard.putNumber("Yaw", yaw);
-    // SmartDashboard.putNumber("Pitch", pitch);
-    // SmartDashboard.putNumber("Area" , area);
-    // SmartDashboard.putNumber("skew", skew);
-    // Transform3d pose = target.getBestCameraToTarget();
-    // double x = pose.getX();
-    // double y = pose.getY();
-    // double z = pose.getZ();
-    // SmartDashboard.putNumber("Pose X Value", x);
-    // SmartDashboard.putNumber("Pose Y Value", y);
-    // SmartDashboard.putNumber("Pose Z value", z);
-    // if (ID >= -1)
-    // {
-    // if (ID == 1)
-    // {
-    // m_intakeLeft.set(1.0);
-    // m_intakeRight.set(-1.0);
-
-    // }
-
-    // }
-    // }
-    // }
-    // if (target != null)
-    // {
-    // double yaw = target.getYaw();
-    // double pitch = target.getPitch();
-    // double area = target.getArea();
-    // double skew = target.getSkew();
-    // System.out.println("" + yaw + ", " + pitch + ", " + area + ", " + skew);
-
-    // SmartDashboard.putNumber("Yaw", yaw);
-    // SmartDashboard.putNumber("Pitch", pitch);
-    // SmartDashboard.putNumber("Area", area);
-    // SmartDashboard.putNumber("skew", skew);
-
-    // }
-    // else
-    // {
-    // System.out.println("No targets locked.");
-
-    // SmartDashboard.putNumber("Yaw", 0);
-    // SmartDashboard.putNumber("Pitch", 0);
-    // SmartDashboard.putNumber("Area", 0);
-    // SmartDashboard.putNumber("skew", 0);
-    // }
+    if(m_buttonPanel.getRawButton(5)){
+      SmartDashboard.putString("autoname", "drivestraight");
+    }
+    if(m_buttonPanel.getRawButton(8)){
+      SmartDashboard.putString("autoname", "stop");
+    }
+    if(m_buttonPanel.getRawButton(10)){
+      SmartDashboard.putString("autoname", "autobalance");
+    }
     SmartDashboard.putNumber("right motor speed:", m_RightFront.get());
     SmartDashboard.putNumber("leftStick", m_DriveController.getLeftX());
     SmartDashboard.putBoolean("drop off mode", dropOffMode);
