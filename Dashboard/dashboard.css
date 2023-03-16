@@ -16,6 +16,7 @@ a {
     width: 587px;
     top: 0px;
     left: 0px;
+    position: absolute;
 
     /*transform: rotate(180deg);*/
 }
@@ -26,6 +27,7 @@ a {
     width: 587px;
     top: 0px;
     left: 0px;
+    position: absolute
 }
 
 /*FRC webcomponents styles/////FRC webcomponents styles/////FRC webcomponents styles/////*/
