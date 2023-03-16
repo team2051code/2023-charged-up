@@ -1,31 +1,4 @@
 {
-  "HALProvider": {
-    "RoboRIO": {
-      "window": {
-        "visible": true
-    "Other Devices": {
-      "ADIS16470[0]": {
-        "header": {
-          "open": true
-        }
-      },
-      "SPARK MAX [11]": {
-        "header": {
-          "open": true
-        }
-      },
-      "SPARK MAX [8]": {
-        "header": {
-          "open": true
-        }
-      },
-      "SPARK MAX [9]": {
-        "header": {
-          "open": true
-        }
-      }
-    }
-  },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
@@ -35,31 +8,12 @@
       "/SmartDashboard/Field: ": "Field2d",
       "/SmartDashboard/Gripper PID": "PIDController",
       "/SmartDashboard/Simulation Field:": "Field2d",
-      "/SmartDashboard/command": "Scheduler",
       "/SmartDashboard/photonvision Sim Field": "Field2d"
-    },
-    "windows": {
-      "/SmartDashboard/Arm Sim": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/photonvision Sim Field": {
-        "window": {
-          "visible": true
-        }
-      }
     }
   },
   "NetworkTables": {
     "transitory": {
       "SmartDashboard": {
-        "Arm PID": {
-          "open": true
-        },
-        "Extender PID": {
-          "open": true
-        },
         "open": true
       }
     }
