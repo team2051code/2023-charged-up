@@ -26,12 +26,19 @@ function ntLoaded() {
         else {
             document.getElementById("teamColor").style.backgroundColor = "#003"
         }
-    }, true)
+    }, true);
 
     //mode at top of dashboard
     NetworkTables.addKeyListener("/SmartDashboard/drop off mode", (key, value, isNew) => {
         if(value) document.getElementById("mode").innerText = "Drop Off";
         else document.getElementById("mode").innerText = "Pick Up"
+    }, true);
+
+    // Auto mode
+     NetworkTables.addKeyListener('/SmartDashboard/autoname', (key, value, isNew) => {
+       const AUTO_NAMES = ["place/drive straight", "stop", "autobalance"];
+       const nameString = value > AUTO_NAMES.length ? value : AUTO_NAMES[value-1];
+       document.getElementById("auto-mode").innerText = nameString;
     }, true);
 
 }

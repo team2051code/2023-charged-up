@@ -126,7 +126,7 @@ public class ArmSubsystem extends SubsystemBase {
             m_GripperPivot = new LimitedMotor(CompetitionDriveConstants.kGripperPivotMotorPort, MotorType.kBrushless,
                     POWER_LIMIT);
             m_absArmPivotEncoder = new AnalogPotentiometer(0, 285, 36.6);
-            m_absExtenderEncoder = new AnalogPotentiometer(1, MAX_ARM_EXTENSION_LENGTH_INCHES * 1.716, -5.15);
+            m_absExtenderEncoder = new AnalogPotentiometer(1, MAX_ARM_EXTENSION_LENGTH_INCHES * 1.716, -10.9);
             m_absGripperPivotEncoder = new AnalogPotentiometer(2, 360 * 0.665, 69.32);
         }
 
@@ -260,8 +260,8 @@ public class ArmSubsystem extends SubsystemBase {
                     break;
                 }
 
-                if (distanceFromPivotPointHorizontalInches > 62) {
-                    setExtenderSetpoint((62 / Math.cos(Units.degreesToRadians(relativeAngle)) - ksolidArmDistance) - 2);
+                if (distanceFromPivotPointHorizontalInches > 63.5) {
+                    setExtenderSetpoint((63.5 / Math.cos(Units.degreesToRadians(relativeAngle)) - ksolidArmDistance) - 0.5);
                     m_Extender.setVoltage(m_extenderPIDController.calculate(m_absExtenderEncoder.get()));
                     SmartDashboard.putBoolean("Debug", true);
                     // m_armPivot.setVoltage(0);
@@ -320,8 +320,8 @@ public class ArmSubsystem extends SubsystemBase {
             SmartDashboard.putString("Pivot1kError", m_ArmPivot1.getLastError().toString());
             SmartDashboard.putString("Pivot2Error", m_ArmPivot2.getLastError().toString());
 
-            if (extenderPosition > 39)
-                setExtenderSetpoint(39);
+            if (extenderPosition > 41)
+                setExtenderSetpoint(41);
             if (extenderSetpoint < 3)
                 setExtenderSetpoint(3);
 

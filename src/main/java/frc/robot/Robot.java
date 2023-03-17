@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.AutoPlaceLow;
 import frc.robot.commands.Balance;
 import frc.robot.commands.DriveLinear;
 import frc.robot.commands.DriveStraight;
@@ -288,7 +289,7 @@ public class Robot extends TimedRobot {
     
     if (autoname == 1 /* driveforward */){
       System.out.println("Drive forward scheduled");
-      autoprogram = new DriveLinear(Units.feetToMeters(3), m_drive);
+      autoprogram = new AutoPlaceLow(m_arm,m_drive);
     }    else if (autoname == 3 /* autobalance */){
       System.out.println("Autobalance scheduled");
       autoprogram = m_robotContainer.getBalanceCommand();
@@ -448,6 +449,17 @@ public class Robot extends TimedRobot {
       }else if(m_ArmController.getRawButton(3))
         m_arm.incrementExtenderSetpoint(-15);
     }
+    if(m_DriveController.getRightBumper()){
+      m_LeftBack.setIdleMode(IdleMode.kBrake);
+      m_LeftFront.setIdleMode(IdleMode.kBrake);
+      m_RightBack.setIdleMode(IdleMode.kBrake);
+      m_RightFront.setIdleMode(IdleMode.kBrake);
+    }else{
+      m_LeftBack.setIdleMode(IdleMode.kCoast);
+      m_LeftFront.setIdleMode(IdleMode.kCoast);
+      m_RightBack.setIdleMode(IdleMode.kCoast);
+      m_RightFront.setIdleMode(IdleMode.kCoast);
+    }
 
     //from bottom left: down-up left-right
   }
@@ -510,7 +522,7 @@ public class Robot extends TimedRobot {
   }
 
   private void scorePiece(DriveToScore.Level level, DriveToScore.Offset offset,boolean frontSide){
-    Place highPlace = new Place(m_arm, level, true, frontSide, SmartDashboard.getNumber("Distance", 10)); //is a cube and facing forwards //p = 1 and d = 0.5 works well
+    Place highPlace = new Place(m_arm, level, false, frontSide, 0); //is a cube and facing forwards //p = 1 and d = 0.5 works well
     CommandScheduler.getInstance().schedule(highPlace);
   }
 

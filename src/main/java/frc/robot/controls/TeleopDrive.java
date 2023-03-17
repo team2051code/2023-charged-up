@@ -46,7 +46,7 @@ public class TeleopDrive {
         m_lastLeft = leftY;
         m_lastRight = rightY;
 
-        m_drive.tankDrive(rightMotorOut, leftMotorOut);
+        m_drive.tankDrive(leftMotorOut, rightMotorOut);
     }
 
     private double computeMotorOut(double current, double previous, SlewRateLimiter limiter) {
