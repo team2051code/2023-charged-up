@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
@@ -28,16 +29,20 @@ public class Retract extends CommandBase {
   @Override
   public void initialize() {
     m_arm.setOveride(true);
+    m_arm.setBreak(true);
     finished = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_arm.setArmPivotSetpoint(180);
-    m_arm.setExtenderSetpoint(2.2);
-    m_arm.setGripperPivotSetpoint(180);
-    finished = true;
+      m_arm.setExtenderSetpoint(3);
+      if(Math.abs(m_arm.getExtendorAbs()-m_arm.getExtenderSetpoint())<1)
+        return;
+      m_arm.setArmPivotSetpoint(180);
+      m_arm.setGripperPivotSetpoint(180);
+      finished = true;
+      SmartDashboard.putBoolean("retractFinished", finished);
   }
 
   // Called once the command ends or is interrupted.

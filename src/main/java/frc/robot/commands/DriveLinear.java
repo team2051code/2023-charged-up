@@ -40,6 +40,7 @@ public class DriveLinear extends CommandBase {
     }
     @Override
     public boolean isFinished(){
+        SmartDashboard.putNumber("DriveLinear/Distance Off", getEncoder()-m_encoderTarget);
         return getEncoder()>=m_encoderTarget;
     }
 
