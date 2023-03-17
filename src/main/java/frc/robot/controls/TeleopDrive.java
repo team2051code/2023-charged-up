@@ -3,6 +3,7 @@ package frc.robot.controls;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class TeleopDrive {
@@ -13,6 +14,8 @@ public class TeleopDrive {
     private double m_lastRight;
     private double m_lastLeft;
     private XboxController m_joystick;
+    private ButtonLatch m_lowSpeedButton;
+    private boolean m_lowSpeed = false;
 
 
     public TeleopDrive (DriveSubsystem subsystem,XboxController joystick) {
@@ -20,12 +23,23 @@ public class TeleopDrive {
         m_leftLimiter = new SlewRateLimiter(SLEW_RATE_LIMIT);
         m_rightLimiter = new SlewRateLimiter(SLEW_RATE_LIMIT);
         m_joystick = joystick;
+        m_lowSpeedButton = new ButtonLatch(() -> m_joystick.getAButton());
     }
 
     public void update(){
         var rightY = MathUtil.applyDeadband(-m_joystick.getRightY(),0.25);
         var leftY = MathUtil.applyDeadband(-m_joystick.getLeftY(),0.25);
 
+        if (m_lowSpeedButton.wasPressed()) {
+            m_lowSpeed = !m_lowSpeed;
+        }
+
+        if(m_lowSpeed) {
+            rightY /= 2;
+            leftY /= 2;
+        }
+
+        SmartDashboard.putBoolean("TeleopDrive/lowSpeed", m_lowSpeed);
         double leftMotorOut = computeMotorOut(leftY,m_lastLeft,m_leftLimiter);
         double rightMotorOut = computeMotorOut(rightY,m_lastRight,m_rightLimiter);
 
