@@ -399,7 +399,7 @@ public class ArmSubsystem extends SubsystemBase {
                 // m_intakeLeftPIDController.setSetpoint(-1);
                 break;
             case SLOW:
-                m_intake.set(-0.2);
+                m_intake.set(-0.25);
                 // m_intakeRightPIDController.setSetpoint(-.125);
                 // m_intakeLeftPIDController.setSetpoint(-.125);
                 break;

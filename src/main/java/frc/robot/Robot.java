@@ -441,12 +441,12 @@ public class Robot extends TimedRobot {
         m_arm.setBreak(false);
       else{
         m_arm.setBreak(true);
-        m_arm.incrementArmPivotSetpoint(-m_ArmController.getRawAxis(1) * 25);
+        m_arm.incrementArmPivotSetpoint(-m_ArmController.getRawAxis(1) * 60);
       }
       if(m_ArmController.getRawButton(1)){
-        m_arm.incrementExtenderSetpoint(10);
+        m_arm.incrementExtenderSetpoint(15);
       }else if(m_ArmController.getRawButton(3))
-        m_arm.incrementExtenderSetpoint(-10);
+        m_arm.incrementExtenderSetpoint(-15);
     }
 
     //from bottom left: down-up left-right
