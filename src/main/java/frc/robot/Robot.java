@@ -438,9 +438,10 @@ public class Robot extends TimedRobot {
     // }
 
     if(!m_arm.getOveride()){
-      if(-m_ArmController.getRawAxis(1)<0.25 && -m_ArmController.getRawAxis(1)>-0.25)
+      if(-m_ArmController.getRawAxis(1)<0.25 && -m_ArmController.getRawAxis(1)>-0.25){
         m_arm.setBreak(false);
-      else{
+        m_arm.setArmPivotSetpoint(m_arm.getArmPivotAbs());
+      }else{
         m_arm.setBreak(true);
         m_arm.incrementArmPivotSetpoint(-m_ArmController.getRawAxis(1) * 60);
       }
@@ -449,6 +450,7 @@ public class Robot extends TimedRobot {
       }else if(m_ArmController.getRawButton(3))
         m_arm.incrementExtenderSetpoint(-15);
     }
+
     if(m_DriveController.getRightBumper()){
       m_LeftBack.setIdleMode(IdleMode.kBrake);
       m_LeftFront.setIdleMode(IdleMode.kBrake);
@@ -507,7 +509,7 @@ public class Robot extends TimedRobot {
   }
   
   private void grabPiece(boolean frontSide){
-    Grab grab = new Grab(m_arm, frontSide, SmartDashboard.getNumber("Distance", 10));
+    Grab grab = new Grab(m_arm, frontSide);
     CommandScheduler.getInstance().schedule(grab);
   }
 

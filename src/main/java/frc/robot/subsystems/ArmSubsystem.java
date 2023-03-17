@@ -147,7 +147,7 @@ public class ArmSubsystem extends SubsystemBase {
 
         m_ArmPivot1.setSmartCurrentLimit(40);
         m_ArmPivot2.setSmartCurrentLimit(40);
-        m_Extender.setSmartCurrentLimit(40);
+        m_Extender.setSmartCurrentLimit(30);
         m_GripperPivot.setSmartCurrentLimit(40);
         m_GripperRotator.setSmartCurrentLimit(40);
         m_IntakeLeft.setSmartCurrentLimit(40);
@@ -320,8 +320,8 @@ public class ArmSubsystem extends SubsystemBase {
             SmartDashboard.putString("Pivot1kError", m_ArmPivot1.getLastError().toString());
             SmartDashboard.putString("Pivot2Error", m_ArmPivot2.getLastError().toString());
 
-            if (extenderPosition > 41)
-                setExtenderSetpoint(41);
+            if (extenderPosition > 39)
+                setExtenderSetpoint(39);
             if (extenderSetpoint < 3)
                 setExtenderSetpoint(3);
 

@@ -49,7 +49,7 @@ public class AutoPlaceLow extends CommandBase {
     m_arm.setIntakeMode(IntakeMode.FORWARD);;
     m_arm.setOveride(false);
     m_arm.setBreak(false);
-    Command Drive = new DriveLinear(Units.feetToMeters(3), m_drive);
+    Command Drive = new DriveLinear(Units.feetToMeters(5), m_drive);
     CommandScheduler.getInstance().schedule(Drive);
   }
 

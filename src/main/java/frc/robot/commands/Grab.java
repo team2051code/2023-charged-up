@@ -7,6 +7,7 @@ package frc.robot.commands;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -15,19 +16,20 @@ public class Grab extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final ArmSubsystem m_arm;
   private boolean m_frontSide;
-  private double m_distance;
-  private boolean finished;
+  //private double m_distance;
+  //private boolean finished;
+  private static final double TIME_OVERRIDE_SECS = 3.0;
+  private Timer m_timer = new Timer();
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public Grab(ArmSubsystem subsystem, boolean frontSide, double distance) {
+  public Grab(ArmSubsystem subsystem, boolean frontSide) {
     m_arm = subsystem;
     m_frontSide = frontSide;
-    m_distance = distance;
-    finished = false;
+    //finished = false;
     // Use addRequirements() here to declare subsystem dependencies.
     // addRequirements(subsystem);
   }
@@ -36,30 +38,34 @@ public class Grab extends CommandBase {
   @Override
   public void initialize() {
     m_arm.setOveride(true);
+    m_arm.setBreak(true);
+    //double theta = 0;
+    m_timer.reset();
+    m_timer.start();
+    if(m_frontSide)//pick up from frontside
+    {
+      //m_arm.toggleGripper();
+      //theta = Units.radiansToDegrees(Math.atan((37.25-24)/(16+m_distance)));
+      m_arm.setArmPivotSetpoint(134.5);
+      m_arm.setExtenderSetpoint(14);
+      m_arm.setGripperPivotSetpoint(144);
+      //m_arm.toggleGripper();
+    }else//pick up from backside
+    {
+      //m_arm.toggleGripper();
+      //theta = 360-Units.radiansToDegrees(Math.atan((37.25-24)/(16+m_distance)));
+      m_arm.setArmPivotSetpoint(360-134.5);
+      m_arm.setExtenderSetpoint(14);
+      m_arm.setGripperPivotSetpoint(360-144);
+      //m_arm.toggleGripper();
+    }
+    //finished = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double theta = 0;
-    if(m_frontSide)//pick up from frontside
-    {
-      m_arm.toggleGripper();
-      theta = Units.radiansToDegrees(Math.atan((37.25-24)/(16+m_distance)));
-      m_arm.setArmPivotSetpoint(theta+90);
-      m_arm.setExtenderSetpoint(Math.sqrt((Math.pow((37.25-24),2)+Math.pow((16+m_distance), 2))-28));
-      m_arm.setGripperPivotSetpoint(180+theta);
-      m_arm.toggleGripper();
-    }else//pick up from backside
-    {
-      m_arm.toggleGripper();
-      theta = 360-Units.radiansToDegrees(Math.atan((37.25-24)/(16+m_distance)));
-      m_arm.setArmPivotSetpoint(theta-90);
-      m_arm.setExtenderSetpoint(Math.sqrt((Math.pow((37.25-24),2)+Math.pow((16+m_distance), 2))-28));
-      m_arm.setGripperPivotSetpoint(theta-180);
-      m_arm.toggleGripper();
-    }
-    finished = true;
+    
   }
 
   // Called once the command ends or is interrupted.
@@ -74,6 +80,6 @@ public class Grab extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return finished;
+    return (m_timer.get() > TIME_OVERRIDE_SECS) ||((Math.abs(m_arm.getArmPivotAbs()-m_arm.getArmPivotSetpoint())<1)&&(Math.abs(m_arm.getExtendorAbs()-m_arm.getExtenderSetpoint())<1));
   }
 }
