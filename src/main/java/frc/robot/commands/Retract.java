@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class Retract extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final ArmSubsystem m_arm;
-  private boolean finished;
   /**
    * Creates a new ExampleCommand.
    *
@@ -30,24 +29,21 @@ public class Retract extends CommandBase {
   public void initialize() {
     m_arm.setOveride(true);
     m_arm.setBreak(true);
-    finished = false;
+    m_arm.setExtenderSetpoint(3);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-      m_arm.setExtenderSetpoint(3);
-      if(Math.abs(m_arm.getExtendorAbs()-m_arm.getExtenderSetpoint())<1)
-        return;
-      m_arm.setArmPivotSetpoint(180);
-      m_arm.setGripperPivotSetpoint(180);
-      finished = true;
-      SmartDashboard.putBoolean("retractFinished", finished);
+    if(!(Math.abs(m_arm.getExtendorAbs()-m_arm.getExtenderSetpoint())<1))
+      return;
+    m_arm.setArmPivotSetpoint(180);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    m_arm.setGripperPivotSetpoint(180);
     m_arm.setBreak(false);
     m_arm.setOveride(false);
   }
@@ -55,6 +51,6 @@ public class Retract extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return finished;
+    return Math.abs(m_arm.getArmPivotAbs()-m_arm.getArmPivotSetpoint())<1;
   }
 }
