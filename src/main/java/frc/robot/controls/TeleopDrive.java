@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class TeleopDrive {
-    public static final double SLEW_RATE_LIMIT = 1.0;
+    public static final double SLEW_RATE_LIMIT = 10;
     private DriveSubsystem m_drive;
     private SlewRateLimiter m_leftLimiter;
     private SlewRateLimiter m_rightLimiter;
@@ -46,7 +46,7 @@ public class TeleopDrive {
         m_lastLeft = leftY;
         m_lastRight = rightY;
 
-        m_drive.tankDrive(leftMotorOut, rightMotorOut);
+        m_drive.tankDrive(rightMotorOut, leftMotorOut);
     }
 
     private double computeMotorOut(double current, double previous, SlewRateLimiter limiter) {

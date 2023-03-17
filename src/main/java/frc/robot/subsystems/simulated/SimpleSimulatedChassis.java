@@ -60,7 +60,7 @@ public class SimpleSimulatedChassis {
     /**
      * Speed at which robot drives forward in meters per second at max velocity
      */
-    private static final double FORWARD_SPEED_MS = 1.0;
+    private static final double FORWARD_SPEED_MS = 5;
 
     /**
      * Number of encoder counts per full wheel revolution
@@ -84,7 +84,7 @@ public class SimpleSimulatedChassis {
      * one wheel or the other turns and conclude what the rotation must be as a result,
      * but easier to make up a number
      */
-    private static final double ROTATIONS_PER_SECOND = 2.0;
+    private static final double ROTATIONS_PER_SECOND = 10.0;
 
     private double m_lastUpdateTime;
 

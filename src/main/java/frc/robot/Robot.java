@@ -108,8 +108,11 @@ public class Robot extends TimedRobot {
   public boolean useButtonBoard = true;
   public ArmSubsystem m_arm;
   private int m_lastBoardButtonValue;
-  private boolean m_gripperButtonPressed;
+  private boolean m_gripperPivotButtonPressed;
+  private boolean m_gripperRotatorButtonPressed;
   private boolean m_autoBalanceButtonPressed;
+  private boolean m_gearButtonPressed;
+  private boolean m_intakeButtonPressed;
   private DriveSubsystem m_drive;
   private Command m_teleopAutoBalance = null;
   private TeleopDrive m_filteredDriveController;
@@ -127,7 +130,7 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     CANSparkMaxSimulated simulatedLeft = null;
     CANSparkMaxSimulated simulatedRight = null;
-    m_gripperButtonPressed = false;
+    m_gripperPivotButtonPressed = false;
     if (RobotBase.isSimulation())
     {
       m_leftEncoder = new SimulatedEncoder();
@@ -285,7 +288,7 @@ public class Robot extends TimedRobot {
     
     if (autoname == 1 /* driveforward */){
       System.out.println("Drive forward scheduled");
-      autoprogram = new DriveLinear(Units.feetToMeters(15), m_drive);
+      autoprogram = new DriveLinear(Units.feetToMeters(3), m_drive);
     }    else if (autoname == 3 /* autobalance */){
       System.out.println("Autobalance scheduled");
       autoprogram = m_robotContainer.getBalanceCommand();
@@ -324,9 +327,12 @@ public class Robot extends TimedRobot {
     m_filteredDriveController.update();
 
     SmartDashboard.putBoolean("Gear", m_drive.getGear());
-      if(m_DriveController.getXButton()){
+
+      if(m_DriveController.getXButton() && !m_gearButtonPressed){
         m_drive.toggleGear();
       }
+
+      m_gearButtonPressed = m_DriveController.getXButton();
     
     //gripper pivot controller
     // if (m_ArmController.getXButton()) {
@@ -356,24 +362,30 @@ public class Robot extends TimedRobot {
     //   m_arm.incrementGripperPivotSetpoint(10);
     // }
 
-    if (m_ArmController.getRawButton(2)&&!m_gripperButtonPressed){
+    if (m_ArmController.getRawButton(2)&&!m_gripperPivotButtonPressed){
       m_arm.toggleGripper();
     } 
-    m_gripperButtonPressed = m_ArmController.getRawButton(2);
+    m_gripperPivotButtonPressed = m_ArmController.getRawButton(2);
 
-    if (m_ArmController.getRawButton(4)){
-      m_arm.setIntakeMode(IntakeMode.FORWARD);
-    }
-    else if (m_ArmController.getRawButton(5)){
-      m_arm.setIntakeMode(IntakeMode.BACKWARD);
-    }
-    else if(!m_arm.getIntakeMode().equals(IntakeMode.SLOW)){
-      m_arm.setIntakeMode(IntakeMode.OFF);
-    }
-    if(m_ArmController.getRawButton(7)&&!m_arm.getIntakeMode().equals(IntakeMode.SLOW))
-      m_arm.setIntakeMode(IntakeMode.SLOW);
-    else if(m_ArmController.getRawButton(7))
-      m_arm.setIntakeMode(IntakeMode.OFF);
+
+    // if(m_ArmController.getRawButton(7)&&!m_intakeButtonPressed){
+    //    if(m_arm.getIntakeMode() !=IntakeMode.SLOW)
+    //     m_arm.setIntakeMode(IntakeMode.SLOW);
+    //   else
+    //     m_arm.setIntakeMode(IntakeMode.OFF);
+    // }else{
+      if (m_ArmController.getRawButton(4)){
+        m_arm.setIntakeMode(IntakeMode.FORWARD);
+      }
+      else if (m_ArmController.getRawButton(5)){
+        m_arm.setIntakeMode(IntakeMode.BACKWARD);
+      }
+      else { //if(!m_arm.getIntakeMode().equals(IntakeMode.SLOW))
+        m_arm.setIntakeMode(IntakeMode.SLOW);
+      }
+    //}
+
+    m_intakeButtonPressed = m_ArmController.getRawButton(7);
     if(!m_arm.getOveride())
      m_arm.setGripperPivotSetpoint(-m_ArmController.getRawAxis(2)*45 + 180);
     if(m_ArmController.getRawButton(8)&&!m_autoBalanceButtonPressed){
@@ -390,8 +402,10 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("TeleopBalance", m_teleopAutoBalance == null);
 
 
-    // if(m_ArmController.getRawButton(6))
-    //   m_arm.toggleGripperRotator();
+    if(m_ArmController.getRawButton(6) && !m_gripperRotatorButtonPressed)
+      m_arm.toggleGripperRotator();
+    
+    m_gripperRotatorButtonPressed = m_ArmController.getRawButton(6);
     // if (m_ArmController.getBButton()) {
     //   m_arm.toggleGripper();
     // }
