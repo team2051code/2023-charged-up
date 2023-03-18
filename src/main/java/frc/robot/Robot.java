@@ -11,14 +11,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.AutoPlaceLow;
-import frc.robot.commands.Balance;
-import frc.robot.commands.DriveLinear;
-import frc.robot.commands.DriveStraight;
-import frc.robot.commands.DriveToScore;
-import frc.robot.commands.Grab;
-import frc.robot.commands.Place;
-import frc.robot.commands.Retract;
+import frc.robot.commands.*;
 import frc.robot.commands.DriveToScore.Level;
 import frc.robot.commands.DriveToScore.Offset;
 import frc.robot.components.LimitedMotor;
@@ -289,10 +282,10 @@ public class Robot extends TimedRobot {
     
     if (autoname == 1 /* driveforward */){
       System.out.println("Drive forward scheduled");
-      autoprogram = new AutoPlaceLow(m_arm,m_drive);
+      autoprogram = new AutoPlaceMid(m_arm,m_drive);
     }    else if (autoname == 3 /* autobalance */){
       System.out.println("Autobalance scheduled");
-      autoprogram = m_robotContainer.getBalanceCommand();
+      autoprogram = new DriveStraight(m_drive);
     }
 
     if (autoprogram != null) {
@@ -329,12 +322,12 @@ public class Robot extends TimedRobot {
 
     SmartDashboard.putBoolean("Gear", m_drive.getGear());
 
-      if(m_DriveController.getXButton() && !m_gearButtonPressed){
-        m_drive.toggleGear();
-      }
+    if(m_DriveController.getXButton() && !m_gearButtonPressed){
+      m_drive.toggleGear();
+    }
 
-      m_gearButtonPressed = m_DriveController.getXButton();
-    
+    m_gearButtonPressed = m_DriveController.getXButton();
+  
     //gripper pivot controller
     // if (m_ArmController.getXButton()) {
     //   m_arm.incrementGripperPivotSetpoint(-20);

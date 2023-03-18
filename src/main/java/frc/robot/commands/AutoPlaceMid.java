@@ -15,19 +15,18 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 /** An example command that uses an example subsystem. */
-public class AutoPlaceLow extends CommandBase {
+public class AutoPlaceMid extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final ArmSubsystem m_arm;
   private final DriveSubsystem m_drive;
   private static final double TIME_OVERRIDE_SECS = 1.0;
   private Timer m_timer = new Timer();
-
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public AutoPlaceLow(ArmSubsystem subsystem,DriveSubsystem drive) {
+  public AutoPlaceMid(ArmSubsystem subsystem,DriveSubsystem drive) {
     m_arm = subsystem;
     m_drive = drive;
     m_timer.reset();
@@ -39,7 +38,7 @@ public class AutoPlaceLow extends CommandBase {
   public void initialize() {
     m_arm.setOveride(true);
     m_arm.setBreak(true);
-    m_arm.setArmPivotSetpoint(270);
+    m_arm.setArmPivotSetpoint(360-120);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
