@@ -7,6 +7,8 @@
       "/LiveWindow/Ungrouped/MotorControllerGroup[3]": "Motor Controller",
       "/LiveWindow/Ungrouped/MotorControllerGroup[4]": "Motor Controller",
       "/LiveWindow/Ungrouped/PIDController[4]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[7]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[8]": "PIDController",
       "/SmartDashboard/Arm PID": "PIDController",
       "/SmartDashboard/Arm Sim": "Mechanism2d",
       "/SmartDashboard/Arm/Intake/leftPid": "PIDController",
@@ -29,14 +31,24 @@
         "Robot": {
           "arrows": false
         },
-        "image": "C:\\Users\\Team2051\\Pictures\\Saved Pictures\\2020field.jpg"
+        "window": {
+          "visible": true
+        }
       }
     }
   },
   "NetworkTables": {
     "transitory": {
+      "LiveWindow": {
+        ".status": {
+          "open": true
+        }
+      },
       "SmartDashboard": {
         "Commands": {
+          "open": true
+        },
+        "TeleopDrive": {
           "open": true
         },
         "command": {

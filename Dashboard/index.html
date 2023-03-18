@@ -16,9 +16,16 @@
 		<a href="cameraDashboard.HTML" style="top: 30px;">Camera</a>
 		
 		<frc-dashboard onload="ntLoaded()">
+			<div class="row">
+				<h1 class="col-1">Mode:</h1>
+				<h1 id="mode" class="col-1 text-light">None</h1>
 
-			<h1 id="mode" class="text-light">None</h1>
+				<h1 class="col-1">Time:</h1>
+				<h1 id="time" class="col-1 text-light">N/A</h1>
 
+				<h1 class="col-1 text-light">Gear:</h1>
+				<h1 class="col-1" id="gear">None</h1>
+			</div>
 			<div class="row text-light">
 				<!-- <h3 id="title0" class="col">gripped</h3> -->
 				<h3 id="title1" class="col">arm angle</h3>
@@ -50,7 +57,7 @@
 
 
 		<!--Audio testing-->
-		<audio src="mixkit-sci-fi-ship-alert-768.wav" id="soundTest"></audio>
+		<audio src="debug.wav" id="soundTest"></audio>
 
 		</frc-dashboard>
 	</body>
