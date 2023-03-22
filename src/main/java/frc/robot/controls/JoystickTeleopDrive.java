@@ -2,35 +2,38 @@ package frc.robot.controls;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.DriveSubsystem;
 
-public class TeleopDrive {
+public class JoystickTeleopDrive {
     public static final double SLEW_RATE_LIMIT = 10;
     private DriveSubsystem m_drive;
     private SlewRateLimiter m_leftLimiter;
     private SlewRateLimiter m_rightLimiter;
     private double m_lastRight;
     private double m_lastLeft;
-    private XboxController m_joystick;
+    private Joystick m_joystick;
     private ButtonLatch m_lowSpeedButton;
     private boolean m_lowSpeed = false;
 
 
-    public TeleopDrive (DriveSubsystem subsystem,XboxController joystick) {
+    public JoystickTeleopDrive (DriveSubsystem subsystem, Joystick joystick) {
         m_drive = subsystem;
         m_leftLimiter = new SlewRateLimiter(SLEW_RATE_LIMIT);
         m_rightLimiter = new SlewRateLimiter(SLEW_RATE_LIMIT);
         m_joystick = joystick;
-        m_lowSpeedButton = new ButtonLatch(() -> m_joystick.getAButton());
+        m_lowSpeedButton = new ButtonLatch(() -> m_joystick.getRawButton(3));
     }
 
     public void update(){
-        var rightY = MathUtil.applyDeadband(-m_joystick.getRightY(),0.25);
-        var leftY = MathUtil.applyDeadband(-m_joystick.getLeftY(),0.25);
-
-        if(m_joystick.getLeftBumper())
+        var rightY = MathUtil.applyDeadband(m_joystick.getRawAxis(1),0.25);
+        var leftY = MathUtil.applyDeadband(-m_joystick.getRawAxis(0),0.25);
+        SmartDashboard.putNumber("JoystickTeleopDrive/rightY", rightY);
+        SmartDashboard.putNumber("JoystickTeleopDrive/rightY", leftY);
+        
+        if(m_joystick.getRawButton(1))
             m_drive.setGear(true);
         else
             m_drive.setGear(false);
@@ -38,8 +41,6 @@ public class TeleopDrive {
         if (m_lowSpeedButton.wasPressed()) {
             m_lowSpeed = !m_lowSpeed;
         }
-
-        
 
         if(m_lowSpeed) {
             rightY /= 2;
@@ -53,7 +54,7 @@ public class TeleopDrive {
         m_lastLeft = leftY;
         m_lastRight = rightY;
 
-        m_drive.tankDrive(leftMotorOut, rightMotorOut);
+        m_drive.arcadeDrive(rightMotorOut,leftMotorOut);
     }
 
     private double computeMotorOut(double current, double previous, SlewRateLimiter limiter) {

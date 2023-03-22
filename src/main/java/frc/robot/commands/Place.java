@@ -108,8 +108,8 @@ public class Place extends CommandBase {
           //theta = Units.radiansToDegrees(Math.atan(24/(16+distance+36+3.75)));
           m_arm.setExtenderSetpoint(39);
           
-          m_arm.setArmPivotSetpoint(126.5);
-          m_arm.setGripperPivotSetpoint(154);
+          m_arm.setArmPivotSetpoint(128);
+          m_arm.setGripperPivotSetpoint(164);
           //m_arm.toggleGripper();
         }
       }
@@ -162,8 +162,8 @@ public class Place extends CommandBase {
       {
         //theta = Units.radiansToDegrees(Math.atan(24/(16+distance+36+3.75)))+180;
         m_arm.setExtenderSetpoint(39);
-        m_arm.setArmPivotSetpoint(360-126.5);
-        m_arm.setGripperPivotSetpoint(360-154);
+        m_arm.setArmPivotSetpoint(360-128);
+        m_arm.setGripperPivotSetpoint(360-164);
         //m_arm.toggleGripper();
       }
     }

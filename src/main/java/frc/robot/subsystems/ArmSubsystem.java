@@ -110,8 +110,8 @@ public class ArmSubsystem extends SubsystemBase {
                 POWER_LIMIT);
         m_IntakeLeft = new LimitedMotor(CompetitionDriveConstants.kIntakeLeft, MotorType.kBrushless, POWER_LIMIT);
         m_IntakeRight = new LimitedMotor(CompetitionDriveConstants.kIntakeRight, MotorType.kBrushless, POWER_LIMIT);
-        m_breakSolenoid = new Solenoid(PneumaticsModuleType.REVPH, CompetitionDriveConstants.kBrakeSolenoid);
-        m_gripperSolenoid = new Solenoid(PneumaticsModuleType.REVPH, CompetitionDriveConstants.kGripperSolenoid);
+        m_breakSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, CompetitionDriveConstants.kBrakeSolenoid);
+        m_gripperSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, CompetitionDriveConstants.kGripperSolenoid);
         m_intakeLeftEncoder = m_IntakeLeft.getEncoder();
         m_intakeRightEncoder = m_IntakeRight.getEncoder();
 
@@ -157,7 +157,7 @@ public class ArmSubsystem extends SubsystemBase {
         m_ArmPivot2.setIdleMode(IdleMode.kBrake);
         m_Extender.setIdleMode(IdleMode.kBrake);
         m_GripperPivot.setIdleMode(IdleMode.kBrake);
-        m_GripperRotator.setIdleMode(IdleMode.kBrake);
+        m_GripperRotator.setIdleMode(IdleMode.kCoast);
         m_IntakeLeft.setIdleMode(IdleMode.kBrake);
         m_IntakeRight.setIdleMode(IdleMode.kBrake);
 
@@ -218,6 +218,7 @@ public class ArmSubsystem extends SubsystemBase {
             var extenderSetpoint = m_extenderPIDController.getSetpoint();
             var gripperPivotPosition = m_absGripperPivotEncoder.get();
             double lastArmSetPoint = Integer.MIN_VALUE;
+            SmartDashboard.putNumber("GripperRotatorEnc",m_gripperRotatorEncoder.getPosition());
             SmartDashboard.putNumber("PIDarmPivotVoltage", armPivotVoltage);
             SmartDashboard.putNumber("extenderBusVoltage", m_Extender.get());
             SmartDashboard.putNumber("extenderVoltage", extenderVoltage);

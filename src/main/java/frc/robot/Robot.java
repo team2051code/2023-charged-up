@@ -16,6 +16,8 @@ import frc.robot.commands.*;
 import frc.robot.commands.DriveToScore.Level;
 import frc.robot.commands.DriveToScore.Offset;
 import frc.robot.components.LimitedMotor;
+import frc.robot.controls.ButtonLatch;
+import frc.robot.controls.JoystickTeleopDrive;
 import frc.robot.controls.TeleopDrive;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CompetitionDriveConstants;
@@ -75,7 +77,6 @@ public class Robot extends TimedRobot {
   
   private RelativeEncoder m_leftEncoder;
   private RelativeEncoder m_rightEncoder;
-  //private final XboxController m_ArmController = new XboxController(CompetitionDriveConstants.XboxArmPort);
   private final Joystick m_ArmController = new Joystick(CompetitionDriveConstants.XboxArmPort);
   private final XboxController m_DriveController = new XboxController(CompetitionDriveConstants.XboxDrivePort);
   private final Joystick m_buttonPanel = new Joystick(CompetitionDriveConstants.joyStickPort);
@@ -109,10 +110,15 @@ public class Robot extends TimedRobot {
   private boolean m_autoBalanceButtonPressed;
   private boolean m_gearButtonPressed;
   private boolean m_intakeButtonPressed;
+  private double m_lastPivotPos = 10000;
   private DriveSubsystem m_drive;
   private Command m_teleopAutoBalance = null;
   private TeleopDrive m_filteredDriveController;
+  private JoystickTeleopDrive m_filteredDriveJoystick;
+  private Joystick m_DriveJoystick;
   public boolean dropOffMode = true;
+  private ButtonLatch m_gripperPivotForwardButton = new ButtonLatch(()->m_ArmController.getRawButton(6));
+  private ButtonLatch m_gripperPivotReverseButton = new ButtonLatch(()->m_ArmController.getRawButton(7));
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -205,6 +211,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("autoname", 2);
 
     m_filteredDriveController = new TeleopDrive(m_drive, m_DriveController);
+    m_DriveJoystick = new Joystick(CompetitionDriveConstants.XboxDrivePort);
+    m_filteredDriveJoystick = new JoystickTeleopDrive(m_drive, m_DriveJoystick);
 
   }
 
@@ -311,7 +319,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-  
+    
 
     handleButtonBoard();
 
@@ -320,16 +328,36 @@ public class Robot extends TimedRobot {
     // m_myRobot.arcadeDrive(-m_driverController.getLeftY()/1.5,
     // -m_driverController.getLeftX()/1.5);
 
-    m_filteredDriveController.update();
+    //m_filteredDriveController.update();
+    m_filteredDriveJoystick.update();
 
     SmartDashboard.putBoolean("Gear", m_drive.getGear());
 
-    if(m_DriveController.getXButton() && !m_gearButtonPressed){
-      m_drive.toggleGear();
-    }
+    if(m_DriveJoystick.getRawButton(8)&&!m_autoBalanceButtonPressed){
+      if(m_teleopAutoBalance == null){
+        m_teleopAutoBalance = new DriveStraight(m_drive);
+        CommandScheduler.getInstance().schedule(m_teleopAutoBalance);
+      }else{
+        m_teleopAutoBalance.cancel();
+        m_teleopAutoBalance = null;
+      }
 
-    m_gearButtonPressed = m_DriveController.getXButton();
-  
+    }
+    m_autoBalanceButtonPressed = m_DriveController.getRawButton(8);
+      
+    // if(m_DriveController.getXButton()&&!m_autoBalanceButtonPressed){
+    //   if(m_teleopAutoBalance == null){
+    //     m_teleopAutoBalance = new Balance(m_drive);
+    //     CommandScheduler.getInstance().schedule(m_teleopAutoBalance);
+    //   }else{
+    //     m_teleopAutoBalance.cancel();
+    //     m_teleopAutoBalance = null;
+    //   }
+
+    // }
+    // m_autoBalanceButtonPressed = m_DriveController.getXButton();
+
+
     //gripper pivot controller
     // if (m_ArmController.getXButton()) {
     //   m_arm.incrementGripperPivotSetpoint(-20);
@@ -382,26 +410,24 @@ public class Robot extends TimedRobot {
     //}
 
     m_intakeButtonPressed = m_ArmController.getRawButton(7);
-    if(!m_arm.getOveride())
-     m_arm.setGripperPivotSetpoint(-m_ArmController.getRawAxis(2)*45 + 180);
-    if(m_ArmController.getRawButton(8)&&!m_autoBalanceButtonPressed){
-      if(m_teleopAutoBalance == null){
-        m_teleopAutoBalance = new Balance(m_drive);
-        CommandScheduler.getInstance().schedule(m_teleopAutoBalance);
-      }else{
-        m_teleopAutoBalance.cancel();
-        m_teleopAutoBalance = null;
-      }
 
-    }
-    m_autoBalanceButtonPressed = m_ArmController.getRawButton(8);
+    if(m_gripperPivotForwardButton.wasPressed())
+      m_arm.incrementGripperPivotSetpoint(10);
+    if(m_gripperPivotReverseButton.wasPressed())
+      m_arm.incrementGripperPivotSetpoint(-10);
+    // if(!m_arm.getOveride() && m_ArmController.getRawAxis(2) != m_lastPivotPos)
+    //  m_arm.setGripperPivotSetpoint(-m_ArmController.getRawAxis(2)*45 + 180);
+
+  
+    //m_lastPivotPos = m_ArmController.getRawAxis(2);
     SmartDashboard.putBoolean("TeleopBalance", m_teleopAutoBalance == null);
 
 
-    if(m_ArmController.getRawButton(6) && !m_gripperRotatorButtonPressed)
-      m_arm.toggleGripperRotator();
+    // if(m_ArmController.getRawButton(9) && !m_gripperRotatorButtonPressed)
+    //   m_arm.toggleGripperRotator();
     
-    m_gripperRotatorButtonPressed = m_ArmController.getRawButton(6);
+    // m_gripperRotatorButtonPressed = m_ArmController.getRawButton(9);
+
     // if (m_ArmController.getBButton()) {
     //   m_arm.toggleGripper();
     // }

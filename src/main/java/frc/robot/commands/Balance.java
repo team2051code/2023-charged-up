@@ -41,32 +41,37 @@ public class Balance extends CommandBase {
   public void initialize() 
   {
     System.out.println("Balance reached");
-    m_left = new PIDController(SmartDashboard.getNumber("BPVal", 1.2), kIDriveVal, kDDriveVal);
-    m_right = new PIDController(SmartDashboard.getNumber("BPVal", 1.2), kIDriveVal, kDDriveVal);
+    SmartDashboard.setDefaultNumber("Balance/BPVal", 1.2);
+    SmartDashboard.setPersistent("Balance/BPVal");
+    SmartDashboard.setDefaultNumber("Balance/BSetpoint", 0.5);
+    SmartDashboard.setPersistent("Balance/BSetpoint");;
+    m_left = new PIDController(SmartDashboard.getNumber("Balance/BPVal", 1.2), kIDriveVal, kDDriveVal);
+    m_right = new PIDController(SmartDashboard.getNumber("Balance/BPVal", 1.2), kIDriveVal, kDDriveVal);
     SPEED_M_S = 0.5;
     m_left.reset();
     m_right.reset();
-    m_left.setSetpoint(SmartDashboard.getNumber("BSetpoint",0.5));
-    m_right.setSetpoint(SmartDashboard.getNumber("BSetpoint",0.5));
+    m_left.setSetpoint(SmartDashboard.getNumber("Balance/BSetpoint",0.5));
+    m_right.setSetpoint(SmartDashboard.getNumber("Balance/BSetpoint",0.5));
     m_drive.resetEncoders();
     m_drive.zeroHeading();
     m_gyroFilter.reset();
     m_drive.zeroHeading();
+    m_drive.setAutoDrive(true);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    SmartDashboard.putBoolean("Balance", true);
-    SmartDashboard.putNumber("Setpoint: ", m_left.getSetpoint());
+    SmartDashboard.putBoolean("Balance/Balancing", true);
+    SmartDashboard.putNumber("Balance/Left Setpoint", m_left.getSetpoint());
     var wheelSpeeds = m_drive.getWheelSpeeds();
-    SmartDashboard.putNumber("Wheelspeeds: ", wheelSpeeds.leftMetersPerSecond);
+    SmartDashboard.putNumber("Balance/Wheelspeeds", wheelSpeeds.leftMetersPerSecond);
     var leftVelocity = m_left.calculate(wheelSpeeds.leftMetersPerSecond);
     var rightVelocity = m_right.calculate(wheelSpeeds.rightMetersPerSecond);
-    SmartDashboard.putNumber("PIDPower", leftVelocity);
+    SmartDashboard.putNumber("Balance/PIDPower", leftVelocity);
     double rawYAngle = m_drive.getYAngle();
 
-    double overrideYAngle = SmartDashboard.getNumber("Gyro Override", 0);
+    double overrideYAngle = SmartDashboard.getNumber("Balance/Gyro Override", 0);
     rawYAngle = overrideYAngle != 0? overrideYAngle : rawYAngle;
     
     //converts angle to a range of -180 to 180
@@ -75,37 +80,37 @@ public class Balance extends CommandBase {
       rawYAngle -= 360;
     }
     double yAngle = m_gyroFilter.calculate(rawYAngle);
-    SmartDashboard.putNumber("raw y angle", rawYAngle);
-    SmartDashboard.putNumber("y angle", yAngle);
+    SmartDashboard.putNumber("Balance/raw y angle", rawYAngle);
+    SmartDashboard.putNumber("Balance/y angle", yAngle);
     //checks for whether ramp is level
     if (rawYAngle > 2.5)
     {
       //scales speed to an inverse function of angle drives forward
-      SmartDashboard.putBoolean("Finished", false);
-      m_left.setSetpoint(SmartDashboard.getNumber("BSetpoint",SPEED_M_S)/(((30-Math.abs(yAngle))/30)*4+1));
-      m_right.setSetpoint(SmartDashboard.getNumber("BSetpoint",SPEED_M_S)/(((30-Math.abs(yAngle))/30)*4+1));
-      m_drive.tankDrive(leftVelocity, rightVelocity);
+      SmartDashboard.putBoolean("Balance/Finished", false);
+      m_left.setSetpoint(SmartDashboard.getNumber("Balance/BSetpoint",SPEED_M_S)/(((30-Math.abs(yAngle))/30)*4+1));
+      m_right.setSetpoint(SmartDashboard.getNumber("Balance/BSetpoint",SPEED_M_S)/(((30-Math.abs(yAngle))/30)*4+1));
+      m_drive.autoDrive(leftVelocity, rightVelocity);
     }else if (rawYAngle < -2.5)
     {
       //scales speed to an inverse function of angle drives backward
-      SmartDashboard.putBoolean("Finished", false);
-      m_left.setSetpoint(-(SmartDashboard.getNumber("BSetpoint",SPEED_M_S)/(((30-Math.abs(yAngle))/30)*4+1)));
-      m_right.setSetpoint(-(SmartDashboard.getNumber("BSetpoint",SPEED_M_S)/(((30-Math.abs(yAngle))/30)*4+1)));
-      m_drive.tankDrive(leftVelocity, rightVelocity);
+      SmartDashboard.putBoolean("Balance/Finished", false);
+      m_left.setSetpoint(-(SmartDashboard.getNumber("Balance/BSetpoint",SPEED_M_S)/(((30-Math.abs(yAngle))/30)*4+1)));
+      m_right.setSetpoint(-(SmartDashboard.getNumber("Balance/BSetpoint",SPEED_M_S)/(((30-Math.abs(yAngle))/30)*4+1)));
+      m_drive.autoDrive(leftVelocity, rightVelocity);
     }else
     {
       //stops robot
-      SmartDashboard.putBoolean("Finished", true);
+      SmartDashboard.putBoolean("Balance/Finished", true);
       // m_left.setSetpoint(0);
       // m_right.setSetpoint(0);
-      m_drive.tankDrive(0, 0);
+      m_drive.autoDrive(0, 0);
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-
+    m_drive.setAutoDrive(false);
   }
 
   // Returns true when the command should end.
