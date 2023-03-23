@@ -11,9 +11,12 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Arm PID": "PIDController",
+      "/SmartDashboard/Arm/Intake/leftPid": "PIDController",
+      "/SmartDashboard/Arm/Intake/rightPid": "PIDController",
       "/SmartDashboard/Extender PID": "PIDController",
       "/SmartDashboard/Field: ": "Field2d",
-      "/SmartDashboard/Gripper PID": "PIDController"
+      "/SmartDashboard/Gripper PID": "PIDController",
+      "/SmartDashboard/command": "Scheduler"
     },
     "windows": {
       "/FMSInfo": {

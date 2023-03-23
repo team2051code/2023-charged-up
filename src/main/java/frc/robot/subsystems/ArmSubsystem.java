@@ -364,7 +364,7 @@ public class ArmSubsystem extends SubsystemBase {
             // if(armPivotPosition<160)
             // setGripperPivotSetpoint(0);
             // if(armPivotPosition>200)
-            // setGripperPivotSetpoint(180);
+            // setGripperPivotSetpoint(93);
 
             SmartDashboard.putBoolean("Debug", false);
             break;
@@ -460,7 +460,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     public void toggleGripperRotator() {
         if (m_gripperRotatorPIDController.getSetpoint() == 0)
-            setGripperPivotSetpoint(180);
+            setGripperPivotSetpoint(93);
         else
             setGripperRotatorSetpoint(0);
     }

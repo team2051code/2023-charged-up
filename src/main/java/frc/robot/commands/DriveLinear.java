@@ -23,7 +23,9 @@ public class DriveLinear extends CommandBase {
     
     @Override
     public void initialize(){
+        SmartDashboard.putBoolean("Commands/DriveLinear", true);
         newTimer.start();
+        m_drive.setAutoDrive(true);
         m_encoderTarget = getEncoder() + distance_meters;
         SmartDashboard.putNumber("DriveLinear/Encoder Target", m_encoderTarget);
     }
@@ -32,7 +34,7 @@ public class DriveLinear extends CommandBase {
     public void execute(){
         SmartDashboard.putNumber("DriveLinear/Distance", getEncoder());
 
-        m_drive.tankDrive(targetPower, targetPower);
+        m_drive.autoDrive(targetPower, targetPower);
     }
 
     public double getEncoder(){
@@ -47,6 +49,8 @@ public class DriveLinear extends CommandBase {
     @Override
     public void end(boolean isInterrupted){
         newTimer.stop();
-        m_drive.tankDrive(0,0);
+        m_drive.autoDrive(0,0);
+        m_drive.setAutoDrive(false);
+        SmartDashboard.putBoolean("Commands/DriveLinear", false);
     }
 }

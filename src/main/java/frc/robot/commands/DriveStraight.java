@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 
@@ -22,9 +23,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 /** An example command that uses an example subsystem. */
 public class DriveStraight extends CommandBase {
   public static final double SPEED_M_S = 1;
-  public static final double kPDriveVal = 0.6;
-  public static final double kIDriveVal = .6;
-  public static final double kDDriveVal = .03;
+  public static final double kPDriveVal = 0.6;public static final double kIDriveVal = 0.6;public static final double kDDriveVal = .03;
   public static final double kOnRampCrosser = 2;
   public static final double kPivotCrosser = 1;
   int time;
@@ -39,7 +38,7 @@ public class DriveStraight extends CommandBase {
   private Autostate m_autostate = Autostate.OFFRAMP;
   private boolean monitor = true;
   private Timer m_timer;
-
+  private ArmSubsystem m_arm;
 
   private enum Autostate{
       OFFRAMP,ONRAMP,PIVOT
@@ -50,9 +49,10 @@ public class DriveStraight extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public DriveStraight(DriveSubsystem subsystem) {
+  public DriveStraight(DriveSubsystem subsystem, ArmSubsystem arm) {
     // Use addRequirements() here to declare subsystem dependencies
     m_drive = subsystem;
+    m_arm = arm;
   }
 
   // Called when the command is initially scheduled.
@@ -65,12 +65,17 @@ public class DriveStraight extends CommandBase {
     SmartDashboard.setDefaultNumber("DriveStraight/Setpoint", SPEED_M_S);
     SmartDashboard.setPersistent("DriveStraight/Setpoint");
 
-    m_left = new PIDController(SmartDashboard.getNumber("DriveStraight/PVal", kPDriveVal), kIDriveVal, kDDriveVal);
-    m_right = new PIDController(SmartDashboard.getNumber("DriveStraight/PVal", kPDriveVal), kIDriveVal, kDDriveVal);
+    m_arm.setOveride(true);
+    m_arm.setBreak(true);
+    m_arm.setArmPivotSetpoint(90);
+    //m_left = new PIDController(SmartDashboard.getNumber("DriveStraight/PVal", kPDriveVal), kIDriveVal, kDDriveVal);
+    m_left = new PIDController(kPDriveVal, kIDriveVal, kDDriveVal);
+    //m_right = new PIDController(SmartDashboard.getNumber("DriveStraight/PVal", kPDriveVal), kIDriveVal, kDDriveVal);
+    m_right = new PIDController(kPDriveVal,kIDriveVal, kDDriveVal);
     m_left.reset();
     m_right.reset();
-    m_left.setSetpoint(SmartDashboard.getNumber("DriveStraight/Setpoint",SPEED_M_S));
-    m_right.setSetpoint(SmartDashboard.getNumber("DriveStraight/Setpoint", SPEED_M_S));
+    m_left.setSetpoint(SPEED_M_S);
+    m_right.setSetpoint(SPEED_M_S);
     m_drive.resetEncoders();
     m_drive.zeroHeading();
     m_gyroFilter.reset();
@@ -83,6 +88,11 @@ public class DriveStraight extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+
+    if(Math.abs(m_arm.getArmPivotAbs()-m_arm.getArmPivotSetpoint())<1){
+      m_arm.setBreak(false);
+      m_arm.setOveride(false);
+    }
     //Sets initial values
     SmartDashboard.putNumber("DriveStraight/read setpoint", m_left.getSetpoint());
     //SmartDashboard.putString("State:", m_autostate.toString());
@@ -127,25 +137,25 @@ public class DriveStraight extends CommandBase {
       if(m_timer != null)
         SmartDashboard.putNumber("Timer", m_timer.get());
       //triggers after the robot is on the ramp and the timer is over deadtime
-      if (m_autostate.equals(Autostate.ONRAMP) && m_timer.get() > SmartDashboard.getNumber("Dead Time", 0.4))
+      if (m_autostate.equals(Autostate.ONRAMP) && m_timer.get() > 0.5)//SmartDashboard.getNumber("DriveStraight/DeadTime", 0.4)
       {
         //checks for whether ramp is level once it is it will trigger balance command
-        if (yAngle > 2.5)
+        if (yAngle > -2.5)
         {
           //scales speed to an inverse function of angle drives forward
-          m_left.setSetpoint(SmartDashboard.getNumber("DriveStraight/Setpoint",SPEED_M_S)/((Math.abs(yAngle)/30)*9+1));
-          m_right.setSetpoint(SmartDashboard.getNumber("DriveStraight/Setpoint",SPEED_M_S)/((Math.abs(yAngle)/30)*9+1));
+          m_left.setSetpoint(SPEED_M_S/((Math.abs(yAngle)/30)*9+1));
+          m_right.setSetpoint(SPEED_M_S/((Math.abs(yAngle)/30)*9+1));
           m_drive.autoDrive(leftVelocity, rightVelocity);
         }
-        else if (yAngle < -2.5)
-        {
-          //scales speed to an inverse function of angle drives backward
-          System.out.println("BACKWARDS");
-          m_left.setSetpoint(-(SmartDashboard.getNumber("DriveStraight/Setpoint", SPEED_M_S)/((Math.abs(yAngle)/30)*9+1)));
-          m_right.setSetpoint(-(SmartDashboard.getNumber("DriveStraight/Setpoint", SPEED_M_S)/((Math.abs(yAngle)/30)*9+1)));
-          System.out.println(m_left.getSetpoint() + " " + m_right.getSetpoint());
-          m_drive.autoDrive(leftVelocity, rightVelocity);
-        }
+        // else if (yAngle < -2.5)
+        // {
+        //   //scales speed to an inverse function of angle drives backward
+        //   System.out.println("BACKWARDS");
+        //   m_left.setSetpoint(-(SmartDashboard.getNumber("DriveStraight/Setpoint", SPEED_M_S)/((Math.abs(yAngle)/30)*9+1)));
+        //   m_right.setSetpoint(-(SmartDashboard.getNumber("DriveStraight/Setpoint", SPEED_M_S)/((Math.abs(yAngle)/30)*9+1)));
+        //   System.out.println(m_left.getSetpoint() + " " + m_right.getSetpoint());
+        //   m_drive.autoDrive(leftVelocity, rightVelocity);
+        // }
         else 
         {
           //ends command and triggers balance command
@@ -175,8 +185,8 @@ public class DriveStraight extends CommandBase {
     //starts balance com
     SmartDashboard.putString("DriveStraight/State", m_autostate.toString());
     if (interrupted) return;
-    Balance balance = new Balance(m_drive);
-    balance.andThen(() -> m_drive.tankDriveVolts(0, 0)).schedule();
+    // Balance balance = new Balance(m_drive);
+    // balance.andThen(() -> m_drive.tankDriveVolts(0, 0)).schedule();
   }
 
   // Returns true when the command should end.

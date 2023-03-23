@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.*;
+import frc.robot.commands.balance.Balance;
 import frc.robot.commands.DriveToScore.Level;
 import frc.robot.commands.DriveToScore.Offset;
 import frc.robot.components.LimitedMotor;
@@ -154,7 +155,7 @@ public class Robot extends TimedRobot {
     m_left = new MotorControllerGroup(m_LeftFront, m_LeftBack);
     m_right = new MotorControllerGroup(m_RightFront, m_RightBack);
     SmartDashboard.putNumber("Distance", 0);
-    SmartDashboard.putNumber("Dead Time", 0);
+    SmartDashboard.putNumber("DriveStraight/DeadTime", 0);
     SmartDashboard.putNumber("Setpoint", 0);
     SmartDashboard.putNumber("PVal", 0);
     SmartDashboard.putNumber("BPVal", 0);
@@ -278,6 +279,32 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+
+    m_LeftBack.restoreFactoryDefaults();
+    m_LeftFront.restoreFactoryDefaults();
+    m_RightBack.restoreFactoryDefaults();
+    m_RightFront.restoreFactoryDefaults();
+
+    m_LeftFront.setInverted(CompetitionDriveConstants.kLeftMotorsReversed);
+    m_LeftBack.setInverted(CompetitionDriveConstants.kLeftMotorsReversed);
+    m_RightBack.setInverted(CompetitionDriveConstants.kRightMotorsReversed);
+    m_RightFront.setInverted(CompetitionDriveConstants.kRightMotorsReversed);
+
+    m_LeftBack.setSmartCurrentLimit(40);
+    m_LeftFront.setSmartCurrentLimit(40);
+    m_RightBack.setSmartCurrentLimit(40);
+    m_RightFront.setSmartCurrentLimit(40);
+
+    m_LeftBack.setIdleMode(IdleMode.kBrake);
+    m_LeftFront.setIdleMode(IdleMode.kBrake);
+    m_RightBack.setIdleMode(IdleMode.kBrake);
+    m_RightFront.setIdleMode(IdleMode.kBrake);
+
+    m_LeftBack.burnFlash();
+    m_LeftFront.burnFlash();
+    m_RightBack.burnFlash();
+    m_RightFront.burnFlash();
+
     Command autoprogram = null;
     // m_trajectory = m_robotContainer.getTrajectories();
     //m_balanceCommand = m_robotContainer.getBalanceCommand();
@@ -295,12 +322,14 @@ public class Robot extends TimedRobot {
       autoprogram = new AutoPlaceMid(m_arm,m_drive);
     }    else if (autoname == 3 /* autobalance */){
       System.out.println("Autobalance scheduled");
-      autoprogram = new DriveStraight(m_drive);
+      autoprogram = new DriveStraight(m_drive,m_arm);
     }
 
     if (autoprogram != null) {
       CommandScheduler.getInstance().schedule(autoprogram);
     }
+
+    
   }
 
   /** This function is called periodically during autonomous. */
@@ -328,26 +357,38 @@ public class Robot extends TimedRobot {
     // m_myRobot.arcadeDrive(-m_driverController.getLeftY()/1.5,
     // -m_driverController.getLeftX()/1.5);
 
-    //m_filteredDriveController.update();
-    m_filteredDriveJoystick.update();
+    m_filteredDriveController.update();
+    //m_filteredDriveJoystick.update();
+
+    // if(m_DriveJoystick.getRawButton(2)){
+    //   m_LeftBack.setIdleMode(IdleMode.kBrake);
+    //   m_LeftFront.setIdleMode(IdleMode.kBrake);
+    //   m_RightBack.setIdleMode(IdleMode.kBrake);
+    //   m_RightFront.setIdleMode(IdleMode.kBrake);
+    // }else{
+    //   m_LeftBack.setIdleMode(IdleMode.kCoast);
+    //   m_LeftFront.setIdleMode(IdleMode.kCoast);
+    //   m_RightBack.setIdleMode(IdleMode.kCoast);
+    //   m_RightFront.setIdleMode(IdleMode.kCoast);
+    // }
+
+    if(m_DriveController.getRightBumper()){
+      m_LeftBack.setIdleMode(IdleMode.kBrake);
+      m_LeftFront.setIdleMode(IdleMode.kBrake);
+      m_RightBack.setIdleMode(IdleMode.kBrake);
+      m_RightFront.setIdleMode(IdleMode.kBrake);
+    }else{
+      m_LeftBack.setIdleMode(IdleMode.kCoast);
+      m_LeftFront.setIdleMode(IdleMode.kCoast);
+      m_RightBack.setIdleMode(IdleMode.kCoast);
+      m_RightFront.setIdleMode(IdleMode.kCoast);
+    }
 
     SmartDashboard.putBoolean("Gear", m_drive.getGear());
 
-    if(m_DriveJoystick.getRawButton(8)&&!m_autoBalanceButtonPressed){
-      if(m_teleopAutoBalance == null){
-        m_teleopAutoBalance = new DriveStraight(m_drive);
-        CommandScheduler.getInstance().schedule(m_teleopAutoBalance);
-      }else{
-        m_teleopAutoBalance.cancel();
-        m_teleopAutoBalance = null;
-      }
-
-    }
-    m_autoBalanceButtonPressed = m_DriveController.getRawButton(8);
-      
-    // if(m_DriveController.getXButton()&&!m_autoBalanceButtonPressed){
+    // if(m_DriveJoystick.getRawButton(8)&&!m_autoBalanceButtonPressed){
     //   if(m_teleopAutoBalance == null){
-    //     m_teleopAutoBalance = new Balance(m_drive);
+    //     m_teleopAutoBalance = new DriveStraight(m_drive,m_arm);
     //     CommandScheduler.getInstance().schedule(m_teleopAutoBalance);
     //   }else{
     //     m_teleopAutoBalance.cancel();
@@ -355,7 +396,18 @@ public class Robot extends TimedRobot {
     //   }
 
     // }
-    // m_autoBalanceButtonPressed = m_DriveController.getXButton();
+    // m_autoBalanceButtonPressed = m_DriveJoystick.getRawButton(8);
+      
+    if(m_DriveController.getXButton()&&!m_autoBalanceButtonPressed){
+      if(m_teleopAutoBalance == null){
+        m_teleopAutoBalance = Balance.balance(m_drive);
+        CommandScheduler.getInstance().schedule(m_teleopAutoBalance);
+      }else{
+        m_teleopAutoBalance.cancel();
+        m_teleopAutoBalance = null;
+      }
+    }
+    m_autoBalanceButtonPressed = m_DriveController.getXButton();
 
 
     //gripper pivot controller
@@ -472,17 +524,7 @@ public class Robot extends TimedRobot {
         m_arm.incrementExtenderSetpoint(-15);
     }
 
-    if(m_DriveController.getRightBumper()){
-      m_LeftBack.setIdleMode(IdleMode.kBrake);
-      m_LeftFront.setIdleMode(IdleMode.kBrake);
-      m_RightBack.setIdleMode(IdleMode.kBrake);
-      m_RightFront.setIdleMode(IdleMode.kBrake);
-    }else{
-      m_LeftBack.setIdleMode(IdleMode.kCoast);
-      m_LeftFront.setIdleMode(IdleMode.kCoast);
-      m_RightBack.setIdleMode(IdleMode.kCoast);
-      m_RightFront.setIdleMode(IdleMode.kCoast);
-    }
+    
 
     //from bottom left: down-up left-right
   }
