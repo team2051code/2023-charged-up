@@ -31,6 +31,13 @@ function ntLoaded() {
         else document.getElementById("mode").innerText = "Pick Up";
     }, true);
 
+    // Auto mode
+     NetworkTables.addKeyListener('/SmartDashboard/autoname', (key, value, isNew) => {
+       const AUTO_NAMES = ["place/drive straight", "stop", "autobalance"];
+       const nameString = value > AUTO_NAMES.length ? value : AUTO_NAMES[value-1];
+       document.getElementById("auto-mode").innerText = nameString;
+    }, true);
+    
     NetworkTables.addKeyListener("/SmartDashboard/Gear", (key, value, isNew) => {
         document.getElementById("gear").innerText = value ? "High" : "Low";
     }, true);

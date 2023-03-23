@@ -72,7 +72,6 @@ public class RobotContainer {
   public Command getBalanceCommand() {
    
     DriveStraight item = new DriveStraight(m_robotDrive);
-    Balance balancer = new Balance(m_robotDrive);
     //DriveLinear test = new DriveLinear(1, m_robotDrive);
     return item.andThen(() -> m_robotDrive.tankDriveVolts(0, 0));
   }

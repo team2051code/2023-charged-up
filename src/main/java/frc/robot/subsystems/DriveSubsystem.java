@@ -63,6 +63,7 @@ public class DriveSubsystem extends SubsystemBase {
   private PoseEstimator poseEstimator;
   private Field2d simPose;
   private SimVisionTarget target1;
+  private boolean m_autoDriving = false;
   // The robot's drive
 
   // The left-side drive encoder
@@ -108,7 +109,7 @@ public class DriveSubsystem extends SubsystemBase {
     m_rightEncoder.setVelocityConversionFactor(CompetitionDriveConstants.kLinearDistanceConversionFactor / 60);
     m_leftMotors = left;
     m_rightMotors = right;
-    m_gearSolenoid = new Solenoid(PneumaticsModuleType.REVPH, CompetitionDriveConstants.kGearShiftSolenoid);
+    m_gearSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, CompetitionDriveConstants.kGearShiftSolenoid);
     m_drive = new DifferentialDrive(m_leftMotors, m_rightMotors);
     SmartDashboard.putData("Field: ", m_field);
     simPose = new Field2d();
@@ -217,10 +218,15 @@ public class DriveSubsystem extends SubsystemBase {
    * @param rot the commanded rotation
    */
   public void arcadeDrive(double fwd, double rot) {
+    if (m_autoDriving) return;
     m_drive.arcadeDrive(fwd, rot);
   }
   public void tankDrive(double leftSpeed, double rightSpeed)
   {
+    if (m_autoDriving) return;
+    m_drive.tankDrive(leftSpeed, rightSpeed);
+  }
+  public void autoDrive(double leftSpeed, double rightSpeed) {
     m_drive.tankDrive(leftSpeed, rightSpeed);
   }
 
@@ -328,12 +334,20 @@ public class DriveSubsystem extends SubsystemBase {
     m_gearSolenoid.toggle();
   }
 
+  public void setGear(boolean gear){
+    m_gearSolenoid.set(gear);
+  }
+
   public boolean getGear(){
     return m_gearSolenoid.get();
   }
   public PhotonCamera getCamera()
   {
     return camera;
+  }
+
+  public void setAutoDrive(boolean auto) {
+    m_autoDriving = auto;
   }
 }
   

@@ -110,8 +110,8 @@ public class ArmSubsystem extends SubsystemBase {
                 POWER_LIMIT);
         m_IntakeLeft = new LimitedMotor(CompetitionDriveConstants.kIntakeLeft, MotorType.kBrushless, POWER_LIMIT);
         m_IntakeRight = new LimitedMotor(CompetitionDriveConstants.kIntakeRight, MotorType.kBrushless, POWER_LIMIT);
-        m_breakSolenoid = new Solenoid(PneumaticsModuleType.REVPH, CompetitionDriveConstants.kBrakeSolenoid);
-        m_gripperSolenoid = new Solenoid(PneumaticsModuleType.REVPH, CompetitionDriveConstants.kGripperSolenoid);
+        m_breakSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, CompetitionDriveConstants.kBrakeSolenoid);
+        m_gripperSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, CompetitionDriveConstants.kGripperSolenoid);
         m_intakeLeftEncoder = m_IntakeLeft.getEncoder();
         m_intakeRightEncoder = m_IntakeRight.getEncoder();
 
@@ -126,7 +126,7 @@ public class ArmSubsystem extends SubsystemBase {
             m_GripperPivot = new LimitedMotor(CompetitionDriveConstants.kGripperPivotMotorPort, MotorType.kBrushless,
                     POWER_LIMIT);
             m_absArmPivotEncoder = new AnalogPotentiometer(0, 285, 36.6);
-            m_absExtenderEncoder = new AnalogPotentiometer(1, MAX_ARM_EXTENSION_LENGTH_INCHES * 1.716, -5.15);
+            m_absExtenderEncoder = new AnalogPotentiometer(1, MAX_ARM_EXTENSION_LENGTH_INCHES * 1.716, -10.9);
             m_absGripperPivotEncoder = new AnalogPotentiometer(2, 360 * 0.665, 69.32);
         }
 
@@ -147,7 +147,7 @@ public class ArmSubsystem extends SubsystemBase {
 
         m_ArmPivot1.setSmartCurrentLimit(40);
         m_ArmPivot2.setSmartCurrentLimit(40);
-        m_Extender.setSmartCurrentLimit(40);
+        m_Extender.setSmartCurrentLimit(30);
         m_GripperPivot.setSmartCurrentLimit(40);
         m_GripperRotator.setSmartCurrentLimit(40);
         m_IntakeLeft.setSmartCurrentLimit(40);
@@ -157,7 +157,7 @@ public class ArmSubsystem extends SubsystemBase {
         m_ArmPivot2.setIdleMode(IdleMode.kBrake);
         m_Extender.setIdleMode(IdleMode.kBrake);
         m_GripperPivot.setIdleMode(IdleMode.kBrake);
-        m_GripperRotator.setIdleMode(IdleMode.kBrake);
+        m_GripperRotator.setIdleMode(IdleMode.kCoast);
         m_IntakeLeft.setIdleMode(IdleMode.kBrake);
         m_IntakeRight.setIdleMode(IdleMode.kBrake);
 
@@ -218,6 +218,7 @@ public class ArmSubsystem extends SubsystemBase {
             var extenderSetpoint = m_extenderPIDController.getSetpoint();
             var gripperPivotPosition = m_absGripperPivotEncoder.get();
             double lastArmSetPoint = Integer.MIN_VALUE;
+            SmartDashboard.putNumber("GripperRotatorEnc",m_gripperRotatorEncoder.getPosition());
             SmartDashboard.putNumber("PIDarmPivotVoltage", armPivotVoltage);
             SmartDashboard.putNumber("extenderBusVoltage", m_Extender.get());
             SmartDashboard.putNumber("extenderVoltage", extenderVoltage);
@@ -261,8 +262,8 @@ public class ArmSubsystem extends SubsystemBase {
                     break;
                 }
 
-                if (distanceFromPivotPointHorizontalInches > 62) {
-                    setExtenderSetpoint((62 / Math.cos(Units.degreesToRadians(relativeAngle)) - ksolidArmDistance) - 2);
+                if (distanceFromPivotPointHorizontalInches > 63.5) {
+                    setExtenderSetpoint((63.5 / Math.cos(Units.degreesToRadians(relativeAngle)) - ksolidArmDistance) - 0.5);
                     m_Extender.setVoltage(m_extenderPIDController.calculate(m_absExtenderEncoder.get()));
                     SmartDashboard.putBoolean("Debug", true);
                     // m_armPivot.setVoltage(0);
@@ -400,7 +401,7 @@ public class ArmSubsystem extends SubsystemBase {
                 // m_intakeLeftPIDController.setSetpoint(-1);
                 break;
             case SLOW:
-                m_intake.set(-0.2);
+                m_intake.set(-0.25);
                 // m_intakeRightPIDController.setSetpoint(-.125);
                 // m_intakeLeftPIDController.setSetpoint(-.125);
                 break;

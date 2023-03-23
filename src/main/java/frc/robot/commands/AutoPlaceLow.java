@@ -5,27 +5,33 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.ArmSubsystem.IntakeMode;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 /** An example command that uses an example subsystem. */
-public class Retract extends CommandBase {
+public class AutoPlaceLow extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final ArmSubsystem m_arm;
-  private static final double TIME_OVERRIDE_SECS = 3.0;
-  private boolean m_armCentering = false;
+  private final DriveSubsystem m_drive;
+  private static final double TIME_OVERRIDE_SECS = 1.0;
   private Timer m_timer = new Timer();
+
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public Retract(ArmSubsystem subsystem) {
+  public AutoPlaceLow(ArmSubsystem subsystem,DriveSubsystem drive) {
     m_arm = subsystem;
-    // Use addRequirements() here to declare subsystem dependencies.
-    // addRequirements(subsystem);
+    m_drive = drive;
+    m_timer.reset();
+    m_timer.start();
   }
 
   // Called when the command is initially scheduled.
@@ -33,41 +39,28 @@ public class Retract extends CommandBase {
   public void initialize() {
     m_arm.setOveride(true);
     m_arm.setBreak(true);
-    m_arm.setExtenderSetpoint(3);
-    m_arm.setArmPivotSetpoint(180);
-    m_armCentering = false;
-    // Start a timer to hold the command to a few-second window
-    m_timer.reset();
-    m_timer.start();
+    m_arm.setArmPivotSetpoint(270);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(!(Math.abs(m_arm.getExtendorAbs()-m_arm.getExtenderSetpoint())<1)) {
-      SmartDashboard.putString("Retract/stage", "retracting extension");
-      return;
-    }
-    SmartDashboard.putString("Retract/stage", "centering arm");
-    m_arm.setArmPivotSetpoint(180);
+
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    SmartDashboard.putString("Retract/stage", "done");
-    m_arm.setGripperPivotSetpoint(180);
-    m_arm.setBreak(false);
+    m_arm.setIntakeMode(IntakeMode.FORWARD);;
     m_arm.setOveride(false);
-    m_timer.stop();
+    m_arm.setBreak(false);
+    Command Drive = new DriveLinear(Units.feetToMeters(5), m_drive);
+    CommandScheduler.getInstance().schedule(Drive);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    SmartDashboard.putBoolean("Retract/arm centering", m_armCentering);
-    // Command ends when reaching target or operational window expires.
-    return (m_timer.get() > TIME_OVERRIDE_SECS) || 
-    (m_armCentering && Math.abs(m_arm.getArmPivotAbs()-m_arm.getArmPivotSetpoint())<1);
+    return (m_timer.get() > TIME_OVERRIDE_SECS) || (Math.abs(m_arm.getArmPivotAbs()-m_arm.getArmPivotSetpoint())<1);
   }
 }
