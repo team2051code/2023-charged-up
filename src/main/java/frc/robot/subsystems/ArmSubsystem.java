@@ -231,6 +231,7 @@ public class ArmSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("gripperVoltage", gripperPivotVoltage);
             SmartDashboard.putNumber("gripperSetpoint", m_gripperPivotPIDController.getSetpoint());
             SmartDashboard.putNumber("gripperOutputCurrent", m_GripperPivot.getOutputCurrent());
+            SmartDashboard.putNumber("gripper rotator enc", m_gripperRotatorEncoder.getPosition());
             // SmartDashboard.putBoolean("GripperSol", m_gripperSolenoid.get());
             if (m_armAngle < 90) {
                 relativeAngle = 90 - m_armAngle;
