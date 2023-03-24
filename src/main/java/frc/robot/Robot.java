@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.*;
-import frc.robot.commands.balance.Balance;
+import frc.robot.commands.balance.BalanceFactory;
 import frc.robot.commands.DriveToScore.Level;
 import frc.robot.commands.DriveToScore.Offset;
 import frc.robot.components.LimitedMotor;
@@ -41,6 +41,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import javax.lang.model.util.ElementScanner14;
 
@@ -189,8 +190,20 @@ public class Robot extends TimedRobot {
     m_LeftFront.burnFlash();
     m_RightBack.burnFlash();
     m_RightFront.burnFlash();
+    Vector<CANSparkMax> motorAccess = new Vector<CANSparkMax>();
+    motorAccess.add(m_LeftBack);
+    motorAccess.add(m_LeftFront);
+    motorAccess.add(m_RightBack);
+    motorAccess.add(m_RightFront);
 
-    m_robotContainer = new RobotContainer(m_left, m_right, m_leftEncoder, m_rightEncoder, simulatedLeft, simulatedRight);
+    m_robotContainer = new RobotContainer(
+      motorAccess,
+      m_left, 
+      m_right, 
+      m_leftEncoder, 
+      m_rightEncoder, 
+      simulatedLeft, 
+      simulatedRight);
     m_arm = m_robotContainer.getArmSubsystem();
     m_drive = m_robotContainer.getDriveSubsystem();
     // m_camera = new PhotonCamera("Camera_A");
@@ -247,21 +260,6 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Time", Timer.getMatchTime());
     
     CommandScheduler.getInstance().run();
-    // System.out.println(targets.size() + "targets found: ");
-    // if (targets.size() > 0)
-    // {
-    // for (PhotonTrackedTarget targety: targets)
-    // {
-    // double yaw = targety.getYaw();
-    // double pitch = targety.getPitch();
-    // double area = targety.getArea();
-    // double skew = targety.getSkew();
-    // int id = targety.getFiducialId();
-    // System.out.println("ID " + id + ": " + yaw + ", " + pitch + ", " + area + ",
-    // " + skew);
-    // }
-    // }
-
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -280,35 +278,10 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
 
-    m_LeftBack.restoreFactoryDefaults();
-    m_LeftFront.restoreFactoryDefaults();
-    m_RightBack.restoreFactoryDefaults();
-    m_RightFront.restoreFactoryDefaults();
-
-    m_LeftFront.setInverted(CompetitionDriveConstants.kLeftMotorsReversed);
-    m_LeftBack.setInverted(CompetitionDriveConstants.kLeftMotorsReversed);
-    m_RightBack.setInverted(CompetitionDriveConstants.kRightMotorsReversed);
-    m_RightFront.setInverted(CompetitionDriveConstants.kRightMotorsReversed);
-
-    m_LeftBack.setSmartCurrentLimit(40);
-    m_LeftFront.setSmartCurrentLimit(40);
-    m_RightBack.setSmartCurrentLimit(40);
-    m_RightFront.setSmartCurrentLimit(40);
-
-    m_LeftBack.setIdleMode(IdleMode.kBrake);
-    m_LeftFront.setIdleMode(IdleMode.kBrake);
-    m_RightBack.setIdleMode(IdleMode.kBrake);
-    m_RightFront.setIdleMode(IdleMode.kBrake);
-
-    m_LeftBack.burnFlash();
-    m_LeftFront.burnFlash();
-    m_RightBack.burnFlash();
-    m_RightFront.burnFlash();
-
     Command autoprogram = null;
     // m_trajectory = m_robotContainer.getTrajectories();
     //m_balanceCommand = m_robotContainer.getBalanceCommand();
-    autoprogram = m_robotContainer.getRamseteCommand();
+    //autoprogram = m_robotContainer.getRamseteCommand();
     // Command drive = m_robotContainer.getTrajectories();
     // schedule the autonomous command (example)
     // if(m_trajectory != null)
@@ -322,7 +295,7 @@ public class Robot extends TimedRobot {
       autoprogram = new AutoPlaceMid(m_arm,m_drive);
     }    else if (autoname == 3 /* autobalance */){
       System.out.println("Autobalance scheduled");
-      autoprogram = new DriveStraight(m_drive,m_arm);
+      autoprogram = BalanceFactory.balance(m_drive);
     }
 
     if (autoprogram != null) {
@@ -335,8 +308,8 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-   SmartDashboard.putData("command", CommandScheduler.getInstance());
   }
+
   @Override
   public void teleopInit() {
     CommandScheduler.getInstance().cancelAll();
@@ -372,17 +345,7 @@ public class Robot extends TimedRobot {
     //   m_RightFront.setIdleMode(IdleMode.kCoast);
     // }
 
-    if(m_DriveController.getRightBumper()){
-      m_LeftBack.setIdleMode(IdleMode.kBrake);
-      m_LeftFront.setIdleMode(IdleMode.kBrake);
-      m_RightBack.setIdleMode(IdleMode.kBrake);
-      m_RightFront.setIdleMode(IdleMode.kBrake);
-    }else{
-      m_LeftBack.setIdleMode(IdleMode.kCoast);
-      m_LeftFront.setIdleMode(IdleMode.kCoast);
-      m_RightBack.setIdleMode(IdleMode.kCoast);
-      m_RightFront.setIdleMode(IdleMode.kCoast);
-    }
+    m_drive.setBrake(m_DriveController.getRightBumper());
 
     SmartDashboard.putBoolean("Gear", m_drive.getGear());
 
@@ -400,10 +363,10 @@ public class Robot extends TimedRobot {
       
     if(m_DriveController.getXButton()&&!m_autoBalanceButtonPressed){
       if(m_teleopAutoBalance == null){
-        m_teleopAutoBalance = Balance.balance(m_drive);
+        m_teleopAutoBalance = BalanceFactory.balance(m_drive);
         CommandScheduler.getInstance().schedule(m_teleopAutoBalance);
       }else{
-        m_teleopAutoBalance.cancel();
+        CommandScheduler.getInstance().cancelAll();
         m_teleopAutoBalance = null;
       }
     }
@@ -475,10 +438,10 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("TeleopBalance", m_teleopAutoBalance == null);
 
 
-    // if(m_ArmController.getRawButton(9) && !m_gripperRotatorButtonPressed)
-    //   m_arm.toggleGripperRotator();
+    if(m_ArmController.getRawButton(9) && !m_gripperRotatorButtonPressed)
+      m_arm.toggleGripperRotator();
     
-    // m_gripperRotatorButtonPressed = m_ArmController.getRawButton(9);
+    m_gripperRotatorButtonPressed = m_ArmController.getRawButton(9);
 
     // if (m_ArmController.getBButton()) {
     //   m_arm.toggleGripper();

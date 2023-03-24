@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import java.security.Key;
+import java.util.Vector;
 
 import javax.crypto.spec.PBEParameterSpec;
 
@@ -11,6 +12,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -50,6 +52,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   public enum Gear{LOW, HIGH};
   // The motors on the left side of the drive.
+  private final Vector<CANSparkMax> m_motorAccess;
 
   private final MotorControllerGroup m_leftMotors;
   // The motors on the right side of the drive.
@@ -93,7 +96,15 @@ public class DriveSubsystem extends SubsystemBase {
   private double m_filteredY;
 
   /** Creates a new DriveSubsystem. */
-  public DriveSubsystem(MotorControllerGroup left, MotorControllerGroup right, RelativeEncoder leftEncode, RelativeEncoder rightEncode, CANSparkMaxSimulated leftSimulatedMotor, CANSparkMaxSimulated rightSimulatedMotor) {
+  public DriveSubsystem(
+    Vector<CANSparkMax> motorAccess,
+    MotorControllerGroup left, 
+    MotorControllerGroup right, 
+    RelativeEncoder leftEncode, 
+    RelativeEncoder rightEncode, 
+    CANSparkMaxSimulated leftSimulatedMotor, 
+    CANSparkMaxSimulated rightSimulatedMotor) {
+      m_motorAccess = motorAccess;
     if (RobotBase.isSimulation())
     {
       m_gyro = new SimulatedGyro();
@@ -366,6 +377,18 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void setAutoDrive(boolean auto) {
     m_autoDriving = auto;
+  }
+
+  public void setBrake(boolean enabled) {
+    if (m_autoDriving) return;
+    autoBrake(enabled);
+  }
+
+  public void autoBrake(boolean enabled) {
+    for (var motor : m_motorAccess) {
+      motor.setIdleMode(enabled ? IdleMode.kBrake : IdleMode.kCoast);
+    }
+
   }
 }
   

@@ -5,6 +5,9 @@
         "Arm PID": {
           "open": true
         },
+        "DriveStraight": {
+          "open": true
+        },
         "open": true
       }
     },
@@ -13,6 +16,7 @@
       "/SmartDashboard/Arm PID": "PIDController",
       "/SmartDashboard/Arm/Intake/leftPid": "PIDController",
       "/SmartDashboard/Arm/Intake/rightPid": "PIDController",
+      "/SmartDashboard/Commands": "Scheduler",
       "/SmartDashboard/Extender PID": "PIDController",
       "/SmartDashboard/Field: ": "Field2d",
       "/SmartDashboard/Gripper PID": "PIDController",

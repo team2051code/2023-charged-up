@@ -4,8 +4,11 @@
 
 package frc.robot;
 
+import java.util.Vector;
+
 import org.photonvision.PhotonCamera;
 
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -43,10 +46,10 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
   }
-  public RobotContainer(MotorControllerGroup m_leftMotors, MotorControllerGroup m_rightMotors, RelativeEncoder m_leftEncoder, RelativeEncoder m_RightEncoder, CANSparkMaxSimulated leftSimulatedMotor, CANSparkMaxSimulated rightSimulatedMotor)
+  public RobotContainer(Vector<CANSparkMax> motorAccess,  MotorControllerGroup m_leftMotors, MotorControllerGroup m_rightMotors, RelativeEncoder m_leftEncoder, RelativeEncoder m_RightEncoder, CANSparkMaxSimulated leftSimulatedMotor, CANSparkMaxSimulated rightSimulatedMotor)
   {
     configureButtonBindings();
-    m_robotDrive = new DriveSubsystem(m_leftMotors, m_rightMotors, m_leftEncoder, m_RightEncoder, leftSimulatedMotor, rightSimulatedMotor);
+    m_robotDrive = new DriveSubsystem(motorAccess, m_leftMotors, m_rightMotors, m_leftEncoder, m_RightEncoder, leftSimulatedMotor, rightSimulatedMotor);
     m_robotArm = new ArmSubsystem();
     m_camera = m_robotDrive.getCamera();
   }

@@ -1,20 +1,13 @@
 package frc.robot.subsystems;
 
-import javax.lang.model.util.ElementScanner14;
-import javax.swing.text.AbstractDocument.BranchElement;
-
-import com.revrobotics.AnalogInput;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.CANDigitalInput.LimitSwitchPolarity;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
-import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -29,7 +22,7 @@ import frc.robot.subsystems.simulated.CANSparkMaxSimulated;
 public class ArmSubsystem extends SubsystemBase {
     public final static double kArmP = 0.4 / 5;public final static double kArmI = 0;public final static double kArmD = 0;
     public final static double kextenderP = 1.4 / 1.3;public final static double kextenderI = 0;public final static double kextenderD = 0;
-    public final static double kgripperP = 0.1;public final static double kgripperI = 0;public final static double kgripperD = 0;
+    public final static double kgripperP = 0.5;public final static double kgripperI = 0;public final static double kgripperD = 0;
     public final static double kgripperRotatorP = 0.1;public final static double kgripperRotatorI = 0;public final static double kgripperRotatorD = 0;
     public final static double kintakeLeftP = 0.1;public final static double kintakeLeftI = 0; public final static double kintakeLeftD = 0;  
     public final static double kintakeRightP = 0.1;public final static double kintakeRightI = 0; public final static double kintakeRightD = 0;  
@@ -126,7 +119,7 @@ public class ArmSubsystem extends SubsystemBase {
             m_GripperPivot = new LimitedMotor(CompetitionDriveConstants.kGripperPivotMotorPort, MotorType.kBrushless,
                     POWER_LIMIT);
             m_absArmPivotEncoder = new AnalogPotentiometer(0, 285, 36.6);
-            m_absExtenderEncoder = new AnalogPotentiometer(1, MAX_ARM_EXTENSION_LENGTH_INCHES * 1.716, -10.9);
+            m_absExtenderEncoder = new AnalogPotentiometer(1, MAX_ARM_EXTENSION_LENGTH_INCHES * 1.749, -3.229);
             m_absGripperPivotEncoder = new AnalogPotentiometer(2, 360 * 0.665, 69.32);
         }
 

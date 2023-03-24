@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 /** An example command that uses an example subsystem. */
 public class DriveStraight extends CommandBase {
   public static final double SPEED_M_S = 1;
-  public static final double kPDriveVal = 0.6;public static final double kIDriveVal = 0.6;public static final double kDDriveVal = .03;
+  public static final double kPDriveVal = 0.6;public static final double kIDriveVal = 0.4;public static final double kDDriveVal = .03;
   public static final double kOnRampCrosser = 2;
   public static final double kPivotCrosser = 1;
   int time;
