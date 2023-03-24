@@ -38,6 +38,17 @@
     }
   },
   "NetworkTables": {
+    "retained": {
+      "SmartDashboard": {
+        "arm": {
+          "open": true
+        },
+        "gripper": {
+          "open": true
+        },
+        "open": true
+      }
+    },
     "transitory": {
       "LiveWindow": {
         ".status": {
@@ -45,15 +56,6 @@
         }
       },
       "SmartDashboard": {
-        "Commands": {
-          "open": true
-        },
-        "TeleopDrive": {
-          "open": true
-        },
-        "command": {
-          "open": true
-        },
         "open": true
       }
     }

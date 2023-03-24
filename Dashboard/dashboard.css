@@ -17,6 +17,7 @@ a {
     top: 0px;
     left: 0px;
     position: absolute;
+    transform: scale(2);
 
     /*transform: rotate(180deg);*/
 }
@@ -28,6 +29,16 @@ a {
     top: 0px;
     left: 0px;
     position: absolute;
+}
+
+button {
+    right: 0px;
+    position: absolute;
+}
+
+#cam {
+    position: absolute;
+    top: 350px;
 }
 
 /*FRC webcomponents styles/////FRC webcomponents styles/////FRC webcomponents styles/////*/

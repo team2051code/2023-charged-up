@@ -176,6 +176,7 @@ public class Robot extends TimedRobot {
     m_RightBack.setInverted(CompetitionDriveConstants.kRightMotorsReversed);
     m_RightFront.setInverted(CompetitionDriveConstants.kRightMotorsReversed);
 
+    //prevents motors using too much current from high load
     m_LeftBack.setSmartCurrentLimit(40);
     m_LeftFront.setSmartCurrentLimit(40);
     m_RightBack.setSmartCurrentLimit(40);

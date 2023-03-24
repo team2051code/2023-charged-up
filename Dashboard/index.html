@@ -35,18 +35,15 @@
 				<!-- <h3 id="title5" class="col">balance</h3> -->
 
 			</div>
-			<!--
-				gripper pivot (), gripper rotation(), extender (extender potentiometer), arm angle(arm potentiometer), gripped (GripperSol), 
-				robot balance
-			-->
-			<div class="row text-light">
+			<!--  -->
+			<div class="row">
 				<!-- <frc-boolean-box class="col" source-key="">gripped</frc-boolean-box> -->
 
-				<frc-gauge class="beattie-gauge col" source-key="/SmartDashboard/arm/angle" min="" max="">arm angle</frc-gauge>
-				<frc-gauge class="col" source-key="/SmartDashboard/gripper/pivot angle" min="" max="">gripper angle</frc-gauge>
+				<frc-gauge class="beattie-gauge col" source-key="/SmartDashboard/arm potentiometer" min="0" max="360">arm angle</frc-gauge>
+				<frc-gauge class="col" source-key="/SmartDashboard/gripper potentiometer" min="0" max="360">gripper angle</frc-gauge>
 				
-				<frc-number-bar class="col" source-key="/SmartDashboard/arm/extender">arm extention</frc-number-bar>
-				<frc-number-bar class="col" source-key="/SmartDashboard/gripper/rotation">gripper rotation</frc-number-bar>
+				<frc-number-bar class="col" source-key="/SmartDashboard/extender potentiometer" min="0" max="40">arm extention</frc-number-bar>
+				<frc-number-bar class="col" source-key="/SmartDashboard/gripper rotator enc" min="0" max="180">gripper rotation</frc-number-bar>
 
 				<!-- <frc-gyro class="col" source-key="">balance</frc-gyro> -->
 			</div>
