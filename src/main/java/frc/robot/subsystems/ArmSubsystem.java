@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -59,6 +60,8 @@ public class ArmSubsystem extends SubsystemBase {
     private AnalogPotentiometer m_absGripperPivotEncoder;
     private double m_armAngle;
     private boolean m_brake = false;
+    private DigitalInput m_pieceSensor = new DigitalInput(9);
+    private boolean m_hasPiece = false;
 
     private enum Quadrant {
         Q1, Q2, Q3, Q4
@@ -199,6 +202,8 @@ public class ArmSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("Extension motor", m_Extender.get());
             SmartDashboard.putNumber("Gripper motor", m_GripperPivot.get());
             SmartDashboard.putNumber("Gripper encoder", m_absGripperPivotEncoder.get());
+            m_hasPiece = m_pieceSensor.get();
+            SmartDashboard.putBoolean("hasPiece", m_hasPiece);
 
             Quadrant quadrant;
             var armPivotVoltage = m_armPIDController.calculate(m_armAngle);
