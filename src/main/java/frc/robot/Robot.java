@@ -118,9 +118,9 @@ public class Robot extends TimedRobot {
   private TeleopDrive m_filteredDriveController;
   private JoystickTeleopDrive m_filteredDriveJoystick;
   private Joystick m_DriveJoystick;
+  private ButtonLatch debugButton = new ButtonLatch(()->m_ArmController.getRawButton(8));
+  private Command m_PIDTest = null;
   public boolean dropOffMode = true;
-  private ButtonLatch m_gripperPivotForwardButton = new ButtonLatch(()->m_ArmController.getRawButton(6));
-  private ButtonLatch m_gripperPivotReverseButton = new ButtonLatch(()->m_ArmController.getRawButton(7));
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -217,6 +217,8 @@ public class Robot extends TimedRobot {
     m_arm.setArmPivotSetpoint(180);
     m_arm.setExtenderSetpoint(3);
     m_arm.setGripperPivotSetpoint(180);
+    // if(m_arm.getGripperRotatorSetpoint() == 93)
+    //   m_arm.toggleGripperRotator();
 
     var modebutton = new JoystickButton(m_ArmController, 11);
     modebutton.onTrue(Commands.runOnce(() -> {
@@ -367,7 +369,7 @@ public class Robot extends TimedRobot {
         m_teleopAutoBalance = BalanceFactory.balance(m_drive);
         CommandScheduler.getInstance().schedule(m_teleopAutoBalance);
       }else{
-        CommandScheduler.getInstance().cancelAll();
+        CommandScheduler.getInstance().cancel(m_teleopAutoBalance);
         m_teleopAutoBalance = null;
       }
     }
@@ -427,9 +429,9 @@ public class Robot extends TimedRobot {
 
     m_intakeButtonPressed = m_ArmController.getRawButton(7);
 
-    if(m_gripperPivotForwardButton.wasPressed())
+    if(m_ArmController.getRawButton(6))
       m_arm.incrementGripperPivotSetpoint(10);
-    if(m_gripperPivotReverseButton.wasPressed())
+    if(m_ArmController.getRawButton(7))
       m_arm.incrementGripperPivotSetpoint(-10);
     // if(!m_arm.getOveride() && m_ArmController.getRawAxis(2) != m_lastPivotPos)
     //  m_arm.setGripperPivotSetpoint(-m_ArmController.getRawAxis(2)*45 + 180);
@@ -438,12 +440,26 @@ public class Robot extends TimedRobot {
     //m_lastPivotPos = m_ArmController.getRawAxis(2);
     SmartDashboard.putBoolean("TeleopBalance", m_teleopAutoBalance == null);
 
+     if(debugButton.wasPressed())
+     {
+      if(m_PIDTest == null)
+      {
+        m_PIDTest = new PIDTest(m_arm);
+        CommandScheduler.getInstance().schedule(m_PIDTest);
+      }else
+      {
+        CommandScheduler.getInstance().cancel(m_PIDTest);
+        m_PIDTest = null;
+      }
+     }
 
     if(m_ArmController.getRawButton(9) && !m_gripperRotatorButtonPressed)
+    {
       m_arm.toggleGripperRotator();
-    
+    }
+        
     m_gripperRotatorButtonPressed = m_ArmController.getRawButton(9);
-
+    SmartDashboard.putBoolean("RotatorButtonPressed", m_gripperRotatorButtonPressed);
     // if (m_ArmController.getBButton()) {
     //   m_arm.toggleGripper();
     // }
