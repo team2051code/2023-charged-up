@@ -119,6 +119,9 @@ public class Robot extends TimedRobot {
   public boolean dropOffMode = true;
   private ButtonLatch m_gripperPivotForwardButton = new ButtonLatch(()->m_ArmController.getRawButton(6));
   private ButtonLatch m_gripperPivotReverseButton = new ButtonLatch(()->m_ArmController.getRawButton(7));
+  private ButtonLatch m_cameraForwardButton = new ButtonLatch(()->m_DriveController.getPOV() == 90);
+  private ButtonLatch m_cameeraBackwardButton = new ButtonLatch(()->m_DriveController.getPOV() == 270);
+  private int m_cameraNumber = 0;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -239,12 +242,27 @@ public class Robot extends TimedRobot {
     if(m_buttonPanel.getRawButton(11)){
       SmartDashboard.putNumber("autoname", 3);
     }
+
     SmartDashboard.putNumber("right motor speed:", m_RightFront.get());
     SmartDashboard.putNumber("leftStick", m_DriveController.getLeftX());
+    SmartDashboard.putNumber("DPad", m_DriveController.getPOV());
+    SmartDashboard.putNumber("camera/camSwich", m_cameraNumber);
+    if (m_cameraForwardButton.wasPressed()) {
+      m_cameraNumber += 3;
+      m_cameraNumber++;
+      m_cameraNumber %= 3;
+    }
+    else if (m_cameeraBackwardButton.wasPressed()) {
+      m_cameraNumber += 3;
+      m_cameraNumber--;
+      m_cameraNumber %= 3;
+    }
+
+
     SmartDashboard.putBoolean("drop off mode", dropOffMode);
     SmartDashboard.putData("Commands", CommandScheduler.getInstance());
-    
     SmartDashboard.putNumber("Time", Timer.getMatchTime());
+
     
     CommandScheduler.getInstance().run();
     // System.out.println(targets.size() + "targets found: ");
@@ -562,4 +580,5 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {
   }
+
 }

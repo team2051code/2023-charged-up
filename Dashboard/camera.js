@@ -11,17 +11,7 @@ function cameraInit() {
     const cameraPorts = [1183, 1181];
     let currentCamera = 0;
 
-    dataTest = () => {
-        NetworkTables.putValue("/SmartDashboard/camera/testVal", funcCycle);
-        if (funcCycle < 2) {
-            funcCycle++;
-        }
-        else {
-            funcCycle = 0;
-        }
-    }
-
-    NetworkTables.addKeyListener("/SmartDashboard/camera/testVal", (key, value, isNew) => {
+    NetworkTables.addKeyListener("/SmartDashboard/camera/camSwich", (key, value, isNew) => {
         cameras[value]()
     }, true);
 
