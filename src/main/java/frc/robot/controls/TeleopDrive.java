@@ -27,7 +27,7 @@ public class TeleopDrive {
     }
 
     public void update(){
-        var rightY = MathUtil.applyDeadband(-m_joystick.getRightY(),0.25);
+        var rightY = MathUtil.applyDeadband(m_joystick.getRightX(),0.25);
         var leftY = MathUtil.applyDeadband(-m_joystick.getLeftY(),0.25);
 
         if(m_joystick.getLeftBumper())
@@ -39,6 +39,7 @@ public class TeleopDrive {
             m_lowSpeed = !m_lowSpeed;
         }
 
+        
         
 
         if(m_lowSpeed) {
@@ -53,7 +54,7 @@ public class TeleopDrive {
         m_lastLeft = leftY;
         m_lastRight = rightY;
 
-        m_drive.tankDrive(leftMotorOut, rightMotorOut);
+        m_drive.arcadeDrive(leftMotorOut, rightMotorOut);
     }
 
     private double computeMotorOut(double current, double previous, SlewRateLimiter limiter) {

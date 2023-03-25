@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class PneumaticSubsystem extends SubsystemBase {
-    public final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
+    public final Compressor m_compressor = new Compressor(PneumaticsModuleType.CTREPCM);
 
     public PneumaticSubsystem(){
         SmartDashboard.putData("compressor", m_compressor);

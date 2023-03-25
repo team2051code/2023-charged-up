@@ -1,5 +1,7 @@
 package frc.robot.controls;
 
+import com.revrobotics.CANSparkMax.IdleMode;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.Joystick;
@@ -41,6 +43,7 @@ public class JoystickTeleopDrive {
         if (m_lowSpeedButton.wasPressed()) {
             m_lowSpeed = !m_lowSpeed;
         }
+
 
         if(m_lowSpeed) {
             rightY /= 2;

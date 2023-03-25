@@ -18,9 +18,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class Balance extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   public static double SPEED_M_S = .5;
-  public static final double kPDriveVal = 1;
-  public static final double kIDriveVal = .6;
-  public static final double kDDriveVal = .03;
+  public static final double kPDriveVal = 1;public static final double kIDriveVal = .6;public static final double kDDriveVal = .03;
   public static final double kOnRampCrosser = 2;
   public static final double kPivotCrosser = 1;
   private PIDController m_left = new PIDController(kPDriveVal, kIDriveVal,kDDriveVal);
