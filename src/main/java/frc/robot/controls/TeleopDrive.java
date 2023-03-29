@@ -27,7 +27,7 @@ public class TeleopDrive {
     }
 
     public void update(){
-        var rightY = MathUtil.applyDeadband(m_joystick.getRightX(),0.25);
+        var rightY = MathUtil.applyDeadband(-m_joystick.getRightX(),0.25);
         var leftY = MathUtil.applyDeadband(-m_joystick.getLeftY(),0.25);
 
         if(m_joystick.getLeftBumper())

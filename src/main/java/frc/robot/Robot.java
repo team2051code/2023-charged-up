@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.*;
 import frc.robot.commands.balance.BalanceFactory;
@@ -315,10 +316,12 @@ public class Robot extends TimedRobot {
     
     if (autoname == 1 /* driveforward */){
       System.out.println("Drive forward scheduled");
-      autoprogram = new AutoPlaceMid(m_arm,m_drive);
+      autoprogram = new SequentialCommandGroup( new AutoPlaceMid(m_arm),
+      new DriveLinear(Units.feetToMeters(-5), m_drive));
     }    else if (autoname == 3 /* autobalance */){
       System.out.println("Autobalance scheduled");
-      autoprogram = BalanceFactory.balance(m_drive);
+      autoprogram = new SequentialCommandGroup(new DriveLinear(-1.45,m_drive,0.7),
+      BalanceFactory.balance(m_drive,m_arm));
     }
 
     if (autoprogram != null) {
@@ -386,7 +389,7 @@ public class Robot extends TimedRobot {
       
     if(m_DriveController.getXButton()&&!m_autoBalanceButtonPressed){
       if(m_teleopAutoBalance == null){
-        m_teleopAutoBalance = BalanceFactory.balance(m_drive);
+        m_teleopAutoBalance = BalanceFactory.balance(m_drive,m_arm);
         CommandScheduler.getInstance().schedule(m_teleopAutoBalance);
       }else{
         CommandScheduler.getInstance().cancel(m_teleopAutoBalance);

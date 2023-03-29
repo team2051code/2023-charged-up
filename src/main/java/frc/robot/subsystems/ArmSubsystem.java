@@ -134,8 +134,6 @@ public class ArmSubsystem extends SubsystemBase {
         m_intakeRightPIDController = new PIDController(kintakeRightP,kintakeRightI,kintakeRightD);
         
 
-        m_ArmPivot1.restoreFactoryDefaults();
-        m_ArmPivot2.restoreFactoryDefaults();
         m_GripperPivot.restoreFactoryDefaults();
         m_GripperRotator.restoreFactoryDefaults();
         m_IntakeLeft.restoreFactoryDefaults();
@@ -203,7 +201,7 @@ public class ArmSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("Gripper motor", m_GripperPivot.get());
             SmartDashboard.putNumber("Gripper encoder", m_absGripperPivotEncoder.get());
             m_hasPiece = m_pieceSensor.get();
-            SmartDashboard.putBoolean("hasPiece", m_hasPiece);
+            SmartDashboard.putBoolean("hasPiece", !m_hasPiece);
 
             Quadrant quadrant;
             var armPivotVoltage = m_armPIDController.calculate(m_armAngle);
@@ -217,6 +215,8 @@ public class ArmSubsystem extends SubsystemBase {
             var gripperPivotPosition = m_absGripperPivotEncoder.get();
             var gripperPivotSetpoint = m_gripperPivotPIDController.getSetpoint();
             double lastArmSetPoint = Integer.MIN_VALUE;
+            SmartDashboard.putString("IntakeLeftError", m_IntakeLeft.getLastError().toString());
+            SmartDashboard.putNumber("IntakeLeftEncoder", m_intakeLeftEncoder.getPosition());
             SmartDashboard.putNumber("gripperRotatorEnc",m_gripperRotatorEncoder.getPosition());
             SmartDashboard.putNumber("PIDarmPivotVoltage", armPivotVoltage);
             SmartDashboard.putNumber("extenderBusVoltage", m_Extender.get());
@@ -272,7 +272,7 @@ public class ArmSubsystem extends SubsystemBase {
              if ((extenderSetpoint + ksolidArmDistance) * Math.sin(Units.degreesToRadians(relativeAngle)) > 21) {
                 lastArmSetPoint = m_armPIDController.getSetpoint();
                 setArmPivotSetpoint(armPivotPosition);
-                setExtenderSetpoint((22 / Math.sin(Units.degreesToRadians(relativeAngle)) - ksolidArmDistance) - 11);
+                setExtenderSetpoint((21 / Math.sin(Units.degreesToRadians(relativeAngle)) - ksolidArmDistance) - 12);
                 m_armPivot.setVoltage(0);
                 m_Extender.setVoltage(m_extenderPIDController.calculate(m_absExtenderEncoder.get()));
                 SmartDashboard.putBoolean("Debug", true);

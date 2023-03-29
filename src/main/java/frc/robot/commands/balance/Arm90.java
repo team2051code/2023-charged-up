@@ -4,61 +4,61 @@
 
 package frc.robot.commands.balance;
 
-import frc.robot.commands.DriveLinear;
 import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 /** An example command that uses an example subsystem. */
-public class OnRamp extends CommandBase {
+public class Arm90 extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final DriveSubsystem m_drive;
-
+  private final ArmSubsystem m_arm;
+  private static final double TIME_OVERRIDE_SECS = 3.0;
+  private Timer m_timer = new Timer();
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public OnRamp(DriveSubsystem subsystem) {
-    m_drive = subsystem;
+  public Arm90(ArmSubsystem subsystem) {
+    m_arm = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
-    //addRequirements(subsystem);
+    // addRequirements(subsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    SmartDashboard.putBoolean("Commands/OnRamp", true);
-    m_drive.setAutoDrive(true);
+    m_arm.setOveride(true);
+    m_arm.setBreak(true);
+    m_arm.setArmPivotSetpoint(90);
+    // Start a timer to hold the command to a few-second window
+    m_timer.reset();
+    m_timer.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_drive.autoDrive(0.3, 0.3);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    SmartDashboard.putBoolean("Commands/OnRamp", false);
-    m_drive.setAutoDrive(false);
-    // Command seekBalance = 
-    // new SequentialCommandGroup(
-    //   new SeekBalance(m_drive, m_drive.getLeftEncoder()),
-    //   new HoldPosition(m_drive)
-    // );
-    // CommandScheduler.getInstance().schedule(seekBalance);
+    
+    m_arm.setGripperPivotSetpoint(180);
+    m_arm.setBreak(false);
+    m_arm.setOveride(false);
+    m_timer.stop();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_drive.getFilteredY() < 8;
+    
+    // Command ends when reaching target or operational window expires.
+    return (m_timer.get() > TIME_OVERRIDE_SECS) || 
+    (Math.abs(m_arm.getArmPivotAbs()-m_arm.getArmPivotSetpoint())<1);
   }
 }

@@ -40,7 +40,7 @@ public class SeekBalance extends CommandBase {
   @Override
   public void execute() {
     if(m_drive.getLeftEncoder() > m_target)
-      m_drive.autoDrive(-0.3, -0.3);
+      m_drive.autoDrive(-0.3,-0.3);
     else if(m_drive.getLeftEncoder() < m_target)
       m_drive.autoDrive(0.3, 0.3);
   }
@@ -49,6 +49,7 @@ public class SeekBalance extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     SmartDashboard.putBoolean("Commands/SeekBalance", false);
+    if(Math.abs(m_target-m_drive.getLeftEncoder())<.5)
     m_drive.setAutoDrive(false);
   }
 
