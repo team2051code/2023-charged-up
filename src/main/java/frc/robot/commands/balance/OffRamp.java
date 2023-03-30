@@ -32,6 +32,7 @@ public class OffRamp extends CommandBase {
   public void initialize() {
     SmartDashboard.putBoolean("Commands/OffRamp", true);
     m_drive.setAutoDrive(true);
+    m_drive.autoBrake(true);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -44,6 +45,7 @@ public class OffRamp extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     SmartDashboard.putBoolean("Commands/OffRamp", false);
+    m_drive.autoBrake(false);
   }
 
   // Returns true when the command should end.

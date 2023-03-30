@@ -46,7 +46,8 @@ public class Grab extends CommandBase {
     {
       //m_arm.toggleGripper();
       //theta = Units.radiansToDegrees(Math.atan((37.25-24)/(16+m_distance)));
-      m_arm.setArmPivotSetpoint(134.5);
+      //m_arm.setArmPivotSetpoint(134.5);
+      MoveArm.moveArm(m_arm, 134.5);
       m_arm.setExtenderSetpoint(14);
       m_arm.setGripperPivotSetpoint(144);
       //m_arm.toggleGripper();
@@ -54,7 +55,8 @@ public class Grab extends CommandBase {
     {
       //m_arm.toggleGripper();
       //theta = 360-Units.radiansToDegrees(Math.atan((37.25-24)/(16+m_distance)));
-      m_arm.setArmPivotSetpoint(360-134.5);
+      //m_arm.setArmPivotSetpoint(360-134.5);
+      MoveArm.moveArm(m_arm, 360-134.5);
       m_arm.setExtenderSetpoint(14);
       m_arm.setGripperPivotSetpoint(360-144);
       //m_arm.toggleGripper();

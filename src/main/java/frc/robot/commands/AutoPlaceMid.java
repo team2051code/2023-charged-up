@@ -36,14 +36,12 @@ public class AutoPlaceMid extends CommandBase {
   public void initialize() {
     m_arm.setOveride(true);
     m_arm.setBreak(true);
-    m_arm.setArmPivotSetpoint(100);
+    m_arm.setArmPivotSetpoint(140);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
