@@ -35,6 +35,7 @@ public class OnRamp extends CommandBase {
   public void initialize() {
     SmartDashboard.putBoolean("Commands/OnRamp", true);
     m_drive.setAutoDrive(true);
+    m_drive.autoBrake(true);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -48,12 +49,13 @@ public class OnRamp extends CommandBase {
   public void end(boolean interrupted) {
     SmartDashboard.putBoolean("Commands/OnRamp", false);
     m_drive.setAutoDrive(false);
-    // Command seekBalance = 
-    // new SequentialCommandGroup(
-    //   new SeekBalance(m_drive, m_drive.getLeftEncoder()),
-    //   new HoldPosition(m_drive)
-    // );
-    // CommandScheduler.getInstance().schedule(seekBalance);
+    m_drive.autoBrake(false);
+    Command seekBalance = 
+    new SequentialCommandGroup(
+      new SeekBalance(m_drive, m_drive.getLeftEncoder()),
+      new HoldPosition(m_drive)
+    );
+    CommandScheduler.getInstance().schedule(seekBalance);
   }
 
   // Returns true when the command should end.

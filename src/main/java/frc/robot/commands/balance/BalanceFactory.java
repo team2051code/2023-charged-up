@@ -15,9 +15,9 @@ public class BalanceFactory {
         new DriveLinear(0.25, drive),
         new OffRamp(drive),
         new DriveLinear(0.5, drive),
-        new OnRamp(drive),
-        new DriveLinear(-0.08, drive,0.3),
-        new HoldPosition(drive)
+        new OnRamp(drive)
+        //new DriveLinear(-0.08, drive,0.3),
+        //new HoldPosition(drive)
         // OnRamp will schedule SeekBalance with its own calculation once done
         );
         //Command balance = new ParallelCommandGroup(armMoves,offRamp);

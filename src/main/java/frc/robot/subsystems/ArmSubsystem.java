@@ -7,6 +7,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.LogMessage;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -16,9 +18,11 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.components.LimitedMotor;
+import frc.robot.filters.VelocityFilter;
 import frc.robot.subsystems.simulated.AnalogPotentiometerSimulation;
 import frc.robot.subsystems.simulated.ArmSimulation;
 import frc.robot.subsystems.simulated.CANSparkMaxSimulated;
+import frc.robot.subsystems.simulated.SimulatedSolenoid;
 
 public class ArmSubsystem extends SubsystemBase {
     public final static double kArmP = 0.4 / 2.5;public final static double kArmI = 0;public final static double kArmD = 0;
@@ -38,7 +42,7 @@ public class ArmSubsystem extends SubsystemBase {
     private final PIDController m_intakeLeftPIDController;
     private final PIDController m_intakeRightPIDController;
     private Solenoid m_gripperSolenoid;
-    private Solenoid m_breakSolenoid;
+    private Solenoid m_brakeSolenoid;
     private RelativeEncoder m_armPivotEncoder;
     private RelativeEncoder m_extenderEncoder;
     private RelativeEncoder m_gripperRotatorEncoder;
@@ -59,9 +63,11 @@ public class ArmSubsystem extends SubsystemBase {
     private AnalogPotentiometer m_absExtenderEncoder;
     private AnalogPotentiometer m_absGripperPivotEncoder;
     private double m_armAngle;
-    private boolean m_brake = false;
+    private int m_openBrakeCalls = 0;
+    private int m_overrideCalls = 0;
     private DigitalInput m_pieceSensor = new DigitalInput(9);
     private boolean m_hasPiece = false;
+    private VelocityFilter m_armVelocityFilter = new VelocityFilter();
 
     private enum Quadrant {
         Q1, Q2, Q3, Q4
@@ -77,6 +83,7 @@ public class ArmSubsystem extends SubsystemBase {
     private ArmSimulation m_ArmSimulation;
 
     public ArmSubsystem() {
+
         // If we're simulating the robot, set up a bunch of simulated components
         // to replace the normal ones.
         if (RobotBase.isSimulation()) {
@@ -91,13 +98,16 @@ public class ArmSubsystem extends SubsystemBase {
             m_Extender = new CANSparkMaxSimulated(CompetitionDriveConstants.kExtenderMotorPort, MotorType.kBrushless);
             m_GripperPivot = new CANSparkMaxSimulated(CompetitionDriveConstants.kGripperPivotMotorPort,
                     MotorType.kBrushless);
+            m_brakeSolenoid = new SimulatedSolenoid(PneumaticsModuleType.CTREPCM, CompetitionDriveConstants.kBrakeSolenoid);
+
             m_ArmSimulation = new ArmSimulation(
                     simulatedArmPivotEncoder,
                     m_ArmPivot1,
                     simulatedExtenderEncoder,
                     m_Extender,
                     simulatedGripperEncoder,
-                    m_GripperPivot);
+                    m_GripperPivot,
+                    m_brakeSolenoid);
         }
 
         m_ArmPivot2 = new LimitedMotor(CompetitionDriveConstants.kArmPivotMotorPort2, MotorType.kBrushless,
@@ -106,7 +116,6 @@ public class ArmSubsystem extends SubsystemBase {
                 POWER_LIMIT);
         m_IntakeLeft = new LimitedMotor(CompetitionDriveConstants.kIntakeLeft, MotorType.kBrushless, POWER_LIMIT);
         m_IntakeRight = new LimitedMotor(CompetitionDriveConstants.kIntakeRight, MotorType.kBrushless, POWER_LIMIT);
-        m_breakSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, CompetitionDriveConstants.kBrakeSolenoid);
         m_gripperSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, CompetitionDriveConstants.kGripperSolenoid);
         m_intakeLeftEncoder = m_IntakeLeft.getEncoder();
         m_intakeRightEncoder = m_IntakeRight.getEncoder();
@@ -124,6 +133,7 @@ public class ArmSubsystem extends SubsystemBase {
             m_absArmPivotEncoder = new AnalogPotentiometer(0, 285, 36.6);
             m_absExtenderEncoder = new AnalogPotentiometer(1, MAX_ARM_EXTENSION_LENGTH_INCHES * 1.749, -3.229);
             m_absGripperPivotEncoder = new AnalogPotentiometer(2, 360 * 0.665, 69.32);
+            m_brakeSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, CompetitionDriveConstants.kBrakeSolenoid);
         }
 
         m_armPIDController = new PIDController(kArmP, kArmI, kArmD);
@@ -212,6 +222,7 @@ public class ArmSubsystem extends SubsystemBase {
             var extenderPosition = m_absExtenderEncoder.get();
             var extenderSetpoint = m_extenderPIDController.getSetpoint();
             var gripperPivotPosition = m_absGripperPivotEncoder.get();
+            m_armVelocityFilter.calculate(armPivotPosition);
             double lastArmSetPoint = Integer.MIN_VALUE;
             SmartDashboard.putString("Arm/Gripper/IntakeLeftError", m_IntakeLeft.getLastError().toString());
             SmartDashboard.putNumber("Arm/Gripper/IntakeLeftEncoder", m_intakeLeftEncoder.getPosition());
@@ -231,6 +242,8 @@ public class ArmSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("Arm/Gripper/outputCurrent", m_GripperPivot.getOutputCurrent());
             SmartDashboard.putNumber("Arm/Gripper/rotatorSetpoint", m_gripperRotatorPIDController.getSetpoint());    
             SmartDashboard.putNumber("Arm/Extender/relativeEncoder", m_extenderEncoder.getPosition());
+            SmartDashboard.putNumber("Arm/Override", m_overrideCalls);
+            SmartDashboard.putNumber("Arm/Arm/openBrakes", m_openBrakeCalls);
             // SmartDashboard.putBoolean("GripperSol", m_gripperSolenoid.get());
             if (m_armAngle < 90) {
                 relativeAngle = 90 - m_armAngle;
@@ -252,6 +265,7 @@ public class ArmSubsystem extends SubsystemBase {
                     (extenderPosition + ksolidArmDistance) * Math.cos(Units.degreesToRadians(relativeAngle)));
             var distanceFromPivotPointHorizontalInches = (extenderSetpoint + ksolidArmDistance) * Math.cos(Units.degreesToRadians(relativeAngle));
             if (quadrant.equals(Quadrant.Q2) || quadrant.equals(Quadrant.Q3)) {
+                SmartDashboard.putString("Arm/Arm/Quadrant", "Q2|Q3");
                 if ((extenderSetpoint + ksolidArmDistance) * Math.sin(Units.degreesToRadians(relativeAngle)) > 52) {
                     setExtenderSetpoint((52 / Math.sin(Units.degreesToRadians(relativeAngle)) - ksolidArmDistance) - 2);
                     m_Extender.setVoltage(m_extenderPIDController.calculate(m_absExtenderEncoder.get()));
@@ -268,6 +282,8 @@ public class ArmSubsystem extends SubsystemBase {
                     break;
                 }
             } else { // we are in the bottom quadrants Q1 || Q4
+             SmartDashboard.putString("Arm/Arm/Quadrant", "Q1|Q4");
+
              if ((extenderSetpoint + ksolidArmDistance) * Math.sin(Units.degreesToRadians(relativeAngle)) > 21) {
                 lastArmSetPoint = m_armPIDController.getSetpoint();
                 setArmPivotSetpoint(armPivotPosition);
@@ -301,7 +317,7 @@ public class ArmSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("Arm/Gripper/rotatorVoltage", gripperRotationVoltage);
             m_GripperRotator.setVoltage(gripperRotationVoltage);
 
-            if (!m_breakSolenoid.get())
+            if (!m_brakeSolenoid.get())
                 m_armPivot.setVoltage(0);
 
             updateIntake();
@@ -502,6 +518,10 @@ public class ArmSubsystem extends SubsystemBase {
         return m_intakeLeftEncoder.getPosition();
     }
 
+    public double getArmPivotVelocity(){
+        return m_armVelocityFilter.getVelocity();
+    }
+
     public double getArmPivotAbs() {
         return m_armAngle;
     }
@@ -514,24 +534,39 @@ public class ArmSubsystem extends SubsystemBase {
         return m_absGripperPivotEncoder.get();
     }
 
-    public void setOveride(boolean overide) {
-        m_brake = overide;
+    public void setOverride(boolean override) {
+        m_overrideCalls += override ? 1 : -1;
     }
 
     public boolean getOveride() {
-        return m_brake;
+        return m_overrideCalls > 0;
     }
 
     public void toggleBreak() {
-        m_breakSolenoid.toggle();
+        m_brakeSolenoid.toggle();
     }
 
-    public void setBreak(boolean brake) {
-        m_breakSolenoid.set(brake);
+    public void openBrake(boolean brake) {
+        if(getOveride()) {
+            // in auto mode, balance open calls with close calls
+            // so multiple commands holding brake open don't step on
+            // each other
+            m_openBrakeCalls += brake ? 1 : -1;
+            if (m_openBrakeCalls < 0) {
+                System.err.println("ERROR: openBrake(false) called more than openBrake(true)!");
+                m_openBrakeCalls = 0;
+            }
+            m_brakeSolenoid.set(m_openBrakeCalls > 0);
+        } else {  // manual
+            // Just clear the open brake calls and set the brake directly
+            m_openBrakeCalls = 0;
+            m_brakeSolenoid.set(brake);
+        }
+        
     }
 
     public boolean getBreakSol() {
-        return m_breakSolenoid.get();
+        return m_brakeSolenoid.get();
     }
 
     public void toggleGripper() {

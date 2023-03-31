@@ -37,8 +37,8 @@ public class Grab extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_arm.setOveride(true);
-    m_arm.setBreak(true);
+    m_arm.setOverride(true);
+    m_arm.openBrake(true);
     //double theta = 0;
     m_timer.reset();
     m_timer.start();
@@ -46,7 +46,8 @@ public class Grab extends CommandBase {
     {
       //m_arm.toggleGripper();
       //theta = Units.radiansToDegrees(Math.atan((37.25-24)/(16+m_distance)));
-      m_arm.setArmPivotSetpoint(134.5);
+      //m_arm.setArmPivotSetpoint(134.5);
+      MoveArm.moveArm(m_arm, 134.5);
       m_arm.setExtenderSetpoint(14);
       m_arm.setGripperPivotSetpoint(144);
       //m_arm.toggleGripper();
@@ -54,7 +55,8 @@ public class Grab extends CommandBase {
     {
       //m_arm.toggleGripper();
       //theta = 360-Units.radiansToDegrees(Math.atan((37.25-24)/(16+m_distance)));
-      m_arm.setArmPivotSetpoint(360-134.5);
+      //m_arm.setArmPivotSetpoint(360-134.5);
+      MoveArm.moveArm(m_arm, 360-134.5);
       m_arm.setExtenderSetpoint(14);
       m_arm.setGripperPivotSetpoint(360-144);
       //m_arm.toggleGripper();
@@ -71,8 +73,8 @@ public class Grab extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_arm.setOveride(false);
-    m_arm.setBreak(false);
+    m_arm.setOverride(false);
+    m_arm.openBrake(false);
     // Retract retract = new Retract(m_arm);
     // CommandScheduler.getInstance().schedule(retract);
   }

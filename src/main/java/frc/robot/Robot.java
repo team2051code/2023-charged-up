@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -25,30 +24,19 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CompetitionDriveConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ArmSubsystem.IntakeMode;
-import frc.robot.subsystems.DriveSubsystem.Gear;
 import frc.robot.subsystems.simulated.CANSparkMaxSimulated;
 import frc.robot.subsystems.simulated.SimulatedEncoder;
-import edu.wpi.first.apriltag.AprilTag;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 
-import javax.lang.model.util.ElementScanner14;
-
 import org.photonvision.*;
-import org.photonvision.targeting.PhotonTrackedTarget;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -316,12 +304,17 @@ public class Robot extends TimedRobot {
     
     if (autoname == 1 /* driveforward */){
       System.out.println("Drive forward scheduled");
-      autoprogram = new SequentialCommandGroup( new AutoPlaceMid(m_arm),
+      autoprogram = new SequentialCommandGroup( //new AutoPlaceMid(m_arm),
       new DriveLinear(Units.feetToMeters(-5), m_drive));
     }    else if (autoname == 3 /* autobalance */){
       System.out.println("Autobalance scheduled");
-      autoprogram = new SequentialCommandGroup(new DriveLinear(-1.45,m_drive,0.7),
-      BalanceFactory.balance(m_drive,m_arm));
+      autoprogram = new SequentialCommandGroup(
+       // new AutoPlaceMid(m_arm),
+        //new Delay(0.5),
+        //new Retract(m_arm),
+        new DriveLinear(-1.45,m_drive,0.7),
+        BalanceFactory.balance(m_drive,m_arm)
+      );
     }
 
     if (autoprogram != null) {
@@ -392,7 +385,7 @@ public class Robot extends TimedRobot {
         m_teleopAutoBalance = BalanceFactory.balance(m_drive,m_arm);
         CommandScheduler.getInstance().schedule(m_teleopAutoBalance);
       }else{
-        CommandScheduler.getInstance().cancel(m_teleopAutoBalance);
+        CommandScheduler.getInstance().cancelAll();
         m_teleopAutoBalance = null;
       }
     }
@@ -515,10 +508,10 @@ public class Robot extends TimedRobot {
 
     if(!m_arm.getOveride()){
       if(-m_ArmController.getRawAxis(1)<0.25 && -m_ArmController.getRawAxis(1)>-0.25){
-        m_arm.setBreak(false);
-        m_arm.setArmPivotSetpoint(m_arm.getArmPivotAbs());
+        m_arm.openBrake(false);
+        //m_arm.setArmPivotSetpoint(m_arm.getArmPivotAbs());
       }else{
-        m_arm.setBreak(true);
+        m_arm.openBrake(true);
         m_arm.incrementArmPivotSetpoint(-m_ArmController.getRawAxis(1) * 60);
       }
       if(m_ArmController.getRawButton(1)){
@@ -547,7 +540,8 @@ public class Robot extends TimedRobot {
       scorePiece(Level.TOP, Offset.RIGHT,true);
     }
     if (boardButton == 2){
-      Retract retract = new Retract(m_arm);
+      CommandScheduler.getInstance().cancelAll();
+      Command retract = new Retract(m_arm);
       CommandScheduler.getInstance().schedule(retract);
     }
     if (boardButton == 3){
@@ -575,6 +569,7 @@ public class Robot extends TimedRobot {
   }
   
   private void grabPiece(boolean frontSide){
+    CommandScheduler.getInstance().cancelAll();
     Grab grab = new Grab(m_arm, frontSide);
     CommandScheduler.getInstance().schedule(grab);
   }
@@ -590,6 +585,7 @@ public class Robot extends TimedRobot {
   }
 
   private void scorePiece(DriveToScore.Level level, DriveToScore.Offset offset,boolean frontSide){
+    CommandScheduler.getInstance().cancelAll();
     Place highPlace = new Place(m_arm, level, false, frontSide, 0); //is a cube and facing forwards //p = 1 and d = 0.5 works well
     CommandScheduler.getInstance().schedule(highPlace);
   }

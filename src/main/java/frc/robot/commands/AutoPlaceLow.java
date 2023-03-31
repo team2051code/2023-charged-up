@@ -37,8 +37,8 @@ public class AutoPlaceLow extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_arm.setOveride(true);
-    m_arm.setBreak(true);
+    m_arm.setOverride(true);
+    m_arm.openBrake(true);
     m_arm.setArmPivotSetpoint(270);
   }
 
@@ -52,8 +52,8 @@ public class AutoPlaceLow extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     m_arm.setIntakeMode(IntakeMode.FORWARD);;
-    m_arm.setOveride(false);
-    m_arm.setBreak(false);
+    m_arm.setOverride(false);
+    m_arm.openBrake(false);
     Command Drive = new DriveLinear(Units.feetToMeters(5), m_drive);
     CommandScheduler.getInstance().schedule(Drive);
   }

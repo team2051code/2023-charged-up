@@ -45,8 +45,8 @@ public class Place extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_arm.setOveride(true);
-    m_arm.setBreak(true);
+    m_arm.setOverride(true);
+    m_arm.openBrake(true);
     SmartDashboard.putBoolean("Place", true);
     double theta = 0;
     m_timer.reset();
@@ -61,7 +61,8 @@ public class Place extends CommandBase {
           m_arm.setExtenderSetpoint(21.7);//calculates
           //and sets the arm to the right length to score
           
-          m_arm.setArmPivotSetpoint(67.5);//sets arm to go to calced angle
+          //m_arm.setArmPivotSetpoint(67.5);//sets arm to go to calced angle
+          MoveArm.moveArm(m_arm, 67.5);
           m_arm.setGripperPivotSetpoint(217);//sets the gripper parallel to the arm
           //m_arm.toggleGripper();//opens gripper to let out cube
         }
@@ -90,7 +91,8 @@ public class Place extends CommandBase {
           //theta = Units.radiansToDegrees(Math.atan((16+30)/24.0));
           m_arm.setExtenderSetpoint(21.7);
           
-          m_arm.setArmPivotSetpoint(67.5);
+         //m_arm.setArmPivotSetpoint(67.5);
+         MoveArm.moveArm(m_arm, 67.5);
           m_arm.setGripperPivotSetpoint(217);
           //m_arm.toggleGripper();
         }
@@ -99,7 +101,8 @@ public class Place extends CommandBase {
           //theta = Units.radiansToDegrees(Math.atan(12/(16+distance+12+10.75)));
           m_arm.setExtenderSetpoint(24.3);
           
-          m_arm.setArmPivotSetpoint(121.8);
+          //m_arm.setArmPivotSetpoint(121.8);
+          MoveArm.moveArm(m_arm, 121.8);
           m_arm.setGripperPivotSetpoint(154.2);
           //m_arm.toggleGripper();
         }
@@ -108,7 +111,8 @@ public class Place extends CommandBase {
           //theta = Units.radiansToDegrees(Math.atan(24/(16+distance+36+3.75)));
           m_arm.setExtenderSetpoint(39);
           
-          m_arm.setArmPivotSetpoint(128);
+          //m_arm.setArmPivotSetpoint(128);
+          MoveArm.moveArm(m_arm, 128);
           m_arm.setGripperPivotSetpoint(164);
           //m_arm.toggleGripper();
         }
@@ -146,15 +150,17 @@ public class Place extends CommandBase {
       {
         //theta = 360-Units.radiansToDegrees(Math.atan((16+30)/24.0));
         m_arm.setExtenderSetpoint(21.7);
-        m_arm.setArmPivotSetpoint(360-67.5);
-        m_arm.setGripperPivotSetpoint(360-217);
+       // m_arm.setArmPivotSetpoint(360-67.5);
+       MoveArm.moveArm(m_arm, 360-67.5); 
+       m_arm.setGripperPivotSetpoint(360-217);
         //m_arm.toggleGripper();
       }
       else if(level == DriveToScore.Level.MIDDLE)
       {
         //theta = Units.radiansToDegrees(Math.atan(12/(16+distance+12+10.75)))+180;
         m_arm.setExtenderSetpoint(24.3);
-        m_arm.setArmPivotSetpoint(360-121.8);
+       // m_arm.setArmPivotSetpoint(360-121.8);
+        MoveArm.moveArm(m_arm, 360-121.8);
         m_arm.setGripperPivotSetpoint(260-154.2);
         //m_arm.toggleGripper();
       }
@@ -162,7 +168,8 @@ public class Place extends CommandBase {
       {
         //theta = Units.radiansToDegrees(Math.atan(24/(16+distance+36+3.75)))+180;
         m_arm.setExtenderSetpoint(39);
-        m_arm.setArmPivotSetpoint(360-128);
+       // m_arm.setArmPivotSetpoint(360-128);
+        MoveArm.moveArm(m_arm, 360-128);
         m_arm.setGripperPivotSetpoint(360-164);
         //m_arm.toggleGripper();
       }
@@ -314,8 +321,8 @@ public class Place extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_arm.setBreak(false);
-    m_arm.setOveride(false);
+    m_arm.openBrake(false);
+    m_arm.setOverride(false);
     // Retract retract = new Retract(m_subsystem);
     // CommandScheduler.getInstance().schedule(retract);
   }
