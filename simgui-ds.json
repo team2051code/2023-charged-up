@@ -1,10 +1,10 @@
 {
-  "Keyboard 0 Settings": {
+  "FMS": {
     "window": {
-      "visible": true
+      "visible": false
     }
   },
-  "Keyboard 2 Settings": {
+  "Keyboard 0 Settings": {
     "window": {
       "visible": true
     }
