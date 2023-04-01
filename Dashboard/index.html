@@ -26,30 +26,44 @@
 				<h1 class="col-1 text-light">Gear:</h1>
 				<h1 class="col-1" id="gear">None</h1>
 			</div>
-			<div class="row text-light">
-				<!-- <h3 id="title0" class="col">gripped</h3> -->
-				<h3 id="title1" class="col">arm angle</h3>
-				<h3 id="title2" class="col">gripper angle</h3>
-				<h3 id="title3" class="col">arm extention</h3>
-				<h3 id="title4" class="col">Piece Gripped</h3>
-				<!-- <h3 id="title5" class="col">balance</h3> -->
+			<div id="teleop">
+				<div class="row text-light">
+					<!-- <h3 id="title0" class="col">gripped</h3> -->
+					<h3 id="title1" class="col">arm angle</h3>
+					<h3 id="title2" class="col">gripper angle</h3>
 
+					<h3 id="title3" class="col">arm extention</h3>
+					<h3 id="title4" class="col">Piece Gripped</h3>
+					<!-- <h3 id="title5" class="col">balance</h3> -->
+
+				</div>
+				<!--  -->
+				<div class="row">
+					<!-- <frc-boolean-box class="col" source-key="">gripped</frc-boolean-box> -->
+
+					<frc-gauge class="beattie-gauge col" source-key="/SmartDashboard/arm potentiometer" min="0" max="360">arm angle</frc-gauge>
+					<frc-gauge class="col" source-key="/SmartDashboard/gripper potentiometer" min="0" max="360">gripper angle</frc-gauge>
+					
+					<frc-number-bar class="col" source-key="/SmartDashboard/extender potentiometer" min="0" max="40">arm extention</frc-number-bar>
+					<frc-boolean-box class="col" source-key="/SmartDashboard/hasPiece"></frc-number-bar>
+
+					<!-- <frc-gyro class="col" source-key="">balance</frc-gyro> -->
+				</div>
 			</div>
-			<!--  -->
-			<div class="row">
-				<!-- <frc-boolean-box class="col" source-key="">gripped</frc-boolean-box> -->
 
-				<frc-gauge class="beattie-gauge col" source-key="/SmartDashboard/arm potentiometer" min="0" max="360">arm angle</frc-gauge>
-				<frc-gauge class="col" source-key="/SmartDashboard/gripper potentiometer" min="0" max="360">gripper angle</frc-gauge>
-				
-				<frc-number-bar class="col" source-key="/SmartDashboard/extender potentiometer" min="0" max="40">arm extention</frc-number-bar>
-				<frc-boolean-box class="col" source-key="/SmartDashboard/hasPiece"></frc-number-bar>
-
-				<!-- <frc-gyro class="col" source-key="">balance</frc-gyro> -->
-			</div>
-			<div>
-				<h1>Auto mode</h1>
-				<h3 id="auto-mode">(loading...)</h3>
+			<div id="auto">	
+				<div class="row">
+					<h1 class="col">Auto mode</h1>
+					<h1 class="col">Drive Linear</h1>
+					<h1 class="col">Off Ramp</h1>
+					<h1 class="col">On Ramp</h1>
+				</div>
+				<div class="row">
+					<h3 class="col" id="auto-mode">(loading...)</h3>
+					<frc-boolean-box source-key="/SmartDashboard/Commands/DriveLinear" class="col"></frc-boolean-box>	
+					<frc-boolean-box source-key="/SmartDashboard/Commands/OffRamp" class="col"></frc-boolean-box>	
+					<frc-boolean-box source-key="/SmartDashboard/Commands/OnRamp" class="col"></frc-boolean-box>
+				</div>
 			</div>
 
 

@@ -6,6 +6,7 @@ function ntLoaded() {
     var isTeleop = false;
     var soundPlayed = false;
     var timeTrip = false;
+    var bkgOverride = false;
 
     console.log("Network tables has loaded");
 
@@ -17,10 +18,10 @@ function ntLoaded() {
  
     //background color of alliance
     NetworkTables.addKeyListener('/FMSInfo/IsRedAlliance', (key, value, isNew) => { 
-        if (value){
+        if (value && !bkgOverride){
             document.getElementById("teamColor").style.backgroundColor = "#500";
         }
-        else {
+        else if (!value && !bkgOverride){
             document.getElementById("teamColor").style.backgroundColor = "#004";
         }
     }, true);
@@ -62,6 +63,39 @@ function ntLoaded() {
             soundPlayed = false;
         }
     }, true)
+
+    //Auto Listeners/////Auto Listeners/////Auto Listeners///
+    var driveLinear = "/SmartDashboard/Commands/DriveLinear";
+    autonomous(driveLinear);
+    
+    var offRamp = "/SmartDashboard/Commands/OffRamp";
+    autonomous(offRamp);
+
+    var onRamp = "/SmartDashboard/Commands/OnRamp";
+    autonomous(onRamp);
+
+    var areTrue = 0;
+
+    function autonomous(keyName) {
+        NetworkTables.addKeyListener(keyName, (key, value, isNew) => {
+
+            value ? areTrue++ : areTrue--;
+
+            if (areTrue > 0) {
+                document.getElementById("teleop").style.display = "none";
+                document.getElementById("auto").style.display = "block";
+                bkgOverride = true;
+                document.getElementById("teamColor").style.backgroundColor = "#E4A11B";
+            }
+            else {
+                document.getElementById("teleop").style.display = "block";
+                document.getElementById("auto").style.display = "none";
+                bkgOverride = false;
+            }
+
+        }, true)
+    }
+
 
     submitData = (valId, keyId) => {
         NetworkTables.putValue(document.getElementById(keyId).innerText, document.getElementById(valId).value - 0);
