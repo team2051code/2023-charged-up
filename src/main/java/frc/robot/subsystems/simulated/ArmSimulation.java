@@ -25,7 +25,7 @@ public class ArmSimulation {
     public static final double ARM_BASE_LENGTH_M = Units.inchesToMeters(28);
     public static final double ARM_GEAR_REDUCTION = 89;
     public static final double EXTENSION_MAX_SPEED_M_S = 0.25;
-    public static final double GRIPPER_MAX_SPEED_M_S = 90.0;
+    public static final double GRIPPER_MAX_SPEED_M_S = 9.0;
 
     private AnalogPotentiometerSimulation m_armPotentiometer;
     private CANSparkMax m_armMotor;

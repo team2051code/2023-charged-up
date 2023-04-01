@@ -56,6 +56,9 @@
         }
       },
       "SmartDashboard": {
+        "Commands": {
+          "open": true
+        },
         "camera": {
           "open": true
         },

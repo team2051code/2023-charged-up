@@ -1,6 +1,15 @@
+@font-face {
+    font-family: daggerSquare;
+    src: url(DAGGERSQUARE.otf);
+}
+
 body {
     color: #FFF;
     background-color: #000;
+}
+
+div {
+    font-family: daggerSquare;
 }
 
 a {
