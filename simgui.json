@@ -11,6 +11,9 @@
       "/LiveWindow/Ungrouped/PIDController[8]": "PIDController",
       "/SmartDashboard/Arm PID": "PIDController",
       "/SmartDashboard/Arm Sim": "Mechanism2d",
+      "/SmartDashboard/Arm/Arm/PID": "PIDController",
+      "/SmartDashboard/Arm/Extender/PID": "PIDController",
+      "/SmartDashboard/Arm/Gripper/PID": "PIDController",
       "/SmartDashboard/Arm/Intake/leftPid": "PIDController",
       "/SmartDashboard/Arm/Intake/rightPid": "PIDController",
       "/SmartDashboard/Commands": "Scheduler",
@@ -56,6 +59,18 @@
         }
       },
       "SmartDashboard": {
+        "Arm": {
+          "Arm": {
+            "open": true
+          },
+          "open": true
+        },
+        "Arm Sim": {
+          "open": true
+        },
+        "Commands": {
+          "open": true
+        },
         "camera": {
           "open": true
         },

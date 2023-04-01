@@ -1,7 +1,7 @@
 {
-  "Keyboard 0 Settings": {
+  "FMS": {
     "window": {
-      "visible": true
+      "visible": false
     }
   },
   "Keyboard 2 Settings": {
@@ -75,17 +75,20 @@
         }
       ],
       "axisCount": 2,
-      "buttonCount": 9,
+      "buttonCount": 12,
       "buttonKeys": [
-        65,
         -1,
-        68,
-        70,
-        71,
-        72,
-        74,
-        75,
-        76
+        -1,
+        -1,
+        55,
+        52,
+        49,
+        56,
+        53,
+        50,
+        57,
+        51,
+        54
       ],
       "povCount": 0
     },
@@ -104,7 +107,7 @@
       "useGamepad": true
     },
     {
-      "guid": "03000000790000000600000000000000"
+      "guid": "Keyboard2"
     }
   ]
 }
