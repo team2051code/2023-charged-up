@@ -34,8 +34,8 @@ public class AutoPlaceMid extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_arm.setOveride(true);
-    m_arm.setBreak(true);
+    m_arm.setOverride(true);
+    m_arm.openBrake(true);
     m_arm.setArmPivotSetpoint(140);
   }
 
@@ -47,8 +47,8 @@ public class AutoPlaceMid extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     m_arm.setIntakeMode(IntakeMode.FORWARD);;
-    m_arm.setOveride(false);
-    m_arm.setBreak(false);
+    m_arm.setOverride(false);
+    m_arm.openBrake(false);
   }
 
   // Returns true when the command should end.

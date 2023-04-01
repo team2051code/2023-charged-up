@@ -41,8 +41,8 @@ public class MoveArm extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_arm.setBreak(true);
-    m_arm.setOveride(true);
+    m_arm.openBrake(true);
+    m_arm.setOverride(true);
     m_timer.start();
     m_timer.reset();
     m_trajectory = new TrapezoidProfile(CONSTRAINTS, 
@@ -62,8 +62,8 @@ public class MoveArm extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_arm.setBreak(false);
-    m_arm.setOveride(false);
+    m_arm.openBrake(false);
+    m_arm.setOverride(false);
     m_timer.stop();
   }
 

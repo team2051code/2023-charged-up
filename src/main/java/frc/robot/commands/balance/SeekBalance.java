@@ -47,7 +47,7 @@ public class SeekBalance extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    SmartDashboard.putNumber("Commands/", m_target);
+    SmartDashboard.putNumber("Commands/SeekBalanceTarget", m_target);
     if(m_drive.getLeftEncoder() > m_target+.25)
       m_drive.autoDrive(-0.3,-0.3);
     else if(m_drive.getLeftEncoder() < m_target-.25)

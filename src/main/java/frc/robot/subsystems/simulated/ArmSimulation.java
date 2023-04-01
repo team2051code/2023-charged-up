@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -42,19 +43,22 @@ public class ArmSimulation {
     private MechanismLigament2d m_armExtensionDisplay;
     private MechanismLigament2d m_armDisplay;
     private MechanismLigament2d m_gripperDisplay;
+    private Solenoid m_brake;
 
     public ArmSimulation(AnalogPotentiometerSimulation armPotentiometer,
     CANSparkMax armMotor,
     AnalogPotentiometerSimulation extensionPotentiometer,
     CANSparkMax extensionMotor,
     AnalogPotentiometerSimulation gripperPotentiometer,
-    CANSparkMax gripperMotor) {
+    CANSparkMax gripperMotor,
+    Solenoid brake) {
         m_armPotentiometer = armPotentiometer;
         m_armMotor = armMotor;
         m_extensionPotentiometer = extensionPotentiometer;
         m_extensionMotor = extensionMotor;
         m_gripperPotentiometer = gripperPotentiometer;
         m_gripperMotor = gripperMotor;
+        m_brake = brake;
 
         m_armGearbox = DCMotor.getFalcon500(2);
         m_armSim = new BeattieSingleJointedArmSim(
@@ -103,8 +107,12 @@ public class ArmSimulation {
 
         m_armSim.setArmLengthMeters(currentArmExtensionMeters + ARM_BASE_LENGTH_M);
 
-        m_armSim.setInput(m_armMotor.get() * 24 /* volts * 2, for two motors*/);
-        m_armSim.update(0.02);
+        SmartDashboard.putNumber("Arm Sim/input", m_armMotor.get());
+        SmartDashboard.putBoolean("Arm Sim/brake", m_brake.get());
+        if (m_brake.get()) {
+            m_armSim.setInput(m_armMotor.get() * 24 /* volts * 2, for two motors*/);
+            m_armSim.update(0.02);
+        }
 
         var newAngleDegrees = Units.radiansToDegrees(m_armSim.getAngleRads());
         m_armPotentiometer.set(newAngleDegrees);
