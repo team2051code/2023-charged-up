@@ -16,15 +16,16 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.components.LimitedMotor;
+import frc.robot.filters.VelocityFilter;
 import frc.robot.subsystems.simulated.AnalogPotentiometerSimulation;
 import frc.robot.subsystems.simulated.ArmSimulation;
 import frc.robot.subsystems.simulated.CANSparkMaxSimulated;
 
 public class ArmSubsystem extends SubsystemBase {
-    public final static double kArmP = 0.4 / 5;public final static double kArmI = 0;public final static double kArmD = 0;
+    public final static double kArmP = 0.4 / 2.5;public final static double kArmI = 0;public final static double kArmD = 0;
     public final static double kextenderP = 1.4 / 1.3;public final static double kextenderI = 0;public final static double kextenderD = 0;
     public final static double kgripperP = 0.5;public final static double kgripperI = 0;public final static double kgripperD = 0;
-    public final static double kgripperRotatorP = 0.1;public final static double kgripperRotatorI = 0;public final static double kgripperRotatorD = 0;
+    public final static double kgripperRotatorP = 1.75;public final static double kgripperRotatorI = 0.0175;public final static double kgripperRotatorD = 0.1;
     public final static double kintakeLeftP = 0.1;public final static double kintakeLeftI = 0; public final static double kintakeLeftD = 0;  
     public final static double kintakeRightP = 0.1;public final static double kintakeRightI = 0; public final static double kintakeRightD = 0;  
     public final static double ksolidArmDistance = 28;
@@ -62,6 +63,7 @@ public class ArmSubsystem extends SubsystemBase {
     private boolean m_brake = false;
     private DigitalInput m_pieceSensor = new DigitalInput(9);
     private boolean m_hasPiece = false;
+    private VelocityFilter m_armVelocityFilter = new VelocityFilter();
 
     private enum Quadrant {
         Q1, Q2, Q3, Q4
@@ -134,8 +136,6 @@ public class ArmSubsystem extends SubsystemBase {
         m_intakeRightPIDController = new PIDController(kintakeRightP,kintakeRightI,kintakeRightD);
         
 
-        m_ArmPivot1.restoreFactoryDefaults();
-        m_ArmPivot2.restoreFactoryDefaults();
         m_GripperPivot.restoreFactoryDefaults();
         m_GripperRotator.restoreFactoryDefaults();
         m_IntakeLeft.restoreFactoryDefaults();
@@ -181,7 +181,7 @@ public class ArmSubsystem extends SubsystemBase {
         m_gripperRotatorEncoder = m_GripperRotator.getEncoder();
         m_gripperPivotEncoder = m_GripperPivot.getEncoder();
 
-        m_gripperPivotPIDController.setSetpoint(0);
+        setGripperPivotSetpoint(0);
 
         SmartDashboard.putData("Arm PID", m_armPIDController);
         SmartDashboard.putData("Extender PID", m_extenderPIDController);
@@ -203,7 +203,7 @@ public class ArmSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("Gripper motor", m_GripperPivot.get());
             SmartDashboard.putNumber("Gripper encoder", m_absGripperPivotEncoder.get());
             m_hasPiece = m_pieceSensor.get();
-            SmartDashboard.putBoolean("hasPiece", m_hasPiece);
+            SmartDashboard.putBoolean("hasPiece", !m_hasPiece);
 
             Quadrant quadrant;
             var armPivotVoltage = m_armPIDController.calculate(m_armAngle);
@@ -215,8 +215,12 @@ public class ArmSubsystem extends SubsystemBase {
             var extenderPosition = m_absExtenderEncoder.get();
             var extenderSetpoint = m_extenderPIDController.getSetpoint();
             var gripperPivotPosition = m_absGripperPivotEncoder.get();
+            var gripperPivotSetpoint = m_gripperPivotPIDController.getSetpoint();
+            m_armVelocityFilter.calculate(armPivotPosition);
             double lastArmSetPoint = Integer.MIN_VALUE;
-            SmartDashboard.putNumber("GripperRotatorEnc",m_gripperRotatorEncoder.getPosition());
+            SmartDashboard.putString("IntakeLeftError", m_IntakeLeft.getLastError().toString());
+            SmartDashboard.putNumber("IntakeLeftEncoder", m_intakeLeftEncoder.getPosition());
+            SmartDashboard.putNumber("gripperRotatorEnc",m_gripperRotatorEncoder.getPosition());
             SmartDashboard.putNumber("PIDarmPivotVoltage", armPivotVoltage);
             SmartDashboard.putNumber("extenderBusVoltage", m_Extender.get());
             SmartDashboard.putNumber("extenderVoltage", extenderVoltage);
@@ -230,7 +234,7 @@ public class ArmSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("gripperVoltage", gripperPivotVoltage);
             SmartDashboard.putNumber("gripperSetpoint", m_gripperPivotPIDController.getSetpoint());
             SmartDashboard.putNumber("gripperOutputCurrent", m_GripperPivot.getOutputCurrent());
-            SmartDashboard.putNumber("gripper rotator enc", m_gripperRotatorEncoder.getPosition());
+            SmartDashboard.putNumber("gripperRotatorSetpoint", m_gripperRotatorPIDController.getSetpoint());
             // SmartDashboard.putBoolean("GripperSol", m_gripperSolenoid.get());
             if (m_armAngle < 90) {
                 relativeAngle = 90 - m_armAngle;
@@ -271,7 +275,7 @@ public class ArmSubsystem extends SubsystemBase {
              if ((extenderSetpoint + ksolidArmDistance) * Math.sin(Units.degreesToRadians(relativeAngle)) > 21) {
                 lastArmSetPoint = m_armPIDController.getSetpoint();
                 setArmPivotSetpoint(armPivotPosition);
-                setExtenderSetpoint((22 / Math.sin(Units.degreesToRadians(relativeAngle)) - ksolidArmDistance) - 11);
+                setExtenderSetpoint((21 / Math.sin(Units.degreesToRadians(relativeAngle)) - ksolidArmDistance) - 12);
                 m_armPivot.setVoltage(0);
                 m_Extender.setVoltage(m_extenderPIDController.calculate(m_absExtenderEncoder.get()));
                 SmartDashboard.putBoolean("Debug", true);
@@ -289,61 +293,16 @@ public class ArmSubsystem extends SubsystemBase {
             if (lastArmSetPoint != Integer.MIN_VALUE)
                 setArmPivotSetpoint(lastArmSetPoint);
 
-            //Limiters
-            var LIMITER_MODE = 1;//use 1
-            switch (LIMITER_MODE) {
-                case 1:
-                    if (armPivotSetpoint < 60)// imagining 0 means vertically down
-                        setArmPivotSetpoint(60);
-                    if (armPivotSetpoint > 300)
-                        setArmPivotSetpoint(300);
-                    m_armPivot.setVoltage(armPivotVoltage);
-                    break;
-                case 2:
-                    //Do not use
-                    if (armPivotPosition > 300 && armPivotVoltage > 0)
-                        m_armPivot.setVoltage(0);
-                    else if (armPivotPosition < 60 && armPivotVoltage < 0)
-                        m_armPivot.setVoltage(0);
-                    else
-                        m_armPivot.setVoltage(armPivotVoltage);
-                    break;
-                case 3:
-                    //Do not use
-                    if (armPivotPosition > 60 && armPivotPosition < 300)// imagining 0 means vertically down
-                        m_armPivot.setVoltage(armPivotVoltage);
-                    else
-                        m_armPivot.setVoltage(0);
-                    break;
-            }
-
             SmartDashboard.putString("Pivot1kError", m_ArmPivot1.getLastError().toString());
             SmartDashboard.putString("Pivot2Error", m_ArmPivot2.getLastError().toString());
 
-            if (extenderPosition > 39)
-                setExtenderSetpoint(39);
-            if (extenderSetpoint < 3)
-                setExtenderSetpoint(3);
+            m_armPivot.setVoltage(armPivotVoltage);
 
             m_Extender.setVoltage(extenderVoltage);
 
-            // m_Extender.setVoltage(extenderVoltage);
+            m_GripperPivot.setVoltage(gripperPivotVoltage);
 
-            // if (gripperPivotPosition<55&&gripperPivotPosition>-55){
-            // m_GripperPivot.setVoltage(gripperPivotVoltage*10/10);
-            // }
-            // else{
-            // m_GripperPivot.setVoltage(0);
-            // }
-
-            if (gripperPivotPosition > (180 + 45) && gripperPivotVoltage > 0) // imagining 0 means vertically down
-                m_GripperPivot.setVoltage(0);
-            else if (gripperPivotPosition < (180 - 45) && gripperPivotVoltage < 0)
-                m_GripperPivot.setVoltage(0);
-            else
-                m_GripperPivot.setVoltage(gripperPivotVoltage);
-
-            SmartDashboard.putNumber("gripperRotatorVoltage", gripperPivotVoltage);
+            SmartDashboard.putNumber("gripperRotatorVoltage", gripperRotationVoltage);
             m_GripperRotator.setVoltage(gripperRotationVoltage);
 
             if (!m_breakSolenoid.get())
@@ -437,31 +396,61 @@ public class ArmSubsystem extends SubsystemBase {
 
     public void incrementExtenderSetpoint(double increment) {
         double setpoint = m_extenderPIDController.getSetpoint();
-        m_extenderPIDController.setSetpoint(setpoint + (increment / 50.0));
+        setExtenderSetpoint(setpoint + (increment / 50.0));
     }
 
     public void incrementGripperPivotSetpoint(double increment) {
         double setpoint = m_gripperPivotPIDController.getSetpoint();
-        m_gripperPivotPIDController.setSetpoint(setpoint + (increment / 50.0));
+        setGripperPivotSetpoint(setpoint + (increment / 50.0));
     }
 
     public void setArmPivotSetpoint(double setpoint) {
+        if (setpoint < 60)// imagining 0 means vertically down
+        {
+            m_armPIDController.setSetpoint(60);
+            return;
+        }   
+        if (setpoint > 300)
+        {
+            m_armPIDController.setSetpoint(300);
+            return;
+        }   
         m_armPIDController.setSetpoint(setpoint);
     }
 
     public void setExtenderSetpoint(double setpoint) {
+        if (setpoint > 39)
+        {
+            m_extenderPIDController.setSetpoint(39);
+            return;
+        }
+        if (setpoint < 3)
+        {
+            m_extenderPIDController.setSetpoint(3);
+            return;
+        }
         m_extenderPIDController.setSetpoint(setpoint);
     }
 
     public void setGripperPivotSetpoint(double setpoint) {
+        if (setpoint > (180 + 45)) // 180 is inline with the arm
+        {
+            m_gripperPivotPIDController.setSetpoint(180+45);
+            return;
+        }
+        else if (setpoint< (180-45))
+        {
+            m_gripperPivotPIDController.setSetpoint(180-45);
+            return;
+        }
         m_gripperPivotPIDController.setSetpoint(setpoint);
     }
 
     public void toggleGripperRotator() {
-        if (m_gripperRotatorPIDController.getSetpoint() == 0)
-            setGripperPivotSetpoint(93);
+        if (m_gripperRotatorPIDController.getSetpoint() == 4)
+            setGripperRotatorSetpoint(-110);
         else
-            setGripperRotatorSetpoint(0);
+            setGripperRotatorSetpoint(4);
     }
 
     private void setGripperRotatorSetpoint(double setpoint) {
@@ -485,7 +474,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void resetGripperRotatorEnc() {
-        m_armPivotEncoder.setPosition(0);
+        m_gripperRotatorEncoder.setPosition(0);
     }
 
     public void resetGripperPivotEnc() {
@@ -515,6 +504,10 @@ public class ArmSubsystem extends SubsystemBase {
 
     public double getIntakeEnc() {
         return m_intakeLeftEncoder.getPosition();
+    }
+
+    public double getArmPivotVelocity(){
+        return m_armVelocityFilter.getVelocity();
     }
 
     public double getArmPivotAbs() {

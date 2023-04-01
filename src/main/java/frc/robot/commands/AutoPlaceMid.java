@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class AutoPlaceMid extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final ArmSubsystem m_arm;
-  private final DriveSubsystem m_drive;
   private static final double TIME_OVERRIDE_SECS = 1.0;
   private Timer m_timer = new Timer();
   /**
@@ -26,9 +25,8 @@ public class AutoPlaceMid extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public AutoPlaceMid(ArmSubsystem subsystem,DriveSubsystem drive) {
+  public AutoPlaceMid(ArmSubsystem subsystem) {
     m_arm = subsystem;
-    m_drive = drive;
     m_timer.reset();
     m_timer.start();
   }
@@ -38,14 +36,12 @@ public class AutoPlaceMid extends CommandBase {
   public void initialize() {
     m_arm.setOveride(true);
     m_arm.setBreak(true);
-    m_arm.setArmPivotSetpoint(360-120);
+    m_arm.setArmPivotSetpoint(140);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
@@ -53,8 +49,6 @@ public class AutoPlaceMid extends CommandBase {
     m_arm.setIntakeMode(IntakeMode.FORWARD);;
     m_arm.setOveride(false);
     m_arm.setBreak(false);
-    Command Drive = new DriveLinear(Units.feetToMeters(5), m_drive);
-    CommandScheduler.getInstance().schedule(Drive);
   }
 
   // Returns true when the command should end.

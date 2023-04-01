@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.*;
 import frc.robot.commands.balance.BalanceFactory;
@@ -28,6 +29,7 @@ import frc.robot.subsystems.DriveSubsystem.Gear;
 import frc.robot.subsystems.simulated.CANSparkMaxSimulated;
 import frc.robot.subsystems.simulated.SimulatedEncoder;
 import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -118,6 +120,8 @@ public class Robot extends TimedRobot {
   private TeleopDrive m_filteredDriveController;
   private JoystickTeleopDrive m_filteredDriveJoystick;
   private Joystick m_DriveJoystick;
+  private ButtonLatch debugButton = new ButtonLatch(()->m_ArmController.getRawButton(8));
+  private Command m_PIDTest = null;
   public boolean dropOffMode = true;
   private ButtonLatch m_gripperPivotForwardButton = new ButtonLatch(()->m_ArmController.getRawButton(6));
   private ButtonLatch m_gripperPivotReverseButton = new ButtonLatch(()->m_ArmController.getRawButton(7));
@@ -220,6 +224,8 @@ public class Robot extends TimedRobot {
     m_arm.setArmPivotSetpoint(180);
     m_arm.setExtenderSetpoint(3);
     m_arm.setGripperPivotSetpoint(180);
+    // if(m_arm.getGripperRotatorSetpoint() == 93)
+    //   m_arm.toggleGripperRotator();
 
     var modebutton = new JoystickButton(m_ArmController, 11);
     modebutton.onTrue(Commands.runOnce(() -> {
@@ -311,10 +317,17 @@ public class Robot extends TimedRobot {
     
     if (autoname == 1 /* driveforward */){
       System.out.println("Drive forward scheduled");
-      autoprogram = new AutoPlaceMid(m_arm,m_drive);
+      autoprogram = new SequentialCommandGroup( //new AutoPlaceMid(m_arm),
+      new DriveLinear(Units.feetToMeters(-5), m_drive));
     }    else if (autoname == 3 /* autobalance */){
       System.out.println("Autobalance scheduled");
-      autoprogram = BalanceFactory.balance(m_drive);
+      autoprogram = new SequentialCommandGroup(
+       // new AutoPlaceMid(m_arm),
+        //new Delay(0.5),
+        //new Retract(m_arm),
+        new DriveLinear(-1.45,m_drive,0.7),
+        BalanceFactory.balance(m_drive,m_arm)
+      );
     }
 
     if (autoprogram != null) {
@@ -382,7 +395,7 @@ public class Robot extends TimedRobot {
       
     if(m_DriveController.getXButton()&&!m_autoBalanceButtonPressed){
       if(m_teleopAutoBalance == null){
-        m_teleopAutoBalance = BalanceFactory.balance(m_drive);
+        m_teleopAutoBalance = BalanceFactory.balance(m_drive,m_arm);
         CommandScheduler.getInstance().schedule(m_teleopAutoBalance);
       }else{
         CommandScheduler.getInstance().cancelAll();
@@ -445,9 +458,9 @@ public class Robot extends TimedRobot {
 
     m_intakeButtonPressed = m_ArmController.getRawButton(7);
 
-    if(m_gripperPivotForwardButton.wasPressed())
+    if(m_ArmController.getRawButton(6))
       m_arm.incrementGripperPivotSetpoint(10);
-    if(m_gripperPivotReverseButton.wasPressed())
+    if(m_ArmController.getRawButton(7))
       m_arm.incrementGripperPivotSetpoint(-10);
     // if(!m_arm.getOveride() && m_ArmController.getRawAxis(2) != m_lastPivotPos)
     //  m_arm.setGripperPivotSetpoint(-m_ArmController.getRawAxis(2)*45 + 180);
@@ -456,12 +469,26 @@ public class Robot extends TimedRobot {
     //m_lastPivotPos = m_ArmController.getRawAxis(2);
     SmartDashboard.putBoolean("TeleopBalance", m_teleopAutoBalance == null);
 
+     if(debugButton.wasPressed())
+     {
+      if(m_PIDTest == null)
+      {
+        m_PIDTest = new PIDTest(m_arm);
+        CommandScheduler.getInstance().schedule(m_PIDTest);
+      }else
+      {
+        CommandScheduler.getInstance().cancel(m_PIDTest);
+        m_PIDTest = null;
+      }
+     }
 
     if(m_ArmController.getRawButton(9) && !m_gripperRotatorButtonPressed)
+    {
       m_arm.toggleGripperRotator();
-    
+    }
+        
     m_gripperRotatorButtonPressed = m_ArmController.getRawButton(9);
-
+    SmartDashboard.putBoolean("RotatorButtonPressed", m_gripperRotatorButtonPressed);
     // if (m_ArmController.getBButton()) {
     //   m_arm.toggleGripper();
     // }
@@ -495,7 +522,7 @@ public class Robot extends TimedRobot {
     if(!m_arm.getOveride()){
       if(-m_ArmController.getRawAxis(1)<0.25 && -m_ArmController.getRawAxis(1)>-0.25){
         m_arm.setBreak(false);
-        m_arm.setArmPivotSetpoint(m_arm.getArmPivotAbs());
+        //m_arm.setArmPivotSetpoint(m_arm.getArmPivotAbs());
       }else{
         m_arm.setBreak(true);
         m_arm.incrementArmPivotSetpoint(-m_ArmController.getRawAxis(1) * 60);
@@ -526,7 +553,8 @@ public class Robot extends TimedRobot {
       scorePiece(Level.TOP, Offset.RIGHT,true);
     }
     if (boardButton == 2){
-      Retract retract = new Retract(m_arm);
+      CommandScheduler.getInstance().cancelAll();
+      Command retract = new Retract(m_arm);
       CommandScheduler.getInstance().schedule(retract);
     }
     if (boardButton == 3){
@@ -554,6 +582,7 @@ public class Robot extends TimedRobot {
   }
   
   private void grabPiece(boolean frontSide){
+    CommandScheduler.getInstance().cancelAll();
     Grab grab = new Grab(m_arm, frontSide);
     CommandScheduler.getInstance().schedule(grab);
   }
@@ -569,6 +598,7 @@ public class Robot extends TimedRobot {
   }
 
   private void scorePiece(DriveToScore.Level level, DriveToScore.Offset offset,boolean frontSide){
+    CommandScheduler.getInstance().cancelAll();
     Place highPlace = new Place(m_arm, level, false, frontSide, 0); //is a cube and facing forwards //p = 1 and d = 0.5 works well
     CommandScheduler.getInstance().schedule(highPlace);
   }
