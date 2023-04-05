@@ -33,8 +33,8 @@ public class ArmTarget extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_arm.setOveride(true);
-    m_arm.setBreak(true);
+    m_arm.setOverride(true);
+    m_arm.openBrake(true);    
     MoveArm.moveArm(m_arm,m_setpoint);
     // Start a timer to hold the command to a few-second window
     m_timer.reset();
@@ -51,8 +51,8 @@ public class ArmTarget extends CommandBase {
   public void end(boolean interrupted) {
     
     m_arm.setGripperPivotSetpoint(180);
-    m_arm.setBreak(false);
-    m_arm.setOveride(false);
+    m_arm.openBrake(false);
+    m_arm.setOverride(false);
     m_timer.stop();
   }
 

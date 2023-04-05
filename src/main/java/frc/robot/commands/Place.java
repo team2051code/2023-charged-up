@@ -45,8 +45,8 @@ public class Place extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_arm.setOveride(true);
-    m_arm.setBreak(true);
+    m_arm.setOverride(true);
+    m_arm.openBrake(true);
     SmartDashboard.putBoolean("Place", true);
     double theta = 0;
     m_timer.reset();
@@ -321,8 +321,8 @@ public class Place extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_arm.setBreak(false);
-    m_arm.setOveride(false);
+    m_arm.openBrake(false);
+    m_arm.setOverride(false);
     // Retract retract = new Retract(m_subsystem);
     // CommandScheduler.getInstance().schedule(retract);
   }

@@ -31,8 +31,8 @@ public class PIDTest extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_arm.setOveride(true);
-    m_arm.setBreak(true);
+    m_arm.setOverride(true);
+    m_arm.openBrake(true);
     if(Math.abs(m_arm.getArmPivotSetpoint() - 225)<1)
       m_arm.setArmPivotSetpoint(135);
     else
@@ -48,8 +48,8 @@ public class PIDTest extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_arm.setBreak(false);
-    m_arm.setOveride(false);
+    m_arm.openBrake(false);
+    m_arm.setOverride(false);
   }
 
   // Returns true when the command should end.

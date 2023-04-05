@@ -10,13 +10,26 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * the `get` method works properly.
  */
 public class CANSparkMaxSimulated extends CANSparkMax {
+    double m_dutyCycle = 0;
     public CANSparkMaxSimulated(int channel, MotorType type) {
         super(channel, type);
     }
 
     @Override
+    public double get() {
+        return m_dutyCycle;
+    }
+
+    @Override
+    public void set(double dutyCycle) {
+        m_dutyCycle = dutyCycle;
+        super.set(dutyCycle);
+    }
+
+    @Override
     public void setVoltage(double voltage) {
-        set(MathUtil.clamp(voltage / 12.0, -1.0, 1.0));
+        var dutyCycle = MathUtil.clamp(voltage / 12.0, -1.0, 1.0);
+        set(dutyCycle);
     }
     
 }
