@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -60,11 +62,12 @@ public class ArmSubsystem extends SubsystemBase {
     private AnalogPotentiometer m_absExtenderEncoder;
     private AnalogPotentiometer m_absGripperPivotEncoder;
     private double m_armAngle;
-    private boolean m_brake = false;
+    private int m_override = 0;
     private DigitalInput m_pieceSensor = new DigitalInput(9);
     private boolean m_hasPiece = false;
     private VelocityFilter m_armVelocityFilter = new VelocityFilter();
     private boolean m_isGripperFlipped;
+    private int m_brake = 0;
 
     private enum Quadrant {
         Q1, Q2, Q3, Q4
@@ -306,8 +309,8 @@ public class ArmSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("gripperRotatorVoltage", gripperRotationVoltage);
             m_GripperRotator.setVoltage(gripperRotationVoltage);
 
-            if (!m_breakSolenoid.get())
-                m_armPivot.setVoltage(0);
+            // if (!m_breakSolenoid.get())
+            //     m_armPivot.setVoltage(0);
 
             updateIntake();
 
@@ -329,7 +332,14 @@ public class ArmSubsystem extends SubsystemBase {
             if (m_gripperRotatorPIDController.getSetpoint() == -110)
                 m_isGripperFlipped = true;
             else
-                m_isGripperFlipped = false;   
+                m_isGripperFlipped = false;  
+            
+            SmartDashboard.putBoolean("isGripperFlipped", m_isGripperFlipped);
+
+            if(m_brake == 0)
+                m_breakSolenoid.set(true);
+            else
+                m_breakSolenoid.set(false);
 
             break;
         }
@@ -532,19 +542,31 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void setOveride(boolean overide) {
-        m_brake = overide;
+        if(overide)
+            m_override++;
+        else
+            m_override--;
     }
 
     public boolean getOveride() {
-        return m_brake;
+        if(m_override == 0)
+            return false;
+        else
+            return true;
     }
 
     public void toggleBreak() {
-        m_breakSolenoid.toggle();
+        if(m_brake != 0)
+            m_brake--;
+        else
+            m_brake++;
     }
 
     public void setBreak(boolean brake) {
-        m_breakSolenoid.set(brake);
+        if(brake)
+            m_brake--;
+        else
+            m_brake++;
     }
 
     public boolean getBreakSol() {

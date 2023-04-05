@@ -70,7 +70,6 @@ public class Retract extends CommandBase {
   public boolean isFinished() {
     SmartDashboard.putBoolean("Retract/arm centering", m_armCentering);
     // Command ends when reaching target or operational window expires.
-    return (m_timer.get() > TIME_OVERRIDE_SECS) || 
-    (m_armCentering && Math.abs(m_arm.getArmPivotAbs()-m_arm.getArmPivotSetpoint())<1);
+    return (m_timer.get() > TIME_OVERRIDE_SECS) || m_armCentering; // && Math.abs(m_arm.getArmPivotAbs()-m_arm.getArmPivotSetpoint())<1);
   }
 }

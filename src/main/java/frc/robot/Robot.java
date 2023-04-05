@@ -237,7 +237,7 @@ public class Robot extends TimedRobot {
     m_filteredDriveController = new TeleopDrive(m_drive, m_DriveController);
     m_DriveJoystick = new Joystick(CompetitionDriveConstants.XboxDrivePort);
     m_filteredDriveJoystick = new JoystickTeleopDrive(m_drive, m_DriveJoystick);
-
+    m_arm.setIntakeMode(IntakeMode.SLOW);
   }
 
   /**
@@ -290,6 +290,11 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
+    m_arm.setIntakeMode(IntakeMode.SLOW);
+    m_LeftBack.setIdleMode(IdleMode.kBrake);
+    m_LeftFront.setIdleMode(IdleMode.kBrake);
+    m_RightBack.setIdleMode(IdleMode.kBrake);
+    m_RightFront.setIdleMode(IdleMode.kBrake);
   }
 
   @Override
@@ -302,7 +307,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-
+    m_arm.setIntakeMode(IntakeMode.SLOW);
     Command autoprogram = null;
     // m_trajectory = m_robotContainer.getTrajectories();
     //m_balanceCommand = m_robotContainer.getBalanceCommand();
@@ -317,8 +322,9 @@ public class Robot extends TimedRobot {
     
     if (autoname == 1 /* driveforward */){
       System.out.println("Drive forward scheduled");
-      autoprogram = new SequentialCommandGroup( //new AutoPlaceMid(m_arm),
-      new DriveLinear(Units.feetToMeters(-5), m_drive));
+      autoprogram = new SequentialCommandGroup( new AutoPlaceMid(m_arm)
+      //new DriveLinear(Units.feetToMeters(-5), m_drive)
+      );
     }    else if (autoname == 3 /* autobalance */){
       System.out.println("Autobalance scheduled");
       autoprogram = new SequentialCommandGroup(
@@ -344,6 +350,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    m_arm.setIntakeMode(IntakeMode.SLOW);
     CommandScheduler.getInstance().cancelAll();
     
     m_robotContainer.resetOdometry();
@@ -525,7 +532,7 @@ public class Robot extends TimedRobot {
         m_arm.setArmPivotSetpoint(m_arm.getArmPivotAbs());
       }else{
         m_arm.setBreak(true);
-        m_arm.incrementArmPivotSetpoint(-m_ArmController.getRawAxis(1) * 60);
+        m_arm.incrementArmPivotSetpoint(m_ArmController.getRawAxis(1) * 60);
       }
       if(m_ArmController.getRawButton(1)){
         m_arm.incrementExtenderSetpoint(15);

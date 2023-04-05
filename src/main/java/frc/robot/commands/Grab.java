@@ -82,6 +82,6 @@ public class Grab extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (m_timer.get() > TIME_OVERRIDE_SECS) ||((Math.abs(m_arm.getArmPivotAbs()-m_arm.getArmPivotSetpoint())<1)&&(Math.abs(m_arm.getExtendorAbs()-m_arm.getExtenderSetpoint())<1));
+    return (m_timer.get() > TIME_OVERRIDE_SECS) ||(Math.abs(m_arm.getExtendorAbs()-m_arm.getExtenderSetpoint())<1);//&&(Math.abs(m_arm.getArmPivotAbs()-m_arm.getArmPivotSetpoint())<1));
   }
 }

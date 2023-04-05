@@ -36,7 +36,8 @@ public class AutoPlaceMid extends CommandBase {
   public void initialize() {
     m_arm.setOveride(true);
     m_arm.setBreak(true);
-    m_arm.setArmPivotSetpoint(140);
+    //m_arm.setArmPivotSetpoint(112);
+    MoveArm.moveArm(m_arm, 112);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -54,6 +55,6 @@ public class AutoPlaceMid extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (m_timer.get() > TIME_OVERRIDE_SECS) || (Math.abs(m_arm.getArmPivotAbs()-m_arm.getArmPivotSetpoint())<1);
+    return (m_timer.get() > TIME_OVERRIDE_SECS); //|| (Math.abs(m_arm.getArmPivotAbs()-m_arm.getArmPivotSetpoint())<1);
   }
 }
