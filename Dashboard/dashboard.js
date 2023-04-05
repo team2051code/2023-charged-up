@@ -33,6 +33,7 @@ function ntLoaded() {
     }, true);
 
     // Auto mode
+    
      NetworkTables.addKeyListener('/SmartDashboard/autoname', (key, value, isNew) => {
        const AUTO_NAMES = ["place/drive straight", "stop", "autobalance"];
        const nameString = value > AUTO_NAMES.length ? value : AUTO_NAMES[value-1];
@@ -94,6 +95,18 @@ function ntLoaded() {
             }
 
         }, true)
+    }
+
+
+    //Y = M * X + B
+    //B = -M * -X + Y
+    //M = (Y2 - Y1)/(X2 - X1)
+    function pointSlope(robotY, expectedY, robotX, expectedX) {
+        let slope = (expectedY-robotY)/(expectedX-robotX);
+        console.log("slope of", slope);
+
+        let yIntercept = (-slope * - expectedX) + expectedY; 
+        console.log("offset of", yIntercept);
     }
 
 

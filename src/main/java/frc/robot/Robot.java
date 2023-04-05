@@ -513,7 +513,7 @@ public class Robot extends TimedRobot {
     //     m_arm.incrementExtenderSetpoint(-m_ArmController.getRightY()*5);
     // }
 
-    if(!m_arm.getOveride()){
+    if(!m_arm.getOverride()){
       if(-m_ArmController.getRawAxis(1)<0.25 && -m_ArmController.getRawAxis(1)>-0.25){
         m_arm.openBrake(false);
         m_arm.setArmPivotSetpoint(m_arm.getArmPivotAbs());
