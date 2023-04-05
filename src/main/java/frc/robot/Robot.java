@@ -322,9 +322,9 @@ public class Robot extends TimedRobot {
     }    else if (autoname == 3 /* autobalance */){
       System.out.println("Autobalance scheduled");
       autoprogram = new SequentialCommandGroup(
-       // new AutoPlaceMid(m_arm),
-        //new Delay(0.5),
-        //new Retract(m_arm),
+        new AutoPlaceMid(m_arm),
+        new Delay(0.5),
+        new Retract(m_arm),
         new DriveLinear(-1.45,m_drive,0.7),
         BalanceFactory.balance(m_drive,m_arm)
       );
@@ -522,7 +522,7 @@ public class Robot extends TimedRobot {
     if(!m_arm.getOveride()){
       if(-m_ArmController.getRawAxis(1)<0.25 && -m_ArmController.getRawAxis(1)>-0.25){
         m_arm.setBreak(false);
-        //m_arm.setArmPivotSetpoint(m_arm.getArmPivotAbs());
+        m_arm.setArmPivotSetpoint(m_arm.getArmPivotAbs());
       }else{
         m_arm.setBreak(true);
         m_arm.incrementArmPivotSetpoint(-m_ArmController.getRawAxis(1) * 60);

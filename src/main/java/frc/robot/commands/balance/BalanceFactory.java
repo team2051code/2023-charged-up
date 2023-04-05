@@ -10,7 +10,7 @@ import frc.robot.subsystems.DriveSubsystem;
 
 public class BalanceFactory {
     public static final Command balance(DriveSubsystem drive, ArmSubsystem arm){
-        Command armMoves = new SequentialCommandGroup(new Arm90(arm));
+        Command armMoves = new SequentialCommandGroup(new ArmTarget(arm,90));
         Command offRamp = new SequentialCommandGroup(
         new DriveLinear(0.25, drive),
         new OffRamp(drive),

@@ -52,7 +52,7 @@ public class OnRamp extends CommandBase {
     m_drive.autoBrake(false);
     Command seekBalance = 
     new SequentialCommandGroup(
-      new SeekBalance(m_drive, m_drive.getLeftEncoder()),
+      new SeekBalance(m_drive, m_drive.getLeftEncoder()-0.42),
       new HoldPosition(m_drive)
     );
     CommandScheduler.getInstance().schedule(seekBalance);

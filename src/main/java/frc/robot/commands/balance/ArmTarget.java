@@ -4,6 +4,7 @@
 
 package frc.robot.commands.balance;
 
+import frc.robot.commands.MoveArm;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj.Timer;
@@ -11,18 +12,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
-public class Arm90 extends CommandBase {
+public class ArmTarget extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final ArmSubsystem m_arm;
   private static final double TIME_OVERRIDE_SECS = 3.0;
+  private double m_setpoint;
   private Timer m_timer = new Timer();
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public Arm90(ArmSubsystem subsystem) {
+  public ArmTarget(ArmSubsystem subsystem,double targetAngle) {
     m_arm = subsystem;
+    m_setpoint = targetAngle;
     // Use addRequirements() here to declare subsystem dependencies.
     // addRequirements(subsystem);
   }
@@ -32,7 +35,7 @@ public class Arm90 extends CommandBase {
   public void initialize() {
     m_arm.setOveride(true);
     m_arm.setBreak(true);
-    m_arm.setArmPivotSetpoint(90);
+    MoveArm.moveArm(m_arm,m_setpoint);
     // Start a timer to hold the command to a few-second window
     m_timer.reset();
     m_timer.start();

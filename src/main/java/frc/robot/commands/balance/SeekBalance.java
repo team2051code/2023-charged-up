@@ -30,7 +30,7 @@ public class SeekBalance extends CommandBase {
    */
   public SeekBalance(DriveSubsystem subsystem,double target) {
     m_drive = subsystem;
-    m_target = target - 0.82;
+    m_target = target;
     m_timer.start();
     // Use addRequirements() here to declare subsystem dependencies.
     //addRequirements(subsystem);
@@ -40,6 +40,7 @@ public class SeekBalance extends CommandBase {
   @Override
   public void initialize() {
     SmartDashboard.putBoolean("Commands/SeekBalance", true);
+    SmartDashboard.putNumber("Commands/SeekBalanceTarget", m_target);
     m_drive.setAutoDrive(true);
     m_drive.autoBrake(true);
   }
@@ -47,7 +48,7 @@ public class SeekBalance extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    SmartDashboard.putNumber("Commands/", m_target)
+    SmartDashboard.putNumber("Commands/SeekBalanceEnc", m_drive.getLeftEncoder());
     if(m_drive.getLeftEncoder() > m_target+.25)
       m_drive.autoDrive(-0.3,-0.3);
     else if(m_drive.getLeftEncoder() < m_target-.25)

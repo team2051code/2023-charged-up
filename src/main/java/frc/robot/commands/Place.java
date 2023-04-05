@@ -89,11 +89,11 @@ public class Place extends CommandBase {
         if(level == DriveToScore.Level.BOTTOM)
         {
           //theta = Units.radiansToDegrees(Math.atan((16+30)/24.0));
-          m_arm.setExtenderSetpoint(21.7);
+          m_arm.setExtenderSetpoint(12.1);
           
          //m_arm.setArmPivotSetpoint(67.5);
-         MoveArm.moveArm(m_arm, 67.5);
-          m_arm.setGripperPivotSetpoint(217);
+         MoveArm.moveArm(m_arm, 60);
+          m_arm.setGripperPivotSetpoint(201.3);
           //m_arm.toggleGripper();
         }
         else if(level == DriveToScore.Level.MIDDLE)
@@ -149,10 +149,10 @@ public class Place extends CommandBase {
       if(level == DriveToScore.Level.BOTTOM)
       {
         //theta = 360-Units.radiansToDegrees(Math.atan((16+30)/24.0));
-        m_arm.setExtenderSetpoint(21.7);
+        m_arm.setExtenderSetpoint(12.1);
        // m_arm.setArmPivotSetpoint(360-67.5);
-       MoveArm.moveArm(m_arm, 360-67.5); 
-       m_arm.setGripperPivotSetpoint(360-217);
+       MoveArm.moveArm(m_arm, 360-60); 
+       m_arm.setGripperPivotSetpoint(360-201.3);
         //m_arm.toggleGripper();
       }
       else if(level == DriveToScore.Level.MIDDLE)
