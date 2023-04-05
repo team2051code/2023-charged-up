@@ -37,8 +37,8 @@ public class Grab extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_arm.setOveride(true);
-    m_arm.setBreak(true);
+    m_arm.setOverride(true);
+    m_arm.openBrake(true);
     //double theta = 0;
     m_timer.reset();
     m_timer.start();
@@ -73,8 +73,8 @@ public class Grab extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_arm.setOveride(false);
-    m_arm.setBreak(false);
+    m_arm.setOverride(false);
+    m_arm.openBrake(false);
     // Retract retract = new Retract(m_arm);
     // CommandScheduler.getInstance().schedule(retract);
   }

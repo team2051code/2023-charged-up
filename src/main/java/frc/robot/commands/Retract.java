@@ -5,7 +5,6 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.ArmSubsystem.IntakeMode;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -32,8 +31,8 @@ public class Retract extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_arm.setOveride(true);
-    m_arm.setBreak(true);
+    m_arm.setOverride(true);
+    m_arm.openBrake(true);
     m_arm.setExtenderSetpoint(3);
     // m_arm.setArmPivotSetpoint(180);
     MoveArm.moveArm(m_arm, 180);
@@ -60,8 +59,8 @@ public class Retract extends CommandBase {
     SmartDashboard.putString("Retract/stage", "done");
     m_arm.setGripperPivotSetpoint(180);
     m_arm.setIntakeMode(IntakeMode.SLOW);
-    m_arm.setBreak(false);
-    m_arm.setOveride(false);
+    m_arm.openBrake(false);
+    m_arm.setOverride(false);
     m_timer.stop();
   }
 

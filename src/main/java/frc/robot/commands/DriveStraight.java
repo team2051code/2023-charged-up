@@ -65,8 +65,8 @@ public class DriveStraight extends CommandBase {
     SmartDashboard.setDefaultNumber("DriveStraight/Setpoint", SPEED_M_S);
     SmartDashboard.setPersistent("DriveStraight/Setpoint");
 
-    m_arm.setOveride(true);
-    m_arm.setBreak(true);
+    m_arm.setOverride(true);
+    m_arm.openBrake(true);
     m_arm.setArmPivotSetpoint(90);
     //m_left = new PIDController(SmartDashboard.getNumber("DriveStraight/PVal", kPDriveVal), kIDriveVal, kDDriveVal);
     m_left = new PIDController(kPDriveVal, kIDriveVal, kDDriveVal);
@@ -90,8 +90,8 @@ public class DriveStraight extends CommandBase {
   public void execute() {
 
     if(Math.abs(m_arm.getArmPivotAbs()-m_arm.getArmPivotSetpoint())<1){
-      m_arm.setBreak(false);
-      m_arm.setOveride(false);
+      m_arm.openBrake(false);
+      m_arm.setOverride(false);
     }
     //Sets initial values
     SmartDashboard.putNumber("DriveStraight/read setpoint", m_left.getSetpoint());
