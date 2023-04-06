@@ -20,13 +20,13 @@ a {
 /*Camera styles/////Camera styles/////Camera styles/////Camera styles/////*/
 #cameraOut {
     object-fit: scale-down;
-    font-size: 10rem; 
+    font-size: 5rem; 
     height: 370px;
     width: 587px;
     top: 0px;
     left: 0px;
     position: absolute;
-    transform: scale(2.5);
+    transform: scale(3);
 }
 
 #canvas {
@@ -45,7 +45,8 @@ button {
 
 #cam {
     position: absolute;
-    top: 350px;
+    top: -30px;
+    left: 70px;
 }
 
 /*FRC webcomponents styles/////FRC webcomponents styles/////FRC webcomponents styles/////*/
