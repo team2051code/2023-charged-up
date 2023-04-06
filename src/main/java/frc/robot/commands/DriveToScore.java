@@ -6,6 +6,7 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -20,7 +21,12 @@ public class DriveToScore extends CommandBase{
     double yOffset;
     PhotonCamera camera1;
     boolean finished = false;
-    boolean scheduled = false;
+    boolean perpendicular = false;
+    double pidP = 0;
+    double pidI = 0;
+    double pidD = 0;
+    PIDController leftPID;
+    PIDController rightPID;
     Pod pod;
     int id = 0;
     public DriveToScore(DriveSubsystem subsystem, PhotonCamera camera)
@@ -69,35 +75,17 @@ public class DriveToScore extends CommandBase{
     public enum Level{TOP, MIDDLE, BOTTOM}
     @Override
     public void initialize() {
-        if (!scheduled)
-        {
-        FollowRamsete ramsete = new FollowRamsete(m_drive);
+        leftPID = new PIDController(pidP, pidI, pidD);
+        rightPID = new PIDController(pidP, pidI, pidD);
         PhotonPipelineResult result = camera1.getLatestResult();
         List<PhotonTrackedTarget> targets = result.getTargets();
-        for (PhotonTrackedTarget target: targets)
-        {
-            int targetId = target.getFiducialId();
-            if (targetId == 0)
-            {
-                Transform3d transform = target.getBestCameraToTarget();
-                double xValue = transform.getX();
-                double yValue = transform.getY();
-                Command command = ramsete.ramsetePose(new Pose2d(0, 0, new Rotation2d(0)), List.of(), new Pose2d(xValue + xOffset, yValue + yOffset, new Rotation2d(-target.getSkew())));
-                command = command.andThen(()-> finished = true);
-                CommandScheduler.getInstance().schedule(command);
-                scheduled = true;
-            }
-        }
-        }
     }
     @Override
     public void execute()
     {
-        if (!scheduled)
-        {
-        FollowRamsete ramsete = new FollowRamsete(m_drive);
         PhotonPipelineResult result = camera1.getLatestResult();
         List<PhotonTrackedTarget> targets = result.getTargets();
+        boolean parallel = false;
         for (PhotonTrackedTarget target: targets)
         {
             int targetId = target.getFiducialId();
@@ -106,14 +94,58 @@ public class DriveToScore extends CommandBase{
                 Transform3d transform = target.getBestCameraToTarget();
                 double xValue = transform.getX();
                 double yValue = transform.getY();
-                double angleDeg = Math.atan(yValue / xValue) * 180 / Math.PI;;
-                Command command = ramsete.ramsetePose(new Pose2d(0, 0, new Rotation2d(0)), List.of(), new Pose2d(xValue + xOffset, yValue + yOffset, new Rotation2d(-angleDeg)));
-                command = command.andThen(()-> finished = true);
-                CommandScheduler.getInstance().schedule(command);
-                scheduled = true;
+                double angleDeg = Math.atan(yValue / xValue) * 180 / Math.PI;
+                perpendicular = goPerpendicular(angleDeg);
+                double horizontalDistance = target.getYaw();
+                if (perpendicular && yValue >= 0)
+                {
+                    m_drive.tankDrive(1, 1);
+                }
+                else if (yValue < 0)
+                {
+                   parallel = goParrallel(angleDeg);
+                }
+                if (parallel && xValue > xOffset)
+                {
+                    m_drive.tankDriveVolts(5, 5);
+                }
+                else
+                {
+                    m_drive.tankDriveVolts(0, 0);
+                }
             }
+        double leftVelocity = leftPID.calculate(m_drive.getWheelSpeeds().leftMetersPerSecond);
+        double rightVelocity = rightPID.calculate(m_drive.getWheelSpeeds().rightMetersPerSecond);
+        m_drive.tankDrive(leftVelocity, rightVelocity);
         }
+    }
+    public boolean goPerpendicular(double angleDeg)
+    {
+        if (angleDeg > 0 && angleDeg < 89)
+        {
+            m_drive.tankDriveVolts(5, 0);
+            return false;
         }
+        else if (angleDeg < 0 && angleDeg > -89)
+        {
+            m_drive.tankDriveVolts(0, 5);
+            return false;
+        }
+        return true;
+    }
+    public boolean goParrallel(double angleDeg)
+    {
+        if (angleDeg > 1)
+        {
+            m_drive.tankDriveVolts(5, 0);
+            return false;
+        }
+        if (angleDeg < -1)
+        {
+            m_drive.tankDriveVolts(0, 5);
+            return false;
+        }
+        return true;
     }
     @Override
     public boolean isFinished() {
