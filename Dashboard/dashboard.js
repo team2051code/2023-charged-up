@@ -33,6 +33,7 @@ function ntLoaded() {
     }, true);
 
     // Auto mode
+    
      NetworkTables.addKeyListener('/SmartDashboard/autoname', (key, value, isNew) => {
        const AUTO_NAMES = ["place/drive straight", "stop", "autobalance"];
        const nameString = value > AUTO_NAMES.length ? value : AUTO_NAMES[value-1];
@@ -55,6 +56,21 @@ function ntLoaded() {
         }        
 
         if (value % 5 == 0 && value <= 30 && !soundPlayed){
+            console.log('audio');
+            document.getElementById("soundTest").play();  
+            soundPlayed = true;          
+        }
+        else if (value % 5 == 0 && value <= 64 && value >= 56  && !soundPlayed){
+            console.log('audio');
+            document.getElementById("soundTest").play();  
+            soundPlayed = true;          
+        }
+        else if (value % 5 == 0 && value <= 94 && value >= 86  && !soundPlayed){
+            console.log('audio');
+            document.getElementById("soundTest").play();  
+            soundPlayed = true;          
+        }
+        else if (value % 5 == 0 && value <= 124 && value >= 116  && !soundPlayed){
             console.log('audio');
             document.getElementById("soundTest").play();  
             soundPlayed = true;          
@@ -94,6 +110,18 @@ function ntLoaded() {
             }
 
         }, true)
+    }
+
+
+    //Y = M * X + B
+    //B = -M * -X + Y
+    //M = (Y2 - Y1)/(X2 - X1)
+    function pointSlope(robotY, expectedY, robotX, expectedX) {
+        let slope = (expectedY-robotY)/(expectedX-robotX);
+        console.log("slope of", slope);
+
+        let yIntercept = (-slope * - expectedX) + expectedY; 
+        console.log("offset of", yIntercept);
     }
 
 
