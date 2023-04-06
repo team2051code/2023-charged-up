@@ -55,9 +55,9 @@ function ntLoaded() {
         }        
 
         if (value % 5 == 0 && value <= 30 && !soundPlayed){
-                console.log('audio');
-                document.getElementById("soundTest").play();  
-                soundPlayed = true;          
+            console.log('audio');
+            document.getElementById("soundTest").play();  
+            soundPlayed = true;          
         }
         else if (value % 5 == 4) {
             soundPlayed = false;

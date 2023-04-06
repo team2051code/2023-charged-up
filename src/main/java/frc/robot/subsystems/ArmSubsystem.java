@@ -69,7 +69,6 @@ public class ArmSubsystem extends SubsystemBase {
     private boolean m_hasPiece = false;
     private VelocityFilter m_armVelocityFilter = new VelocityFilter();
     private boolean m_isGripperFlipped;
-    private int m_brake = 0;
 
     private enum Quadrant {
         Q1, Q2, Q3, Q4
@@ -346,11 +345,6 @@ public class ArmSubsystem extends SubsystemBase {
             
             SmartDashboard.putBoolean("isGripperFlipped", m_isGripperFlipped);
 
-            if(m_brake == 0)
-                m_brakeSolenoid.set(true);
-            else
-                m_brakeSolenoid.set(false);
-
             break;
         }
 
@@ -560,13 +554,6 @@ public class ArmSubsystem extends SubsystemBase {
             return false;
         else
             return true;
-    }
-
-    public void toggleBrake() {
-        if(m_brake != 0)
-            m_brake--;
-        else
-            m_brake++;
     }
 
     public void openBrake(boolean brake) {

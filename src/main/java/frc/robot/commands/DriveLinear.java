@@ -48,7 +48,7 @@ public class DriveLinear extends CommandBase {
     }
 
     public double getEncoder(){
-        return m_drive.getRightEncoder()*((Math.PI*6)/53.213);
+        return m_drive.getRightEncoder()*((Math.PI*6)/(53.213));
     }
     @Override
     public boolean isFinished(){

@@ -5,9 +5,14 @@
 package frc.robot.commands.balance;
 
 import frc.robot.commands.DriveLinear;
+import frc.robot.commands.DriveToScore.Offset;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -18,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 public class OnRamp extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final DriveSubsystem m_drive;
+  private double m_offset;
 
   /**
    * Creates a new ExampleCommand.
@@ -36,6 +42,11 @@ public class OnRamp extends CommandBase {
     SmartDashboard.putBoolean("Commands/OnRamp", true);
     m_drive.setAutoDrive(true);
     m_drive.autoBrake(true);
+    if(DriverStation.getAlliance() == Alliance.Red)//if the field is red
+      m_offset = 0.4;
+    else
+      m_offset = 0.4;
+    SmartDashboard.putNumber("BalanceOffset", m_offset);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -52,7 +63,7 @@ public class OnRamp extends CommandBase {
     m_drive.autoBrake(false);
     Command seekBalance = 
     new SequentialCommandGroup(
-      new SeekBalance(m_drive, m_drive.getLeftEncoder()-0.42),
+      new SeekBalance(m_drive, m_drive.getLeftEncoder()-m_offset),
       new HoldPosition(m_drive)
     );
     CommandScheduler.getInstance().schedule(seekBalance);

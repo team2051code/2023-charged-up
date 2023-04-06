@@ -11,9 +11,6 @@ function cameraInit() {
     const cameraPorts = [1183, 1181];
     let currentCamera = 0;
 
-    NetworkTables.addKeyListener("/SmartDashboard/camera/camSwich", (key, value, isNew) => {
-        cameras[value]()
-    }, true);
 
     //22 is Shaolin Hand and 16 is Drill Handlespo Traffic Light (testing)
     // 18 is trauma and 20 is Dumb
@@ -44,13 +41,17 @@ function cameraInit() {
 
     var cameras = [frontCam, armCam, backCam];
 
+    NetworkTables.addKeyListener("/SmartDashboard/camera/camSwich", (key, value, isNew) => {
+        cameras[value]()
+    }, true);
+
     function setCameraPort(piIp, port) {
         const url = `http://10.20.51.${piIp}:${port}/stream.mjpg?1674930762001`;
         camerasource = url;
         document.getElementById("cameraOut").src = url;
     }
 
-    setCameraPort(piProtocols[3], cameraPorts[1]);
+    armCam()
 }
 
 //refreshes camera if not connected
@@ -76,10 +77,10 @@ function ntLoaded() {
     //filp camera output when the arm swiches sides && arm camera is selected
     NetworkTables.addKeyListener("/SmartDashboard/arm potentiometer", (key, value, isNew) => {
         if(value > 180 && document.getElementById("cameraOut").src == "http://10.20.51.18:1181/stream.mjpg?1674930762001") {
-            document.getElementById("cameraOut").style.transform = "rotate(180deg)"
+            document.getElementById("cameraOut").style.transform = "rotate(180deg); transform(2)"
         }
         else {
-            document.getElementById("cameraOut").style.transform = "rotate(0deg)"
+            document.getElementById("cameraOut").style.transform = "rotate(0deg); transform(2)"
         }
     }, true);
 

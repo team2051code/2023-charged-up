@@ -26,9 +26,7 @@ a {
     top: 0px;
     left: 0px;
     position: absolute;
-    transform: scale(2);
-
-    /*transform: rotate(180deg);*/
+    transform: scale(2.5);
 }
 
 #canvas {

@@ -316,8 +316,7 @@ public class Robot extends TimedRobot {
       System.out.println("Autobalance scheduled");
       autoprogram = new SequentialCommandGroup(
         new AutoPlaceMid(m_arm),
-        new Delay(0.5),
-        new Retract(m_arm),
+        new Delay(0.25),
         new DriveLinear(-1.45,m_drive,0.7),
         BalanceFactory.balance(m_drive,m_arm)
       );
@@ -339,6 +338,10 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     m_arm.setIntakeMode(IntakeMode.SLOW);
     CommandScheduler.getInstance().cancelAll();
+    m_LeftBack.setIdleMode(IdleMode.kCoast);
+    m_LeftFront.setIdleMode(IdleMode.kCoast);
+    m_RightBack.setIdleMode(IdleMode.kCoast);
+    m_RightFront.setIdleMode(IdleMode.kCoast);
     
     m_robotContainer.resetOdometry();
   }
@@ -513,11 +516,13 @@ public class Robot extends TimedRobot {
     //     m_arm.incrementExtenderSetpoint(-m_ArmController.getRightY()*5);
     // }
 
-    if(!m_arm.getOveride()){
+    if(!m_arm.getOverride()){
       if(-m_ArmController.getRawAxis(1)<0.25 && -m_ArmController.getRawAxis(1)>-0.25){
+        //when arm not moving
         m_arm.openBrake(false);
         m_arm.setArmPivotSetpoint(m_arm.getArmPivotAbs());
       }else{
+        //when moving arm
         m_arm.openBrake(true);
         m_arm.incrementArmPivotSetpoint(m_ArmController.getRawAxis(1) * 60);
       }
