@@ -1,7 +1,7 @@
 {
-  "Keyboard 0 Settings": {
+  "FMS": {
     "window": {
-      "visible": true
+      "visible": false
     }
   },
   "Keyboard 2 Settings": {
@@ -75,17 +75,20 @@
         }
       ],
       "axisCount": 2,
-      "buttonCount": 9,
+      "buttonCount": 12,
       "buttonKeys": [
-        65,
         -1,
-        68,
-        70,
-        71,
-        72,
-        74,
-        75,
-        76
+        -1,
+        -1,
+        55,
+        52,
+        49,
+        56,
+        53,
+        50,
+        57,
+        51,
+        54
       ],
       "povCount": 0
     },
@@ -97,14 +100,17 @@
   ],
   "robotJoysticks": [
     {
-      "guid": "Keyboard0"
+      "guid": "030000006d04000014c2000000000000"
     },
     {
       "guid": "78696e70757401000000000000000000",
       "useGamepad": true
     },
     {
-      "guid": "Keyboard2"
+      "guid": "03000000790000000600000000000000"
+    },
+    {
+      "useGamepad": true
     }
   ]
 }

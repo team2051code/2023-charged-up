@@ -8,42 +8,35 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.*;
+import frc.robot.commands.balance.BalanceFactory;
 import frc.robot.commands.DriveToScore.Level;
 import frc.robot.commands.DriveToScore.Offset;
 import frc.robot.components.LimitedMotor;
+import frc.robot.controls.ButtonLatch;
+import frc.robot.controls.JoystickTeleopDrive;
 import frc.robot.controls.TeleopDrive;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CompetitionDriveConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ArmSubsystem.IntakeMode;
-import frc.robot.subsystems.DriveSubsystem.Gear;
 import frc.robot.subsystems.simulated.CANSparkMaxSimulated;
 import frc.robot.subsystems.simulated.SimulatedEncoder;
-import edu.wpi.first.apriltag.AprilTag;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import javax.lang.model.util.ElementScanner14;
+import java.util.Vector;
 
 import org.photonvision.*;
-import org.photonvision.targeting.PhotonTrackedTarget;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -75,7 +68,6 @@ public class Robot extends TimedRobot {
   
   private RelativeEncoder m_leftEncoder;
   private RelativeEncoder m_rightEncoder;
-  //private final XboxController m_ArmController = new XboxController(CompetitionDriveConstants.XboxArmPort);
   private final Joystick m_ArmController = new Joystick(CompetitionDriveConstants.XboxArmPort);
   private final XboxController m_DriveController = new XboxController(CompetitionDriveConstants.XboxDrivePort);
   private final Joystick m_buttonPanel = new Joystick(CompetitionDriveConstants.joyStickPort);
@@ -109,10 +101,20 @@ public class Robot extends TimedRobot {
   private boolean m_autoBalanceButtonPressed;
   private boolean m_gearButtonPressed;
   private boolean m_intakeButtonPressed;
+  private double m_lastPivotPos = 10000;
   private DriveSubsystem m_drive;
   private Command m_teleopAutoBalance = null;
   private TeleopDrive m_filteredDriveController;
+  private JoystickTeleopDrive m_filteredDriveJoystick;
+  private Joystick m_DriveJoystick;
+  private ButtonLatch debugButton = new ButtonLatch(()->m_ArmController.getRawButton(8));
+  private Command m_PIDTest = null;
   public boolean dropOffMode = true;
+  private ButtonLatch m_gripperPivotForwardButton = new ButtonLatch(()->m_ArmController.getRawButton(6));
+  private ButtonLatch m_gripperPivotReverseButton = new ButtonLatch(()->m_ArmController.getRawButton(7));
+  private ButtonLatch m_cameraForwardButton = new ButtonLatch(()->m_DriveController.getPOV() == 90);
+  private ButtonLatch m_cameeraBackwardButton = new ButtonLatch(()->m_DriveController.getPOV() == 270);
+  private int m_cameraNumber = 0;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -148,7 +150,7 @@ public class Robot extends TimedRobot {
     m_left = new MotorControllerGroup(m_LeftFront, m_LeftBack);
     m_right = new MotorControllerGroup(m_RightFront, m_RightBack);
     SmartDashboard.putNumber("Distance", 0);
-    SmartDashboard.putNumber("Dead Time", 0);
+    SmartDashboard.putNumber("DriveStraight/DeadTime", 0);
     SmartDashboard.putNumber("Setpoint", 0);
     SmartDashboard.putNumber("PVal", 0);
     SmartDashboard.putNumber("BPVal", 0);
@@ -168,6 +170,7 @@ public class Robot extends TimedRobot {
     m_RightBack.setInverted(CompetitionDriveConstants.kRightMotorsReversed);
     m_RightFront.setInverted(CompetitionDriveConstants.kRightMotorsReversed);
 
+    //prevents motors using too much current from high load
     m_LeftBack.setSmartCurrentLimit(40);
     m_LeftFront.setSmartCurrentLimit(40);
     m_RightBack.setSmartCurrentLimit(40);
@@ -182,8 +185,20 @@ public class Robot extends TimedRobot {
     m_LeftFront.burnFlash();
     m_RightBack.burnFlash();
     m_RightFront.burnFlash();
+    Vector<CANSparkMax> motorAccess = new Vector<CANSparkMax>();
+    motorAccess.add(m_LeftBack);
+    motorAccess.add(m_LeftFront);
+    motorAccess.add(m_RightBack);
+    motorAccess.add(m_RightFront);
 
-    m_robotContainer = new RobotContainer(m_left, m_right, m_leftEncoder, m_rightEncoder, simulatedLeft, simulatedRight);
+    m_robotContainer = new RobotContainer(
+      motorAccess,
+      m_left, 
+      m_right, 
+      m_leftEncoder, 
+      m_rightEncoder, 
+      simulatedLeft, 
+      simulatedRight);
     m_arm = m_robotContainer.getArmSubsystem();
     m_drive = m_robotContainer.getDriveSubsystem();
     // m_camera = new PhotonCamera("Camera_A");
@@ -196,6 +211,8 @@ public class Robot extends TimedRobot {
     m_arm.setArmPivotSetpoint(180);
     m_arm.setExtenderSetpoint(3);
     m_arm.setGripperPivotSetpoint(180);
+    // if(m_arm.getGripperRotatorSetpoint() == 93)
+    //   m_arm.toggleGripperRotator();
 
     var modebutton = new JoystickButton(m_ArmController, 11);
     modebutton.onTrue(Commands.runOnce(() -> {
@@ -205,7 +222,9 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("autoname", 2);
 
     m_filteredDriveController = new TeleopDrive(m_drive, m_DriveController);
-
+    m_DriveJoystick = new Joystick(CompetitionDriveConstants.XboxDrivePort);
+    m_filteredDriveJoystick = new JoystickTeleopDrive(m_drive, m_DriveJoystick);
+    m_arm.setIntakeMode(IntakeMode.SLOW);
   }
 
   /**
@@ -230,34 +249,39 @@ public class Robot extends TimedRobot {
     if(m_buttonPanel.getRawButton(11)){
       SmartDashboard.putNumber("autoname", 3);
     }
+
     SmartDashboard.putNumber("right motor speed:", m_RightFront.get());
     SmartDashboard.putNumber("leftStick", m_DriveController.getLeftX());
+    SmartDashboard.putNumber("DPad", m_DriveController.getPOV());
+    SmartDashboard.putNumber("camera/camSwich", m_cameraNumber);
+    if (m_cameraForwardButton.wasPressed()) {
+      m_cameraNumber += 3;
+      m_cameraNumber++;
+      m_cameraNumber %= 3;
+    }
+    else if (m_cameeraBackwardButton.wasPressed()) {
+      m_cameraNumber += 3;
+      m_cameraNumber--;
+      m_cameraNumber %= 3;
+    }
+
+
     SmartDashboard.putBoolean("drop off mode", dropOffMode);
     SmartDashboard.putData("Commands", CommandScheduler.getInstance());
-    
     SmartDashboard.putNumber("Time", Timer.getMatchTime());
+
     
     CommandScheduler.getInstance().run();
-    // System.out.println(targets.size() + "targets found: ");
-    // if (targets.size() > 0)
-    // {
-    // for (PhotonTrackedTarget targety: targets)
-    // {
-    // double yaw = targety.getYaw();
-    // double pitch = targety.getPitch();
-    // double area = targety.getArea();
-    // double skew = targety.getSkew();
-    // int id = targety.getFiducialId();
-    // System.out.println("ID " + id + ": " + yaw + ", " + pitch + ", " + area + ",
-    // " + skew);
-    // }
-    // }
-
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
+    m_arm.setIntakeMode(IntakeMode.SLOW);
+    m_LeftBack.setIdleMode(IdleMode.kBrake);
+    m_LeftFront.setIdleMode(IdleMode.kBrake);
+    m_RightBack.setIdleMode(IdleMode.kBrake);
+    m_RightFront.setIdleMode(IdleMode.kBrake);
   }
 
   @Override
@@ -270,10 +294,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    m_arm.setIntakeMode(IntakeMode.SLOW);
     Command autoprogram = null;
     // m_trajectory = m_robotContainer.getTrajectories();
     //m_balanceCommand = m_robotContainer.getBalanceCommand();
-    autoprogram = m_robotContainer.getRamseteCommand();
+    //autoprogram = m_robotContainer.getRamseteCommand();
     // Command drive = m_robotContainer.getTrajectories();
     // schedule the autonomous command (example)
     // if(m_trajectory != null)
@@ -284,25 +309,39 @@ public class Robot extends TimedRobot {
     
     if (autoname == 1 /* driveforward */){
       System.out.println("Drive forward scheduled");
-      autoprogram = new AutoPlaceMid(m_arm,m_drive);
+      autoprogram = new SequentialCommandGroup( new AutoPlaceMid(m_arm)
+      //new DriveLinear(Units.feetToMeters(-5), m_drive)
+      );
     }    else if (autoname == 3 /* autobalance */){
       System.out.println("Autobalance scheduled");
-      autoprogram = new DriveStraight(m_drive);
+      autoprogram = new SequentialCommandGroup(
+        new AutoPlaceMid(m_arm),
+        new Delay(0.25),
+        new DriveLinear(-1.45,m_drive,0.7),
+        BalanceFactory.balance(m_drive,m_arm)
+      );
     }
 
     if (autoprogram != null) {
       CommandScheduler.getInstance().schedule(autoprogram);
     }
+
+    
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-   SmartDashboard.putData("command", CommandScheduler.getInstance());
   }
+
   @Override
   public void teleopInit() {
+    m_arm.setIntakeMode(IntakeMode.SLOW);
     CommandScheduler.getInstance().cancelAll();
+    m_LeftBack.setIdleMode(IdleMode.kCoast);
+    m_LeftFront.setIdleMode(IdleMode.kCoast);
+    m_RightBack.setIdleMode(IdleMode.kCoast);
+    m_RightFront.setIdleMode(IdleMode.kCoast);
     
     m_robotContainer.resetOdometry();
   }
@@ -311,7 +350,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-  
+    
 
     handleButtonBoard();
 
@@ -321,15 +360,48 @@ public class Robot extends TimedRobot {
     // -m_driverController.getLeftX()/1.5);
 
     m_filteredDriveController.update();
+    //m_filteredDriveJoystick.update();
+
+    // if(m_DriveJoystick.getRawButton(2)){
+    //   m_LeftBack.setIdleMode(IdleMode.kBrake);
+    //   m_LeftFront.setIdleMode(IdleMode.kBrake);
+    //   m_RightBack.setIdleMode(IdleMode.kBrake);
+    //   m_RightFront.setIdleMode(IdleMode.kBrake);
+    // }else{
+    //   m_LeftBack.setIdleMode(IdleMode.kCoast);
+    //   m_LeftFront.setIdleMode(IdleMode.kCoast);
+    //   m_RightBack.setIdleMode(IdleMode.kCoast);
+    //   m_RightFront.setIdleMode(IdleMode.kCoast);
+    // }
+
+    m_drive.setBrake(m_DriveController.getRightBumper());
 
     SmartDashboard.putBoolean("Gear", m_drive.getGear());
 
-    if(m_DriveController.getXButton() && !m_gearButtonPressed){
-      m_drive.toggleGear();
-    }
+    // if(m_DriveJoystick.getRawButton(8)&&!m_autoBalanceButtonPressed){
+    //   if(m_teleopAutoBalance == null){
+    //     m_teleopAutoBalance = new DriveStraight(m_drive,m_arm);
+    //     CommandScheduler.getInstance().schedule(m_teleopAutoBalance);
+    //   }else{
+    //     m_teleopAutoBalance.cancel();
+    //     m_teleopAutoBalance = null;
+    //   }
 
-    m_gearButtonPressed = m_DriveController.getXButton();
-  
+    // }
+    // m_autoBalanceButtonPressed = m_DriveJoystick.getRawButton(8);
+      
+    if(m_DriveController.getXButton()&&!m_autoBalanceButtonPressed){
+      if(m_teleopAutoBalance == null){
+        m_teleopAutoBalance = BalanceFactory.balance(m_drive,m_arm);
+        CommandScheduler.getInstance().schedule(m_teleopAutoBalance);
+      }else{
+        CommandScheduler.getInstance().cancelAll();
+        m_teleopAutoBalance = null;
+      }
+    }
+    m_autoBalanceButtonPressed = m_DriveController.getXButton();
+
+
     //gripper pivot controller
     // if (m_ArmController.getXButton()) {
     //   m_arm.incrementGripperPivotSetpoint(-20);
@@ -382,26 +454,38 @@ public class Robot extends TimedRobot {
     //}
 
     m_intakeButtonPressed = m_ArmController.getRawButton(7);
-    if(!m_arm.getOveride())
-     m_arm.setGripperPivotSetpoint(-m_ArmController.getRawAxis(2)*45 + 180);
-    if(m_ArmController.getRawButton(8)&&!m_autoBalanceButtonPressed){
-      if(m_teleopAutoBalance == null){
-        m_teleopAutoBalance = new Balance(m_drive);
-        CommandScheduler.getInstance().schedule(m_teleopAutoBalance);
-      }else{
-        m_teleopAutoBalance.cancel();
-        m_teleopAutoBalance = null;
-      }
 
-    }
-    m_autoBalanceButtonPressed = m_ArmController.getRawButton(8);
+    if(m_ArmController.getRawButton(6))
+      m_arm.incrementGripperPivotSetpoint(10);
+    if(m_ArmController.getRawButton(7))
+      m_arm.incrementGripperPivotSetpoint(-10);
+    // if(!m_arm.getOveride() && m_ArmController.getRawAxis(2) != m_lastPivotPos)
+    //  m_arm.setGripperPivotSetpoint(-m_ArmController.getRawAxis(2)*45 + 180);
+
+  
+    //m_lastPivotPos = m_ArmController.getRawAxis(2);
     SmartDashboard.putBoolean("TeleopBalance", m_teleopAutoBalance == null);
 
+     if(debugButton.wasPressed())
+     {
+      if(m_PIDTest == null)
+      {
+        m_PIDTest = new PIDTest(m_arm);
+        CommandScheduler.getInstance().schedule(m_PIDTest);
+      }else
+      {
+        CommandScheduler.getInstance().cancel(m_PIDTest);
+        m_PIDTest = null;
+      }
+     }
 
-    if(m_ArmController.getRawButton(6) && !m_gripperRotatorButtonPressed)
+    if(m_ArmController.getRawButton(9) && !m_gripperRotatorButtonPressed)
+    {
       m_arm.toggleGripperRotator();
-    
-    m_gripperRotatorButtonPressed = m_ArmController.getRawButton(6);
+    }
+        
+    m_gripperRotatorButtonPressed = m_ArmController.getRawButton(9);
+    SmartDashboard.putBoolean("RotatorButtonPressed", m_gripperRotatorButtonPressed);
     // if (m_ArmController.getBButton()) {
     //   m_arm.toggleGripper();
     // }
@@ -432,13 +516,15 @@ public class Robot extends TimedRobot {
     //     m_arm.incrementExtenderSetpoint(-m_ArmController.getRightY()*5);
     // }
 
-    if(!m_arm.getOveride()){
+    if(!m_arm.getOverride()){
       if(-m_ArmController.getRawAxis(1)<0.25 && -m_ArmController.getRawAxis(1)>-0.25){
-        m_arm.setBreak(false);
+        //when arm not moving
+        m_arm.openBrake(false);
         m_arm.setArmPivotSetpoint(m_arm.getArmPivotAbs());
       }else{
-        m_arm.setBreak(true);
-        m_arm.incrementArmPivotSetpoint(-m_ArmController.getRawAxis(1) * 60);
+        //when moving arm
+        m_arm.openBrake(true);
+        m_arm.incrementArmPivotSetpoint(m_ArmController.getRawAxis(1) * 60);
       }
       if(m_ArmController.getRawButton(1)){
         m_arm.incrementExtenderSetpoint(15);
@@ -446,17 +532,7 @@ public class Robot extends TimedRobot {
         m_arm.incrementExtenderSetpoint(-15);
     }
 
-    if(m_DriveController.getRightBumper()){
-      m_LeftBack.setIdleMode(IdleMode.kBrake);
-      m_LeftFront.setIdleMode(IdleMode.kBrake);
-      m_RightBack.setIdleMode(IdleMode.kBrake);
-      m_RightFront.setIdleMode(IdleMode.kBrake);
-    }else{
-      m_LeftBack.setIdleMode(IdleMode.kCoast);
-      m_LeftFront.setIdleMode(IdleMode.kCoast);
-      m_RightBack.setIdleMode(IdleMode.kCoast);
-      m_RightFront.setIdleMode(IdleMode.kCoast);
-    }
+    
 
     //from bottom left: down-up left-right
   }
@@ -476,7 +552,8 @@ public class Robot extends TimedRobot {
       scorePiece(Level.TOP, Offset.RIGHT,true);
     }
     if (boardButton == 2){
-      Retract retract = new Retract(m_arm);
+      CommandScheduler.getInstance().cancelAll();
+      Command retract = new Retract(m_arm);
       CommandScheduler.getInstance().schedule(retract);
     }
     if (boardButton == 3){
@@ -504,6 +581,7 @@ public class Robot extends TimedRobot {
   }
   
   private void grabPiece(boolean frontSide){
+    CommandScheduler.getInstance().cancelAll();
     Grab grab = new Grab(m_arm, frontSide);
     CommandScheduler.getInstance().schedule(grab);
   }
@@ -519,6 +597,7 @@ public class Robot extends TimedRobot {
   }
 
   private void scorePiece(DriveToScore.Level level, DriveToScore.Offset offset,boolean frontSide){
+    CommandScheduler.getInstance().cancelAll();
     Place highPlace = new Place(m_arm, level, false, frontSide, 0); //is a cube and facing forwards //p = 1 and d = 0.5 works well
     CommandScheduler.getInstance().schedule(highPlace);
   }
@@ -535,4 +614,5 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {
   }
+
 }

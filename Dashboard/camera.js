@@ -3,23 +3,14 @@ console.log("javaScrript has loaded");
 toggleCam = () => console.log("toggleCam");
 togglePi = () => console.log("togglePi");
 camerasource = "";
-
-setTimeout(() => {
-    document.getElementById("cameraOut").addEventListener("error", () => {
-        setTimeout(() => {
-            document.getElementById("cameraOut").src = camerasource;
-            console.log("cameraReload");
-        }, 5000);
-
-    });
-    document.getElementById("cameraOut").src = camerasource;
-}, 1000);
+var funcCycle = 0;
 
 function cameraInit() {
 
-    //code for the buttons to toggle between pis
+    //code for the button to toggle between cams
     const cameraPorts = [1183, 1181];
     let currentCamera = 0;
+
 
     //22 is Shaolin Hand and 16 is Drill Handlespo Traffic Light (testing)
     // 18 is trauma and 20 is Dumb
@@ -30,6 +21,7 @@ function cameraInit() {
         const piIp = piProtocols[3];
         const port = cameraPorts[0];
         setCameraPort(piIp, port);
+        document.getElementById("cam").innerHTML = "front";
     }
 
     //if protocol/port need changed tweak url in ntLoaded
@@ -37,13 +29,21 @@ function cameraInit() {
         const piIp = piProtocols[3];
         const port = cameraPorts[1];
         setCameraPort(piIp, port);
+        document.getElementById("cam").innerHTML = "arm";
     }
 
     backCam = () => {
         const piIp = piProtocols[1];
         const port = cameraPorts[0];
         setCameraPort(piIp, port);
+        document.getElementById("cam").innerHTML = "back";
     }
+
+    var cameras = [frontCam, armCam, backCam];
+
+    NetworkTables.addKeyListener("/SmartDashboard/camera/camSwich", (key, value, isNew) => {
+        cameras[value]()
+    }, true);
 
     function setCameraPort(piIp, port) {
         const url = `http://10.20.51.${piIp}:${port}/stream.mjpg?1674930762001`;
@@ -51,8 +51,20 @@ function cameraInit() {
         document.getElementById("cameraOut").src = url;
     }
 
-    setCameraPort(piProtocols[3], cameraPorts[1]);
+    armCam()
 }
+
+//refreshes camera if not connected
+setTimeout(() => {
+    document.getElementById("cameraOut").addEventListener("error", () => {
+        setTimeout(() => {
+            document.getElementById("cameraOut").src = camerasource;
+        }, 5000);
+
+    });
+    document.getElementById("cameraOut").src = camerasource;
+}, 1000);
+
 
 //temporary to make drawing faster
 function locateCursor(event) {
@@ -61,13 +73,14 @@ function locateCursor(event) {
 }
 
 function ntLoaded() {
+    console.log("network tables");
     //filp camera output when the arm swiches sides && arm camera is selected
     NetworkTables.addKeyListener("/SmartDashboard/arm potentiometer", (key, value, isNew) => {
         if(value > 180 && document.getElementById("cameraOut").src == "http://10.20.51.18:1181/stream.mjpg?1674930762001") {
-            document.getElementById("cameraOut").style.transform = "rotate(180deg) scale(2)"
+            document.getElementById("cameraOut").style.transform = "rotate(180deg); transform(2)"
         }
         else {
-            document.getElementById("cameraOut").style.transform = "rotate(0deg) scale(2)"
+            document.getElementById("cameraOut").style.transform = "rotate(0deg); transform(2)"
         }
     }, true);
 

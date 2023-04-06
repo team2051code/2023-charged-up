@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import java.security.Key;
+import java.util.Vector;
 
 import javax.crypto.spec.PBEParameterSpec;
 
@@ -11,7 +12,9 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -34,6 +37,7 @@ import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.components.LimitedMotor;
 import frc.robot.subsystems.simulated.CANSparkMaxSimulated;
 import frc.robot.subsystems.simulated.PoseEstimator;
 import frc.robot.subsystems.simulated.SimpleSimulatedChassis;
@@ -48,6 +52,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   public enum Gear{LOW, HIGH};
   // The motors on the left side of the drive.
+  private final Vector<CANSparkMax> m_motorAccess;
 
   private final MotorControllerGroup m_leftMotors;
   // The motors on the right side of the drive.
@@ -63,6 +68,7 @@ public class DriveSubsystem extends SubsystemBase {
   private PoseEstimator poseEstimator;
   private Field2d simPose;
   private SimVisionTarget target1;
+  private boolean m_autoDriving = false;
   // The robot's drive
 
   // The left-side drive encoder
@@ -86,9 +92,19 @@ public class DriveSubsystem extends SubsystemBase {
   private SimVisionSystem simulatedVision;
   // Odometry class for tracking robot pose
   private final DifferentialDriveOdometry m_odometry;
+  private LinearFilter m_gyroFilter = LinearFilter.movingAverage(20);
+  private double m_filteredY;
 
   /** Creates a new DriveSubsystem. */
-  public DriveSubsystem(MotorControllerGroup left, MotorControllerGroup right, RelativeEncoder leftEncode, RelativeEncoder rightEncode, CANSparkMaxSimulated leftSimulatedMotor, CANSparkMaxSimulated rightSimulatedMotor) {
+  public DriveSubsystem(
+    Vector<CANSparkMax> motorAccess,
+    MotorControllerGroup left, 
+    MotorControllerGroup right, 
+    RelativeEncoder leftEncode, 
+    RelativeEncoder rightEncode, 
+    CANSparkMaxSimulated leftSimulatedMotor, 
+    CANSparkMaxSimulated rightSimulatedMotor) {
+      m_motorAccess = motorAccess;
     if (RobotBase.isSimulation())
     {
       m_gyro = new SimulatedGyro();
@@ -108,10 +124,11 @@ public class DriveSubsystem extends SubsystemBase {
     m_rightEncoder.setVelocityConversionFactor(CompetitionDriveConstants.kLinearDistanceConversionFactor / 60);
     m_leftMotors = left;
     m_rightMotors = right;
-    m_gearSolenoid = new Solenoid(PneumaticsModuleType.REVPH, CompetitionDriveConstants.kGearShiftSolenoid);
+    m_gearSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, CompetitionDriveConstants.kGearShiftSolenoid);
     m_drive = new DifferentialDrive(m_leftMotors, m_rightMotors);
     SmartDashboard.putData("Field: ", m_field);
     simPose = new Field2d();
+
 
 
     // Sets the distance per pulse for the encoders
@@ -142,6 +159,13 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("x accel", m_gyro.getAccelX());
     SmartDashboard.putNumber("y accel", m_gyro.getAccelY());
     SmartDashboard.putNumber("z accel", m_gyro.getAccelZ());
+    double rawY = getYAngle();
+    if (rawY> 180)
+    {
+      rawY -= 360;
+    }
+    m_filteredY = m_gyroFilter.calculate(rawY);
+    SmartDashboard.putNumber("Commands/filteredY", m_filteredY);
   }
   @Override
   public void simulationPeriodic()
@@ -165,6 +189,10 @@ public class DriveSubsystem extends SubsystemBase {
       SmartDashboard.putNumber("angleDeg", angleDeg);
       var thing = target.getBestCameraToTarget();
     }
+  }
+
+  public double getFilteredY(){
+    return m_filteredY;
   }
   
   /**
@@ -217,10 +245,15 @@ public class DriveSubsystem extends SubsystemBase {
    * @param rot the commanded rotation
    */
   public void arcadeDrive(double fwd, double rot) {
+    if (m_autoDriving) return;
     m_drive.arcadeDrive(fwd, rot);
   }
   public void tankDrive(double leftSpeed, double rightSpeed)
   {
+    if (m_autoDriving) return;
+    m_drive.tankDrive(leftSpeed, rightSpeed);
+  }
+  public void autoDrive(double leftSpeed, double rightSpeed) {
     m_drive.tankDrive(leftSpeed, rightSpeed);
   }
 
@@ -253,6 +286,8 @@ public class DriveSubsystem extends SubsystemBase {
   public double getAverageEncoderDistance() {
     return (m_leftEncoder.getPosition() + m_rightEncoder.getPosition()) / 2.0;
   }
+
+
 
   /**
    * Gets the left drive encoder.
@@ -328,12 +363,32 @@ public class DriveSubsystem extends SubsystemBase {
     m_gearSolenoid.toggle();
   }
 
+  public void setGear(boolean gear){
+    m_gearSolenoid.set(gear);
+  }
+
   public boolean getGear(){
     return m_gearSolenoid.get();
   }
   public PhotonCamera getCamera()
   {
     return camera;
+  }
+
+  public void setAutoDrive(boolean auto) {
+    m_autoDriving = auto;
+  }
+
+  public void setBrake(boolean enabled) {
+    if (m_autoDriving) return;
+    autoBrake(enabled);
+  }
+
+  public void autoBrake(boolean enabled) {
+    for (var motor : m_motorAccess) {
+      motor.setIdleMode(enabled ? IdleMode.kBrake : IdleMode.kCoast);
+    }
+
   }
 }
   

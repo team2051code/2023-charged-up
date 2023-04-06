@@ -38,4 +38,7 @@ public class CompetitionDriveConstants {
     public static final int XboxArmPort = 0;
     public static final int XboxDrivePort = 1;
     public static final int joyStickPort = 2;
+    public static final int kArmPivotAbsoluteEncoderChannel = 0;
+    public static final int kExtenderAbsoluteEncoderChannel = 1;
+    public static final int kGripperPivotAbsoluteEncoderChannel = 2;
 }

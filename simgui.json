@@ -11,6 +11,9 @@
       "/LiveWindow/Ungrouped/PIDController[8]": "PIDController",
       "/SmartDashboard/Arm PID": "PIDController",
       "/SmartDashboard/Arm Sim": "Mechanism2d",
+      "/SmartDashboard/Arm/Arm/PID": "PIDController",
+      "/SmartDashboard/Arm/Extender/PID": "PIDController",
+      "/SmartDashboard/Arm/Gripper/PID": "PIDController",
       "/SmartDashboard/Arm/Intake/leftPid": "PIDController",
       "/SmartDashboard/Arm/Intake/rightPid": "PIDController",
       "/SmartDashboard/Commands": "Scheduler",
@@ -38,6 +41,17 @@
     }
   },
   "NetworkTables": {
+    "retained": {
+      "SmartDashboard": {
+        "arm": {
+          "open": true
+        },
+        "gripper": {
+          "open": true
+        },
+        "open": true
+      }
+    },
     "transitory": {
       "LiveWindow": {
         ".status": {
@@ -48,10 +62,7 @@
         "Commands": {
           "open": true
         },
-        "TeleopDrive": {
-          "open": true
-        },
-        "command": {
+        "camera": {
           "open": true
         },
         "open": true

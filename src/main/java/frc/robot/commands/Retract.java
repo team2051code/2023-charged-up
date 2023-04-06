@@ -5,7 +5,7 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.ArmSubsystem.IntakeMode;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -31,10 +31,11 @@ public class Retract extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_arm.setOveride(true);
-    m_arm.setBreak(true);
+    m_arm.setOverride(true);
+    m_arm.openBrake(true);
     m_arm.setExtenderSetpoint(3);
-    m_arm.setArmPivotSetpoint(180);
+    // m_arm.setArmPivotSetpoint(180);
+    MoveArm.moveArm(m_arm, 180);
     m_armCentering = false;
     // Start a timer to hold the command to a few-second window
     m_timer.reset();
@@ -57,8 +58,9 @@ public class Retract extends CommandBase {
   public void end(boolean interrupted) {
     SmartDashboard.putString("Retract/stage", "done");
     m_arm.setGripperPivotSetpoint(180);
-    m_arm.setBreak(false);
-    m_arm.setOveride(false);
+    m_arm.setIntakeMode(IntakeMode.SLOW);
+    m_arm.openBrake(false);
+    m_arm.setOverride(false);
     m_timer.stop();
   }
 
@@ -67,7 +69,6 @@ public class Retract extends CommandBase {
   public boolean isFinished() {
     SmartDashboard.putBoolean("Retract/arm centering", m_armCentering);
     // Command ends when reaching target or operational window expires.
-    return (m_timer.get() > TIME_OVERRIDE_SECS) || 
-    (m_armCentering && Math.abs(m_arm.getArmPivotAbs()-m_arm.getArmPivotSetpoint())<1);
+    return (m_timer.get() > TIME_OVERRIDE_SECS) || m_armCentering; // && Math.abs(m_arm.getArmPivotAbs()-m_arm.getArmPivotSetpoint())<1);
   }
 }

@@ -5,33 +5,27 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.ArmSubsystem.IntakeMode;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 /** An example command that uses an example subsystem. */
-public class AutoPlaceLow extends CommandBase {
+public class PIDTest extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final ArmSubsystem m_arm;
-  private final DriveSubsystem m_drive;
-  private static final double TIME_OVERRIDE_SECS = 1.0;
+  private static final double TIME_OVERRIDE_SECS = 3.0;
+  private boolean m_armCentering = false;
   private Timer m_timer = new Timer();
-
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public AutoPlaceLow(ArmSubsystem subsystem,DriveSubsystem drive) {
+  public PIDTest(ArmSubsystem subsystem) {
     m_arm = subsystem;
-    m_drive = drive;
-    m_timer.reset();
-    m_timer.start();
+    // Use addRequirements() here to declare subsystem dependencies.
+    // addRequirements(subsystem);
   }
 
   // Called when the command is initially scheduled.
@@ -39,28 +33,29 @@ public class AutoPlaceLow extends CommandBase {
   public void initialize() {
     m_arm.setOverride(true);
     m_arm.openBrake(true);
-    m_arm.setArmPivotSetpoint(270);
+    if(Math.abs(m_arm.getArmPivotSetpoint() - 225)<1)
+      m_arm.setArmPivotSetpoint(135);
+    else
+      m_arm.setArmPivotSetpoint(225);
+    m_armCentering = false;
+    // Start a timer to hold the command to a few-second window
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_arm.setIntakeMode(IntakeMode.FORWARD);;
-    m_arm.setOverride(false);
     m_arm.openBrake(false);
-    Command Drive = new DriveLinear(Units.feetToMeters(5), m_drive);
-    CommandScheduler.getInstance().schedule(Drive);
+    m_arm.setOverride(false);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (m_timer.get() > TIME_OVERRIDE_SECS) || (Math.abs(m_arm.getArmPivotAbs()-m_arm.getArmPivotSetpoint())<1);
+    // Command ends when reaching target or operational window expires.
+    return Math.abs(m_arm.getArmPivotAbs()-m_arm.getArmPivotSetpoint())<1;
   }
 }

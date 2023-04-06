@@ -13,30 +13,16 @@
 
 		<frc-dashboard onload="ntLoaded()">
 
-			<div class="row">
-				<h3 id="title0" class="tRow0">Compressor Enabled</h3>
-				<h3 id="title1" class="tRow0">Pressure Switch</h3>
-				<h3 id="title2" class="tRow0">Brake</h3>
+			<!-- prevent erros from shared .js file -->
+			<p id="mode" style="display: none;"></p>
+			<p id="gear" style="display: none;"></p>
+			<p id="time" style="display: none;"></p>
 
-				<h3 id="title3" class="tRow0">Arm Pivot Setpoint</h3>
-				<h3 id="title4" class="tRow0">Arm Pivot Voltage</h3>
-			</div>
-
-			<div class="row">
-					<frc-boolean-box id="component0" class="boolean0" source-key="/SmartDashboard/compressor/Enabled">enabled</frc-boolean-box>
-					<frc-boolean-box id="component1" class="boolean0" source-key="/SmartDashboard/compressor/Pressure switch">pressure</frc-boolean-box>
-					<frc-boolean-box id="component2" class="boolean0" source-key="/SmartDashboard/Brake">brake</frc-boolean-box>
-
-					<frc-number-bar id="component3" class="number0" source-key="/SmartDashboard/armPivotSetpoint">armPivotSetpoint</frc-number-bar>
-					<frc-number-bar id="component4" class="number0" source-key="/SmartDashboard/armPivotVoltage">armPivotVoltage</frc-number-bar>
-			</div>
-			
-
-		<!--Audio testing-->
-		<audio src="mixkit-sci-fi-ship-alert-768.wav" id="soundTest"></audio>
-
-		</frc-dashboard>
-		<!--------------------------------------------------------------------------------------------------->
+				<form action="#">
+					<label id="testKey">/SmartDashboard/boardButton</label>
+					<input id="testField" type="text">
+					<input type="submit" onclick="submitData('testField', 'testKey')">
+				</form>
 		
 		<!--------------------------------------------------------------------------------------------------->
 		

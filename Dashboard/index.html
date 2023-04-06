@@ -4,7 +4,6 @@
 	<head>
 		<title>Driver</title>
 		
-		
 		<link href="bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 		<script src="bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 		<link rel="stylesheet" href="dashboard.css">	
@@ -26,35 +25,52 @@
 				<h1 class="col-1 text-light">Gear:</h1>
 				<h1 class="col-1" id="gear">None</h1>
 			</div>
-			<div class="row text-light">
-				<!-- <h3 id="title0" class="col">gripped</h3> -->
-				<h3 id="title1" class="col">arm angle</h3>
-				<h3 id="title2" class="col">gripper angle</h3>
-				<h3 id="title3" class="col">arm extention</h3>
-				<h3 id="title4" class="col">gripper rotation</h3>
-				<!-- <h3 id="title5" class="col">balance</h3> -->
 
+			<div id="auto">	
+				<div class="row">
+					<h1 class="col">Auto mode</h1>
+					<h1 class="col">Drive Linear</h1>
+					<h1 class="col">Off Ramp</h1>
+					<h1 class="col">On Ramp</h1>
+				</div>
+				<div class="row">
+					<h3 class="col" id="auto-mode">(loading...)</h3>
+					<frc-boolean-box source-key="/SmartDashboard/Commands/DriveLinear" class="col"></frc-boolean-box>	
+					<frc-boolean-box source-key="/SmartDashboard/Commands/OffRamp" class="col"></frc-boolean-box>	
+					<frc-boolean-box source-key="/SmartDashboard/Commands/OnRamp" class="col"></frc-boolean-box>
+				</div>
 			</div>
-			<!--
-				gripper pivot (), gripper rotation(), extender (extender potentiometer), arm angle(arm potentiometer), gripped (GripperSol), 
-				robot balance
-			-->
-			<div class="row text-light">
-				<!-- <frc-boolean-box class="col" source-key="">gripped</frc-boolean-box> -->
+			
+			<div id="teleop">
+				<div class="row text-light">
+					<!-- <h3 id="title0" class="col">gripped</h3> -->
+					<h3 id="title1" class="col">arm angle</h3>
+					<h3 id="title2" class="col">gripper angle</h3>
 
-				<frc-gauge class="beattie-gauge col" source-key="/SmartDashboard/arm/angle" min="" max="">arm angle</frc-gauge>
-				<frc-gauge class="col" source-key="/SmartDashboard/gripper/pivot angle" min="" max="">gripper angle</frc-gauge>
-				
-				<frc-number-bar class="col" source-key="/SmartDashboard/arm/extender">arm extention</frc-number-bar>
-				<frc-number-bar class="col" source-key="/SmartDashboard/gripper/rotation">gripper rotation</frc-number-bar>
+					<h3 id="title3" class="col">arm extention</h3>
+					<!-- <h3 id="title5" class="col">balance</h3> -->
 
-				<!-- <frc-gyro class="col" source-key="">balance</frc-gyro> -->
+				</div>
+				<!--  -->
+				<div class="row">
+					<!-- <frc-boolean-box class="col" source-key="">gripped</frc-boolean-box> -->
+
+					<frc-gauge class="beattie-gauge col" source-key="/SmartDashboard/arm potentiometer" min="0" max="360">arm angle</frc-gauge>
+					<frc-gauge class="col" source-key="/SmartDashboard/gripper potentiometer" min="0" max="360">gripper angle</frc-gauge>
+					
+					<frc-number-bar class="col" source-key="/SmartDashboard/extender potentiometer" min="0" max="40">arm extention</frc-number-bar>
+					<!-- <frc-gyro class="col" source-key="">balance</frc-gyro> -->
+				</div>
+
+				<div class="row">
+					<h3 id="title4" class="col">Piece Gripped</h3>
+					<h3 id="title5" class="col">Gripper Flipped</h3>
+				</div>
+				<div class="row">
+					<frc-boolean-box class="col" source-key="/SmartDashboard/hasPiece"></frc-boolean-box>
+					<frc-boolean-box class="col" source-key="/SmartDashboard/isGripperFlipped"></frc-boolean-box>
+				</div>
 			</div>
-			<div>
-				<h1>Auto mode</h1>
-				<h3 id="auto-mode">(loading...)</h3>
-			</div>
-
 
 		<!--Audio testing-->
 		<audio src="debug.wav" id="soundTest"></audio>
