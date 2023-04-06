@@ -60,6 +60,21 @@ function ntLoaded() {
                 document.getElementById("soundTest").play();  
                 soundPlayed = true;          
         }
+        else if (value % 5 == 0 && value <= 64 && value >= 56  && !soundPlayed){
+            console.log('audio');
+            document.getElementById("soundTest").play();  
+            soundPlayed = true;          
+        }
+        else if (value % 5 == 0 && value <= 94 && value >= 86  && !soundPlayed){
+            console.log('audio');
+            document.getElementById("soundTest").play();  
+            soundPlayed = true;          
+        }
+        else if (value % 5 == 0 && value <= 124 && value >= 116  && !soundPlayed){
+            console.log('audio');
+            document.getElementById("soundTest").play();  
+            soundPlayed = true;          
+        }
         else if (value % 5 == 4) {
             soundPlayed = false;
         }
