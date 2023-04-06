@@ -318,7 +318,7 @@ public class ArmSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("Arm/Gripper/rotatorVoltage", gripperRotationVoltage);
             m_GripperRotator.setVoltage(gripperRotationVoltage);
 
-            // if (!m_breakSolenoid.get())
+            // if (!m_brakeSolenoid.get())
             //     m_armPivot.setVoltage(0);
 
             updateIntake();

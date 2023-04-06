@@ -240,6 +240,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    SmartDashboard.putNumber("DriveLeftEncoder", m_drive.getLeftEncoder());
     if(m_buttonPanel.getRawButton(6)){
       SmartDashboard.putNumber("autoname", 1);
     }
@@ -248,6 +249,9 @@ public class Robot extends TimedRobot {
     }
     if(m_buttonPanel.getRawButton(11)){
       SmartDashboard.putNumber("autoname", 3);
+    }
+    if(m_buttonPanel.getRawButton(8)){
+      SmartDashboard.putNumber("autoname", 4);
     }
 
     SmartDashboard.putNumber("right motor speed:", m_RightFront.get());
@@ -309,8 +313,8 @@ public class Robot extends TimedRobot {
     
     if (autoname == 1 /* driveforward */){
       System.out.println("Drive forward scheduled");
-      autoprogram = new SequentialCommandGroup( new AutoPlaceMid(m_arm)
-      //new DriveLinear(Units.feetToMeters(-5), m_drive)
+      autoprogram = new SequentialCommandGroup( new AutoPlaceMid(m_arm),
+      new DriveLinear(Units.feetToMeters(-5), m_drive)
       );
     }    else if (autoname == 3 /* autobalance */){
       System.out.println("Autobalance scheduled");
@@ -320,6 +324,8 @@ public class Robot extends TimedRobot {
         new DriveLinear(-1.45,m_drive,0.7),
         BalanceFactory.balance(m_drive,m_arm)
       );
+    } else if (autoname == 4 /* place no drive */){
+      autoprogram = new AutoPlaceMid(m_arm);
     }
 
     if (autoprogram != null) {
