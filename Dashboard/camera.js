@@ -77,24 +77,10 @@ function ntLoaded() {
     //filp camera output when the arm swiches sides && arm camera is selected
     NetworkTables.addKeyListener("/SmartDashboard/arm potentiometer", (key, value, isNew) => {
         if(value > 180 && document.getElementById("cameraOut").src == "http://10.20.51.18:1181/stream.mjpg?1674930762001") {
-            document.getElementById("cameraOut").style.transform = "rotate(180deg); transform(2)"
+            document.getElementById("cameraOut").style.transform = "rotate(180deg); transform(3)"
         }
         else {
-            document.getElementById("cameraOut").style.transform = "rotate(0deg); transform(2)"
+            document.getElementById("cameraOut").style.transform = "rotate(0deg); transform(3)"
         }
     }, true);
-
-
-    NetworkTables.addKeyListener("/SmartDashboard/leftStick", (key, value, isNew) => {
-        console.log("network tables")
-        var canvas = document.getElementById("canvas");
-        ctx = canvas.getContext("2d");
-
-        ctx.beginPath();
-        ctx.clearRect(0, 0, 100, 100);
-        ctx.moveTo(0, 0);
-        ctx.lineTo(100, value * 100);
-        ctx.strokeStyle = "#0FF";
-        ctx.stroke();
-    }, true)
 }
