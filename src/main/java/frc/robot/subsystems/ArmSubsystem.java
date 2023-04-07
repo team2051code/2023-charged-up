@@ -362,11 +362,11 @@ public class ArmSubsystem extends SubsystemBase {
     // Subroutine: update the intake based on current mode
     private void updateIntake() {
         switch (m_intakeMode) {
-            // case OFF:
-            //     m_intake.set(0);
-            //     // m_intakeRightPIDController.setSetpoint(0);
-            //     // m_intakeLeftPIDController.setSetpoint(0);
-            //     break;
+            case OFF:
+                m_intake.set(0);
+                // m_intakeRightPIDController.setSetpoint(0);
+                // m_intakeLeftPIDController.setSetpoint(0);
+                break;
             case FORWARD:
                 m_intake.set(1);
                 // m_intakeRightPIDController.setSetpoint(1);

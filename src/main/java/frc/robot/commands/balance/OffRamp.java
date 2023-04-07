@@ -45,7 +45,6 @@ public class OffRamp extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     SmartDashboard.putBoolean("Commands/OffRamp", false);
-    m_drive.autoBrake(false);
   }
 
   // Returns true when the command should end.

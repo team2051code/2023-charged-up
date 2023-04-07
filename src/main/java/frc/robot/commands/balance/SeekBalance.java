@@ -71,7 +71,6 @@ public class SeekBalance extends CommandBase {
     }
     SmartDashboard.putBoolean("Commands/SeekBalance", false);
     m_drive.setAutoDrive(false);
-    m_drive.autoBrake(false);
   }
 
   // Returns true when the command should end.

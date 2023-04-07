@@ -51,6 +51,8 @@ public class TeleopDrive {
         SmartDashboard.putBoolean("TeleopDrive/lowSpeed", m_lowSpeed);
         double leftMotorOut = computeMotorOut(leftY,m_lastLeft,m_leftLimiter);
         double rightMotorOut = computeMotorOut(rightY,m_lastRight,m_rightLimiter);
+        SmartDashboard.putNumber("TeleopDrive/LeftMotorOut", leftMotorOut);
+        SmartDashboard.putNumber("TeleopDrive/RightMotorOut", rightMotorOut);
 
         m_lastLeft = leftY;
         m_lastRight = rightY;

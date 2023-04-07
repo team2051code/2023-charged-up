@@ -286,6 +286,10 @@ public class Robot extends TimedRobot {
     m_LeftFront.setIdleMode(IdleMode.kBrake);
     m_RightBack.setIdleMode(IdleMode.kBrake);
     m_RightFront.setIdleMode(IdleMode.kBrake);
+    m_LeftBack.burnFlash();
+    m_LeftFront.burnFlash();
+    m_RightBack.burnFlash();
+    m_RightFront.burnFlash();
   }
 
   @Override
@@ -338,11 +342,15 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+    m_LeftBack.setIdleMode(IdleMode.kBrake);
+    m_LeftFront.setIdleMode(IdleMode.kBrake);
+    m_RightBack.setIdleMode(IdleMode.kBrake);
+    m_RightFront.setIdleMode(IdleMode.kBrake);
   }
 
   @Override
   public void teleopInit() {
-    m_arm.setIntakeMode(IntakeMode.SLOW);
+    m_arm.setIntakeMode(IntakeMode.OFF);
     CommandScheduler.getInstance().cancelAll();
     m_LeftBack.setIdleMode(IdleMode.kCoast);
     m_LeftFront.setIdleMode(IdleMode.kCoast);
@@ -442,24 +450,36 @@ public class Robot extends TimedRobot {
     m_gripperPivotButtonPressed = m_ArmController.getRawButton(2);
 
 
-    // if(m_ArmController.getRawButton(7)&&!m_intakeButtonPressed){
+    // if(m_ArmController.getRawButton(8)&&!m_intakeButtonPressed){
     //    if(m_arm.getIntakeMode() !=IntakeMode.SLOW)
     //     m_arm.setIntakeMode(IntakeMode.SLOW);
     //   else
     //     m_arm.setIntakeMode(IntakeMode.OFF);
     // }else{
-      if (m_ArmController.getRawButton(4)){
-        m_arm.setIntakeMode(IntakeMode.FORWARD);
-      }
-      else if (m_ArmController.getRawButton(5)){
-        m_arm.setIntakeMode(IntakeMode.BACKWARD);
-      }
-      else { //if(!m_arm.getIntakeMode().equals(IntakeMode.SLOW))
-        m_arm.setIntakeMode(IntakeMode.SLOW);
-      }
+      // if (m_ArmController.getRawButton(4)){
+      //   m_arm.setIntakeMode(IntakeMode.FORWARD);
+      // }
+      // else if (m_ArmController.getRawButton(5)){
+      //   m_arm.setIntakeMode(IntakeMode.BACKWARD);
+      // }
+      // else {//if(!m_arm.getIntakeMode().equals(IntakeMode.SLOW)){
+      //   m_arm.setIntakeMode(IntakeMode.SLOW);
+      // }
     //}
 
-    m_intakeButtonPressed = m_ArmController.getRawButton(7);
+    m_intakeButtonPressed = m_ArmController.getRawButton(8);
+
+    if(m_arm.getGripperSol())
+      m_arm.setIntakeMode(IntakeMode.OFF);
+    else
+      m_arm.setIntakeMode(IntakeMode.SLOW);
+    
+    if (m_ArmController.getRawButton(4)){
+      m_arm.setIntakeMode(IntakeMode.FORWARD);
+    }
+    else if (m_ArmController.getRawButton(5)){
+      m_arm.setIntakeMode(IntakeMode.BACKWARD);
+    }
 
     if(m_ArmController.getRawButton(6))
       m_arm.incrementGripperPivotSetpoint(10);

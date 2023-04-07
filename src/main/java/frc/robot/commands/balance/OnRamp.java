@@ -43,7 +43,7 @@ public class OnRamp extends CommandBase {
     m_drive.setAutoDrive(true);
     m_drive.autoBrake(true);
     if(DriverStation.getAlliance() == Alliance.Red)//if the field is red
-      m_offset = 0.4;
+      m_offset = 0.45;
     else
       m_offset = 0.4;
     SmartDashboard.putNumber("BalanceOffset", m_offset);
@@ -60,7 +60,6 @@ public class OnRamp extends CommandBase {
   public void end(boolean interrupted) {
     SmartDashboard.putBoolean("Commands/OnRamp", false);
     m_drive.setAutoDrive(false);
-    m_drive.autoBrake(false);
     Command seekBalance = 
     new SequentialCommandGroup(
       new SeekBalance(m_drive, m_drive.getLeftEncoder()-m_offset),

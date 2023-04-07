@@ -27,7 +27,6 @@ public class HoldPosition extends CommandBase{
     public void end(boolean interrupted) {
         SmartDashboard.putBoolean("Commands/HoldPosition", false);
         m_drive.setAutoDrive(false);
-        m_drive.autoBrake(false);
     }
 
     @Override
