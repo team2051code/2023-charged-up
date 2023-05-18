@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 
 
+
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -16,7 +18,10 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.commands.Delay;
 import frc.robot.components.LimitedMotor;
 import frc.robot.filters.VelocityFilter;
 import frc.robot.subsystems.simulated.AnalogPotentiometerSimulation;
@@ -69,6 +74,8 @@ public class ArmSubsystem extends SubsystemBase {
     private boolean m_hasPiece = false;
     private VelocityFilter m_armVelocityFilter = new VelocityFilter();
     private boolean m_isGripperFlipped;
+    private double hStop1;
+    private double hStop2;
 
     private enum Quadrant {
         Q1, Q2, Q3, Q4
@@ -405,6 +412,32 @@ public class ArmSubsystem extends SubsystemBase {
 
     }
 
+    public void calibrateIntake(){
+        Timer timer = new Timer();
+        double lastRotatorPos = m_gripperRotatorEncoder.getPosition();
+        m_GripperRotator.setVoltage(-1);
+        while(timer.get() < 0.1){}
+        while(Math.abs(lastRotatorPos-m_gripperRotatorEncoder.getPosition())>=1){
+            timer.reset();
+            timer.start();
+            while(timer.get() < 0.1){}
+            lastRotatorPos = m_gripperRotatorEncoder.getPosition();
+        }
+        m_GripperRotator.setVoltage(0);
+        hStop1 = m_gripperRotatorEncoder.getPosition();
+        lastRotatorPos = m_gripperRotatorEncoder.getPosition();
+        m_GripperRotator.setVoltage(1);
+        while(timer.get() < 0.1){}
+        while(Math.abs(lastRotatorPos-m_gripperRotatorEncoder.getPosition())>=1){
+            timer.reset();
+            timer.start();
+            while(timer.get() < 0.1){}
+            lastRotatorPos = m_gripperRotatorEncoder.getPosition();
+        }
+        m_GripperRotator.setVoltage(0);
+        hStop2 = m_gripperRotatorEncoder.getPosition();
+    }
+
     public IntakeMode getIntakeMode() {
         return m_intakeMode;
     }
@@ -470,10 +503,10 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void toggleGripperRotator() {
-        if (m_gripperRotatorPIDController.getSetpoint() == 4)
-            setGripperRotatorSetpoint(-110);
+        if (m_gripperRotatorPIDController.getSetpoint() == hStop1)
+            setGripperRotatorSetpoint(hStop2);
         else
-            setGripperRotatorSetpoint(4);
+            setGripperRotatorSetpoint(hStop1);
     }
 
     private void setGripperRotatorSetpoint(double setpoint) {

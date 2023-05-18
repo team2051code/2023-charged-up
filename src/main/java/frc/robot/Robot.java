@@ -290,6 +290,7 @@ public class Robot extends TimedRobot {
     m_LeftFront.burnFlash();
     m_RightBack.burnFlash();
     m_RightFront.burnFlash();
+    CommandScheduler.getInstance().cancelAll();
   }
 
   @Override
@@ -356,8 +357,8 @@ public class Robot extends TimedRobot {
     m_LeftFront.setIdleMode(IdleMode.kCoast);
     m_RightBack.setIdleMode(IdleMode.kCoast);
     m_RightFront.setIdleMode(IdleMode.kCoast);
-    
     m_robotContainer.resetOdometry();
+    m_arm.calibrateIntake();
   }
 
   /** This function is called periodically during operator control. */
@@ -639,6 +640,8 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
+    if(!CommandScheduler.getInstance().isScheduled(RobotIdle.idle(m_arm)))
+      CommandScheduler.getInstance().schedule(RobotIdle.idle(m_arm));
   }
 
 }
