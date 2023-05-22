@@ -345,7 +345,7 @@ public class ArmSubsystem extends SubsystemBase {
             // setGripperPivotSetpoint(93);
 
             SmartDashboard.putBoolean("Debug", false);
-            if (m_gripperRotatorPIDController.getSetpoint() == -110)
+            if (m_gripperRotatorEncoder.getPosition() <= ((hStop2+hStop1)/2))
                 m_isGripperFlipped = true;
             else
                 m_isGripperFlipped = false;  
@@ -414,28 +414,46 @@ public class ArmSubsystem extends SubsystemBase {
 
     public void calibrateIntake(){
         Timer timer = new Timer();
+        timer.reset();
+        timer.start();
         double lastRotatorPos = m_gripperRotatorEncoder.getPosition();
-        m_GripperRotator.setVoltage(-1);
-        while(timer.get() < 0.1){}
-        while(Math.abs(lastRotatorPos-m_gripperRotatorEncoder.getPosition())>=1){
+        m_GripperRotator.setVoltage(-5);
+        SmartDashboard.putNumber("CalibrateIntake/RotatorVoltage", -1);
+        while(timer.get() < 0.1){SmartDashboard.putNumber("CalibrateIntake/Timer", timer.get());}
+        while(Math.abs(lastRotatorPos-m_gripperRotatorEncoder.getPosition())>0.0){
+            SmartDashboard.putNumber("CalibrateIntake/Difference-1", Math.abs(lastRotatorPos-m_gripperRotatorEncoder.getPosition()));
+            SmartDashboard.putBoolean("CalibrateIntake/While-1", true);
             timer.reset();
             timer.start();
-            while(timer.get() < 0.1){}
             lastRotatorPos = m_gripperRotatorEncoder.getPosition();
+            SmartDashboard.putNumber("CalibrateIntake/lastRotatorPos", lastRotatorPos);
+            while(timer.get() < 0.1){SmartDashboard.putNumber("CalibrateIntake/Timer", timer.get());} 
         }
+        timer.reset();
+        timer.start();
+        SmartDashboard.putBoolean("CalibrateIntake/While-1", false);
         m_GripperRotator.setVoltage(0);
+        SmartDashboard.putNumber("CalibrateIntake/RotatorVoltage", 0);
         hStop1 = m_gripperRotatorEncoder.getPosition();
+        SmartDashboard.putNumber("CalibrateIntake/hStop1", hStop1);
         lastRotatorPos = m_gripperRotatorEncoder.getPosition();
-        m_GripperRotator.setVoltage(1);
+        m_GripperRotator.setVoltage(5);
+        SmartDashboard.putNumber("CalibrateIntake/RotatorVoltage", 1);
         while(timer.get() < 0.1){}
-        while(Math.abs(lastRotatorPos-m_gripperRotatorEncoder.getPosition())>=1){
+        while(Math.abs(lastRotatorPos-m_gripperRotatorEncoder.getPosition())>0.){
+            SmartDashboard.putBoolean("CalibrateIntake/While1", true);
             timer.reset();
             timer.start();
-            while(timer.get() < 0.1){}
             lastRotatorPos = m_gripperRotatorEncoder.getPosition();
+            SmartDashboard.putNumber("CalibrateIntake/lastRotatorPos", lastRotatorPos);
+            while(timer.get() < 0.1){SmartDashboard.putNumber("CalibrateIntake/Timer", timer.get());}
         }
+        SmartDashboard.putBoolean("CalibrateIntake/While1", false);
         m_GripperRotator.setVoltage(0);
+        SmartDashboard.putNumber("CalibrateIntake/RotatorVoltage", 0);
         hStop2 = m_gripperRotatorEncoder.getPosition();
+        SmartDashboard.putNumber("CalibrateIntake/hStop2", hStop2);
+        toggleGripperRotator();
     }
 
     public IntakeMode getIntakeMode() {
@@ -503,10 +521,10 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void toggleGripperRotator() {
-        if (m_gripperRotatorPIDController.getSetpoint() == hStop1)
-            setGripperRotatorSetpoint(hStop2);
+        if (m_gripperRotatorPIDController.getSetpoint() == hStop2)//4
+            setGripperRotatorSetpoint(hStop1);//-110
         else
-            setGripperRotatorSetpoint(hStop1);
+            setGripperRotatorSetpoint(hStop2);//4
     }
 
     private void setGripperRotatorSetpoint(double setpoint) {
